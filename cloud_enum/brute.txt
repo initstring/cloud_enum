@@ -1,0 +1,17 @@
+container
+storage
+test
+dev
+secrets
+passwords
+blob
+cloud
+development
+production
+bucket
+source
+source-code
+src
+private
+public
+shared
