@@ -7,6 +7,7 @@ Currently enumerates:
 - Microsoft Azure Storage Accounts
 - Open Microsoft Azure Containers
 - Open Google Cloud Platform Buckets
+- Protected Google Cloud Platform Buckets
 
 Right now, by "open" buckets/containers, I mean those that allow anonymous users to list contents. if you discover a protected bucket/container, it is still worth trying to brute force the contents with another tool.
 
