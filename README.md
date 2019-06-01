@@ -11,6 +11,9 @@ Currently enumerates:
 
 Right now, by "open" buckets/containers, I mean those that allow anonymous users to list contents. if you discover a protected bucket/container, it is still worth trying to brute force the contents with another tool.
 
+<img src="https://initstring.keybase.pub/host/images/cloud_enum.png" align="center"/>
+
+
 # Usage
 
 ## Setup
@@ -66,4 +69,3 @@ I plan to implement some more things, like:
 - Searching for test virtual machine instances (which often have unfinished, vulnerable web apps)
 - Adding additional public resources, where it makes sense
 
-<img src="https://initstring.keybase.pub/host/images/cloud_enum.png" align="center"/>
