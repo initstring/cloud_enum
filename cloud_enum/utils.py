@@ -5,57 +5,65 @@ Helper functions for network requests, etc
 import time
 import sys
 import socket
-import requests
+try:
+    from concurrent.futures import ThreadPoolExecutor
+    from requests_futures.sessions import FuturesSession
+except ImportError:
+    print("[!] You'll need to pip install requests-futures for this tool.")
+    sys.exit()
 
 
-class FastHttpGet():
+def get_url_batch(url_list, use_ssl=False, callback='', threads=5):
     """
-    Wrapper for an HTTP processor. Will implement multi-threading in a future
-    release.
+    Processes a list of URLs, sending the results back to the calling
+    function in real-time via the `callback` parameter
     """
-    def __init__(self):
 
-        # Define variables used for interacting with class
-        self.reply_text = ''
-        self.reply_code = ''
-        self.batch_results = {}
+    # Start a counter for a status message
+    tick = {}
+    tick['total'] = len(url_list)
+    tick['current'] = 0
 
-    def get_url_batch(self, url_list, use_ssl=False, callback=''):
-        """
-        Processes a list of URLs, sending the results back to the calling
-        function in real-time via the `callback` parameter
-        """
+    # Break the url list into smaller lists based on thread size
+    queue = [url_list[x:x+threads] for x in range(0, len(url_list), threads)]
 
-        # Start a counter for a status message
-        tick = {}
-        tick['total'] = len(url_list)
-        tick['current'] = 0
+    # Define the protocol
+    if use_ssl:
+        proto = 'https://'
+    else:
+        proto = 'http://'
 
-        # Define the protocol
-        if use_ssl:
-            proto = 'https://'
-        else:
-            proto = 'http://'
+    # Start a requests object
+    session = FuturesSession(executor=ThreadPoolExecutor(max_workers=threads))
 
-        # Start a requests object
-        session = requests.session()
+    # Using the async requests-futures module, work in batches based on
+    # the 'queue' list created above. Call each URL, sending the results
+    # back to the callback function.
+    for batch in queue:
+        batch_pending = {}
+        batch_results = {}
 
-        # Get each URL, appending the results to a list
-        for url in url_list:
-            reply = session.get(proto + url)
+        # First, grab the pending async request and store it in a dict
+        for url in batch:
+            batch_pending[url] = session.get(proto + url)
 
-            # Send the results back for immediate analysis
-            callback(reply)
+        # Then, grab all the results from the queue
+        for url in batch_pending:
+            batch_results[url] = batch_pending[url].result()
+        
+        # Now, send all the results to the callback function for analysis
+        for url in batch_results:
+            callback(batch_results[url])
 
-            # Refresh a status message
-            tick['current'] += 1
-            sys.stdout.flush()
-            sys.stdout.write("    {}/{} complete..."
-                             .format(tick['current'], tick['total']))
-            sys.stdout.write('\r')
+        # Refresh a status message
+        tick['current'] += threads
+        sys.stdout.flush()
+        sys.stdout.write("    {}/{} complete..."
+                         .format(tick['current'], tick['total']))
+        sys.stdout.write('\r')
 
-        # Clear the status message
-        sys.stdout.write('                            \r')
+    # Clear the status message
+    sys.stdout.write('                            \r')
 
 def fast_dns_lookup(names):
     """

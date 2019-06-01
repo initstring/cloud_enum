@@ -54,6 +54,10 @@ def parse_arguments():
                         help='List to brute-force Azure container names.'
                         '  Default: cloud_enum/brute.txt.')
 
+    parser.add_argument('-t', '--threads', type=int, action='store',
+                        default=5, help='Threads for HTTP brute-force.'
+                        ' Default = 5')
+
     # Allow the user to specify a custom AWS region (NOT YET IMPLEMENTED)
     #parser.add_argument('-ar', '--aws_region', type=str, action='append',
     #                    help='Limit to specific AWS region/s (see list in'
@@ -140,9 +144,9 @@ def main():
     names = build_names(args.keyword, mutations)
 
     # All the work is done in the individual modules
-    aws_checks.run_all(names)
-    azure_checks.run_all(names, args.brute)
-    gcp_checks.run_all(names)
+    aws_checks.run_all(names, args.threads)
+    azure_checks.run_all(names, args.brute, args.threads)
+    gcp_checks.run_all(names, args.threads)
 
     # Best of luck to you!
     print("\n[+] All done, happy hacking!\n")
