@@ -33,7 +33,7 @@ def print_bucket_response(reply):
                 "       {}: {}"
                 .format(reply.status_code, reply.reason))
 
-def check_gcp_buckets(names):
+def check_gcp_buckets(names, threads):
     """
     Checks for open and restricted Google Cloud buckets
     """
@@ -49,21 +49,19 @@ def check_gcp_buckets(names):
     for name in names:
         candidates.append('{}/{}'.format(GCP_URL, name))
 
-    # Initialize the http engine
-    http_client = utils.FastHttpGet()
-
     # Send the valid names to the batch HTTP processor
-    http_client.get_url_batch(candidates, use_ssl=False,
-                              callback=print_bucket_response)
+    utils.get_url_batch(candidates, use_ssl=False,
+                        callback=print_bucket_response,
+                        threads=threads)
 
     # Stop the time
     utils.stop_timer(start_time)
 
-def run_all(names):
+def run_all(names, threads):
     """
     Function is called by main program
     """
     print(BANNER)
 
-    check_gcp_buckets(names)
+    check_gcp_buckets(names, threads)
     return ''

@@ -34,7 +34,7 @@ def print_account_response(reply):
                 "       {}: {}"
                 .format(reply.status_code, reply.reason))
 
-def check_storage_accounts(names):
+def check_storage_accounts(names, threads):
     """
     Checks storage account names
     """
@@ -60,12 +60,10 @@ def check_storage_accounts(names):
     # Azure Storage Accounts use DNS sub-domains. First, see which are valid.
     valid_names = utils.fast_dns_lookup(candidates)
 
-    # Initialize the http engine
-    http_client = utils.FastHttpGet()
-
     # Send the valid names to the batch HTTP processor
-    http_client.get_url_batch(valid_names, use_ssl=False,
-                              callback=print_account_response)
+    utils.get_url_batch(valid_names, use_ssl=False,
+                        callback=print_account_response,
+                        threads=threads)
 
     # Stop the timer
     utils.stop_timer(start_time)
@@ -90,7 +88,7 @@ def print_container_response(reply):
                 "       {}: {}"
                 .format(reply.status_code, reply.reason))
 
-def brute_force_containers(storage_accounts, brute_list):
+def brute_force_containers(storage_accounts, brute_list, threads):
     """
     Attempts to find public Blob Containers in valid Storage Accounts
 
@@ -116,22 +114,20 @@ def brute_force_containers(storage_accounts, brute_list):
             candidates.append('{}/{}/?restype=container&comp=list'
                               .format(account, name))
 
-        # Initialize the http engine
-        http_client = utils.FastHttpGet()
-
         # Send the valid names to the batch HTTP processor
-        http_client.get_url_batch(candidates, use_ssl=True,
-                                  callback=print_container_response)
+        utils.get_url_batch(candidates, use_ssl=True,
+                            callback=print_container_response,
+                            threads=threads)
 
     # Stop the timer
     utils.stop_timer(start_time)
 
-def run_all(names, brute_list):
+def run_all(names, brute_list, threads):
     """
     Function is called by main program
     """
     print(BANNER)
 
-    valid_accounts = check_storage_accounts(names)
+    valid_accounts = check_storage_accounts(names, threads)
     if valid_accounts:
-        brute_force_containers(valid_accounts, brute_list)
+        brute_force_containers(valid_accounts, brute_list, threads)

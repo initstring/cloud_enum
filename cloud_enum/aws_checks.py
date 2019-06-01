@@ -3,6 +3,7 @@ AWS-specific checks. Part of the cloud_enum package available at
 github.com/initstring/cloud_enum
 """
 
+import sys
 from cloud_enum import utils
 
 BANNER = '''
@@ -52,11 +53,14 @@ def print_s3_response(reply):
     elif reply.status_code == 403:
         utils.printc("    Protected S3 Bucket: {}\n"
                      .format(reply.url), 'orange')
+    elif 'Slow Down' in reply.reason:
+        print("[!] You've been rate limited, exiting.")
+        sys.exit()
     else: print("    Unknown status codes being received:\n"
                 "       {}: {}"
                 .format(reply.status_code, reply.reason))
 
-def check_s3_buckets(names):
+def check_s3_buckets(names, threads):
     """
     Checks for open and restricted Amazon S3 buckets
     """
@@ -72,17 +76,15 @@ def check_s3_buckets(names):
     for name in names:
         candidates.append('{}.{}'.format(name, S3_URL))
 
-    # Initialize the http engine
-    http_client = utils.FastHttpGet()
-
     # Send the valid names to the batch HTTP processor
-    http_client.get_url_batch(candidates, use_ssl=False,
-                              callback=print_s3_response)
+    utils.get_url_batch(candidates, use_ssl=False,
+                        callback=print_s3_response,
+                        threads=threads)
 
     # Stop the time
     utils.stop_timer(start_time)
 
-def run_all(names):
+def run_all(names, threads):
     """
     Function is called by main program
     """
@@ -91,5 +93,5 @@ def run_all(names):
     # Use user-supplied AWS region if provided
     #if not regions:
     #    regions = AWS_REGIONS
-    check_s3_buckets(names)
+    check_s3_buckets(names, threads)
     return ''
