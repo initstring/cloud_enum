@@ -65,7 +65,7 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5):
     # Clear the status message
     sys.stdout.write('                            \r')
 
-def fast_dns_lookup(names):
+def fast_dns_lookup(names, callback=''):
     """
     Helper function to resolve DNS names.
 
@@ -89,8 +89,13 @@ def fast_dns_lookup(names):
         try:
             socket.gethostbyname(name)
             valid_names.append(name)
+            if callback:
+                callback(name)
         except socket.gaierror:
             continue
+
+    # Clear the status message
+    sys.stdout.write('                            \r')
 
     return valid_names
 

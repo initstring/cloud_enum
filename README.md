@@ -6,6 +6,7 @@ Currently enumerates:
 - Protected Amazon S3 Buckets
 - Microsoft Azure Storage Accounts
 - Open Microsoft Azure Containers
+- Registered Azure Website DNS (PaaS web apps)
 - Open Google Cloud Platform Buckets
 - Protected Google Cloud Platform Buckets
 

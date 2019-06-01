@@ -14,6 +14,7 @@ BANNER = '''
 
 # Known Azure domain names
 BLOB_URL = 'blob.core.windows.net'
+WEBAPP_URL = 'azurewebsites.net'
 
 def print_account_response(reply):
     """
@@ -122,6 +123,35 @@ def brute_force_containers(storage_accounts, brute_list, threads):
     # Stop the timer
     utils.stop_timer(start_time)
 
+def print_website_response(hostname):
+    """
+    This function is passed into the DNS brute force as a callback,
+    so we can get real-time results.
+    """
+    utils.printc("    Registered Azure Website DNS Name: {}\n"
+                 .format(hostname), 'green')
+
+def check_azure_websites(names):
+    """
+    Checks for Azure Websites (PaaS)
+    """
+    print("[+] Checking for Azure Websites")
+
+    # Start a counter to report on elapsed time
+    start_time = utils.start_timer()
+
+    # Initialize the list of domain names to look up
+    candidates = [name + '.' + WEBAPP_URL for name in names]
+
+    # Azure Websites use DNS sub-domains. If it resolves, it is registered.
+    valid_names = utils.fast_dns_lookup(candidates,
+                                        callback=print_website_response)
+
+    # Stop the timer
+    utils.stop_timer(start_time)
+
+    return valid_names
+
 def run_all(names, brute_list, threads):
     """
     Function is called by main program
@@ -131,3 +161,5 @@ def run_all(names, brute_list, threads):
     valid_accounts = check_storage_accounts(names, threads)
     if valid_accounts:
         brute_force_containers(valid_accounts, brute_list, threads)
+
+    check_azure_websites(names)
