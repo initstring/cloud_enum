@@ -148,7 +148,7 @@ def main():
     names = build_names(args.keyword, mutations)
 
     # All the work is done in the individual modules
-    #aws_checks.run_all(names, args.threads)
+    aws_checks.run_all(names, args.threads)
     azure_checks.run_all(names, args.brute, args.threads, args.nameserver)
     gcp_checks.run_all(names, args.threads)
 
