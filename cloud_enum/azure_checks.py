@@ -23,8 +23,12 @@ def print_account_response(reply):
     This function is passed into the class object so we can view results
     in real-time.
     """
+    # 
     if reply.status_code == 404:
         pass
+    elif 'The specified account is disabled' in reply.reason:
+        utils.printc("    Disabled Storage Account: {}\n"
+                     .format(reply.url), 'orange')
     elif 'Value for one of the query' in reply.reason:
         utils.printc("    HTTP-OK Storage Account: {}\n"
                      .format(reply.url), 'orange')
@@ -78,11 +82,20 @@ def print_container_response(reply):
     This function is passed into the class object so we can view results
     in real-time.
     """
-    if reply.status_code == 200:
+    # Stop brute forcing disabled accounts
+    if 'The specified account is disabled' in reply.reason:
+        return 'breakout'
+
+    # Stop brute forcing accounts without permission
+    if 'not authorized to perform this operation' in reply.reason:
+        return 'breakout'
+
+    # Handle other responses
+    if reply.status_code == 404:
+        pass
+    elif reply.status_code == 200:
         utils.printc("    OPEN AZURE CONTAINER: {}\n"
                      .format(reply.url), 'green')
-    elif reply.status_code == 404:
-        pass
     elif 'One of the request inputs is out of range' in reply.reason:
         pass
     else: print("    Unknown status codes being received:\n"

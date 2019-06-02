@@ -52,8 +52,12 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5):
             batch_results[url] = batch_pending[url].result()
 
         # Now, send all the results to the callback function for analysis
+        # We need a way to stop processing unnecessary brute-forces, so the
+        # callback may tell us to bail out.
         for url in batch_results:
-            callback(batch_results[url])
+            check = callback(batch_results[url])
+            if check == 'breakout':
+                return
 
         # Refresh a status message
         tick['current'] += threads
