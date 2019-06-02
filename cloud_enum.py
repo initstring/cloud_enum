@@ -58,6 +58,10 @@ def parse_arguments():
                         default=5, help='Threads for HTTP brute-force.'
                         ' Default = 5')
 
+    parser.add_argument('-ns', '--nameserver', type=str, action='store',
+                        default='8.8.8.8',
+                        help='DNS server to use in brute-force.')
+
     # Allow the user to specify a custom AWS region (NOT YET IMPLEMENTED)
     #parser.add_argument('-ar', '--aws_region', type=str, action='append',
     #                    help='Limit to specific AWS region/s (see list in'
@@ -144,8 +148,8 @@ def main():
     names = build_names(args.keyword, mutations)
 
     # All the work is done in the individual modules
-    aws_checks.run_all(names, args.threads)
-    azure_checks.run_all(names, args.brute, args.threads)
+    #aws_checks.run_all(names, args.threads)
+    azure_checks.run_all(names, args.brute, args.threads, args.nameserver)
     gcp_checks.run_all(names, args.threads)
 
     # Best of luck to you!

@@ -35,7 +35,7 @@ def print_account_response(reply):
                 "       {}: {}"
                 .format(reply.status_code, reply.reason))
 
-def check_storage_accounts(names, threads):
+def check_storage_accounts(names, threads, nameserver):
     """
     Checks storage account names
     """
@@ -59,7 +59,7 @@ def check_storage_accounts(names, threads):
             candidates.append('{}.{}'.format(name, BLOB_URL))
 
     # Azure Storage Accounts use DNS sub-domains. First, see which are valid.
-    valid_names = utils.fast_dns_lookup(candidates)
+    valid_names = utils.fast_dns_lookup(candidates, nameserver)
 
     # Send the valid names to the batch HTTP processor
     utils.get_url_batch(valid_names, use_ssl=False,
@@ -131,7 +131,7 @@ def print_website_response(hostname):
     utils.printc("    Registered Azure Website DNS Name: {}\n"
                  .format(hostname), 'green')
 
-def check_azure_websites(names):
+def check_azure_websites(names, nameserver):
     """
     Checks for Azure Websites (PaaS)
     """
@@ -144,22 +144,20 @@ def check_azure_websites(names):
     candidates = [name + '.' + WEBAPP_URL for name in names]
 
     # Azure Websites use DNS sub-domains. If it resolves, it is registered.
-    valid_names = utils.fast_dns_lookup(candidates,
-                                        callback=print_website_response)
+    utils.fast_dns_lookup(candidates, nameserver,
+                          callback=print_website_response)
 
     # Stop the timer
     utils.stop_timer(start_time)
 
-    return valid_names
-
-def run_all(names, brute_list, threads):
+def run_all(names, brute_list, threads, nameserver):
     """
     Function is called by main program
     """
     print(BANNER)
 
-    valid_accounts = check_storage_accounts(names, threads)
+    valid_accounts = check_storage_accounts(names, threads, nameserver)
     if valid_accounts:
         brute_force_containers(valid_accounts, brute_list, threads)
 
-    check_azure_websites(names)
+    check_azure_websites(names, nameserver)
