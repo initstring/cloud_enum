@@ -28,7 +28,7 @@ def print_account_response(reply):
         pass
     elif 'The specified account is disabled' in reply.reason:
         utils.printc("    Disabled Storage Account: {}\n"
-                     .format(reply.url), 'orange')
+                     .format(reply.url), 'red')
     elif 'Value for one of the query' in reply.reason:
         utils.printc("    HTTP-OK Storage Account: {}\n"
                      .format(reply.url), 'orange')

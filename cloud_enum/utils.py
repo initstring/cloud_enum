@@ -134,7 +134,8 @@ def printc(text, color):
     """
     # ANSI escape sequences
     green = '\033[92m'
-    orange = '\033[93m'
+    orange = '\033[33m'
+    red = '\033[31m'
     bold = '\033[1m'
     end = '\033[0m'
 
@@ -142,6 +143,8 @@ def printc(text, color):
         sys.stdout.write(bold + orange + text + end)
     if color == 'green':
         sys.stdout.write(bold + green + text + end)
+    if color == 'red':
+        sys.stdout.write(bold + red + text + end)
     if color == 'black':
         sys.stdout.write(bold + text + end)
 
