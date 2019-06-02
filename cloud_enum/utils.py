@@ -5,7 +5,6 @@ Helper functions for network requests, etc
 import time
 import sys
 import subprocess
-import socket
 try:
     from concurrent.futures import ThreadPoolExecutor
     from requests_futures.sessions import FuturesSession
@@ -51,7 +50,7 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5):
         # Then, grab all the results from the queue
         for url in batch_pending:
             batch_results[url] = batch_pending[url].result()
-        
+
         # Now, send all the results to the callback function for analysis
         for url in batch_results:
             callback(batch_results[url])
@@ -123,7 +122,7 @@ def fast_dns_lookup(names, nameserver, callback='', threads=5):
     sys.stdout.write('                            \r')
 
     # Return the list of valid dns names
-    return(valid_names)
+    return valid_names
 
 def printc(text, color):
     """
