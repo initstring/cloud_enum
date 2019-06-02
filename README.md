@@ -41,6 +41,8 @@ cloudenum.py -k somecompany -k somecompany.io -k blockchaindoohickey
 
 By default, the tool uses 5 HTTP threads for brute forcing and enumerating. You can try increasing this, but eventually the cloud providers will rate limit you. Here is an example to increase to 8.
 
+DNS brute-forcing uses a hard-coded 5 threads.
+
 ```sh
 cloudenum.py -k keyword -t 8
 ```
@@ -62,6 +64,9 @@ optional arguments:
                         cloud_enum/brute.txt.
   -t THREADS, --threads THREADS
                         Threads for HTTP brute-force. Default = 5
+  -ns NAMESERVER, --nameserver NAMESERVER
+                        DNS server to use in brute-force.
+
 ```
 
 # Roadmap
