@@ -5,12 +5,16 @@ Currently enumerates:
 - Open Amazon S3 Buckets
 - Protected Amazon S3 Buckets
 - Microsoft Azure Storage Accounts
+- Microsoft Azure hosted databases
+- Microsoft Azure Virtual Machines (across multiple DNS regions)
 - Open Microsoft Azure Containers
 - Registered Azure Website DNS (PaaS web apps)
 - Open Google Cloud Platform Buckets
 - Protected Google Cloud Platform Buckets
 
-Right now, by "open" buckets/containers, I mean those that allow anonymous users to list contents. if you discover a protected bucket/container, it is still worth trying to brute force the contents with another tool.
+By "open" buckets/containers, I mean those that allow anonymous users to list contents. if you discover a protected bucket/container, it is still worth trying to brute force the contents with another tool.
+
+**IMPORTANT**: Azure Virtual Machine DNS records can span a lot of geo regions. To save time scanning, there is a "REGIONS" variable defined in cloudenum/azure_regions.py. You'll want to look at this file and edit it to be relevant to your own work.
 
 <img src="https://initstring.keybase.pub/host/images/cloud_enum.png" align="center"/>
 
