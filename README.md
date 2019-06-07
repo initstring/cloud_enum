@@ -84,6 +84,5 @@ optional arguments:
 # Roadmap
 I plan to implement some more things, like:
 - Adding content to `mutations.txt` and `brute.txt` - they are most POC-length right now.
-- Searching for test virtual machine instances (which often have unfinished, vulnerable web apps)
 - Adding additional public resources, where it makes sense
 
