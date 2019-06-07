@@ -5,6 +5,7 @@ github.com/initstring/cloud_enum
 
 import re
 from cloud_enum import utils
+from cloud_enum import azure_regions
 
 BANNER = '''
 ++++++++++++++++++++++++++
@@ -15,6 +16,11 @@ BANNER = '''
 # Known Azure domain names
 BLOB_URL = 'blob.core.windows.net'
 WEBAPP_URL = 'azurewebsites.net'
+DATABASE_URL = 'database.windows.net'
+
+# Virtual machine DNS names are actually:
+#   {whatever}.{region}.cloudapp.azure.com
+VM_URL = 'cloudapp.azure.com'
 
 def print_account_response(reply):
     """
@@ -23,7 +29,6 @@ def print_account_response(reply):
     This function is passed into the class object so we can view results
     in real-time.
     """
-    # 
     if reply.status_code == 404:
         pass
     elif 'The specified account is disabled' in reply.reason:
@@ -163,6 +168,68 @@ def check_azure_websites(names, nameserver):
     # Stop the timer
     utils.stop_timer(start_time)
 
+def print_database_response(hostname):
+    """
+    This function is passed into the DNS brute force as a callback,
+    so we can get real-time results.
+    """
+    utils.printc("    Registered Azure Database DNS Name: {}\n"
+                 .format(hostname), 'green')
+
+def check_azure_databases(names, nameserver):
+    """
+    Checks for Azure Databases
+    """
+    print("[+] Checking for Azure Databases")
+
+    # Start a counter to report on elapsed time
+    start_time = utils.start_timer()
+
+    # Initialize the list of domain names to look up
+    candidates = [name + '.' + DATABASE_URL for name in names]
+
+    # Azure databases use DNS sub-domains. If it resolves, it is registered.
+    utils.fast_dns_lookup(candidates, nameserver,
+                          callback=print_database_response)
+
+    # Stop the timer
+    utils.stop_timer(start_time)
+
+def print_vm_response(hostname):
+    """
+    This function is passed into the DNS brute force as a callback,
+    so we can get real-time results.
+    """
+    utils.printc("    Registered Azure Virtual Machine DNS Name: {}\n"
+                 .format(hostname), 'green')
+
+def check_azure_vms(names, nameserver):
+    """
+    Checks for Azure Virtual Machines
+    """
+    print("[+] Checking for Azure Virtual Machines")
+
+    # Start a counter to report on elapsed time
+    start_time = utils.start_timer()
+
+    # Pull the regions from a config file
+    regions = azure_regions.REGIONS
+
+    print("[*] Testing across {} regions defined in the config file"
+          .format(len(regions)))
+
+    for region in regions:
+
+        # Initialize the list of domain names to look up
+        candidates = [name + '.' + region + '.' + VM_URL for name in names]
+
+        # Azure VMs use DNS sub-domains. If it resolves, it is registered.
+        utils.fast_dns_lookup(candidates, nameserver,
+                              callback=print_vm_response)
+
+    # Stop the timer
+    utils.stop_timer(start_time)
+
 def run_all(names, brute_list, threads, nameserver):
     """
     Function is called by main program
@@ -174,3 +241,5 @@ def run_all(names, brute_list, threads, nameserver):
         brute_force_containers(valid_accounts, brute_list, threads)
 
     check_azure_websites(names, nameserver)
+    check_azure_databases(names, nameserver)
+    check_azure_vms(names, nameserver)

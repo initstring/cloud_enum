@@ -1,16 +1,26 @@
 # cloud_enum
 Multi-cloud OSINT tool. Enumerate public resources in AWS, Azure, and Google Cloud.
 
-Currently enumerates:
-- Open Amazon S3 Buckets
-- Protected Amazon S3 Buckets
-- Microsoft Azure Storage Accounts
-- Open Microsoft Azure Containers
-- Registered Azure Website DNS (PaaS web apps)
-- Open Google Cloud Platform Buckets
-- Protected Google Cloud Platform Buckets
+Currently enumerates the following:
 
-Right now, by "open" buckets/containers, I mean those that allow anonymous users to list contents. if you discover a protected bucket/container, it is still worth trying to brute force the contents with another tool.
+**Amazon Web Services**:
+- Open S3 Buckets
+- Protected S3 Buckets
+
+**Microsoft Azure**:
+- Storage Accounts
+- Open Blob Storage Containers
+- Hosted Databases
+- Virtual Machines
+- Web Apps
+
+**Google Cloud Platform**
+- Open GCP Buckets
+- Protected GCP Buckets
+
+By "open" buckets/containers, I mean those that allow anonymous users to list contents. if you discover a protected bucket/container, it is still worth trying to brute force the contents with another tool.
+
+**IMPORTANT**: Azure Virtual Machine DNS records can span a lot of geo regions. To save time scanning, there is a "REGIONS" variable defined in cloudenum/azure_regions.py. You'll want to look at this file and edit it to be relevant to your own work.
 
 <img src="https://initstring.keybase.pub/host/images/cloud_enum.png" align="center"/>
 
@@ -66,12 +76,13 @@ optional arguments:
                         Threads for HTTP brute-force. Default = 5
   -ns NAMESERVER, --nameserver NAMESERVER
                         DNS server to use in brute-force.
-
+  --disable-aws         Disable Amazon checks.
+  --disable-azure       Disable Azure checks.
+  --disable-gcp         Disable Google checks.
 ```
 
 # Roadmap
 I plan to implement some more things, like:
 - Adding content to `mutations.txt` and `brute.txt` - they are most POC-length right now.
-- Searching for test virtual machine instances (which often have unfinished, vulnerable web apps)
 - Adding additional public resources, where it makes sense
 
