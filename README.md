@@ -76,7 +76,9 @@ optional arguments:
                         Threads for HTTP brute-force. Default = 5
   -ns NAMESERVER, --nameserver NAMESERVER
                         DNS server to use in brute-force.
-
+  --disable-aws         Disable Amazon checks.
+  --disable-azure       Disable Azure checks.
+  --disable-gcp         Disable Google checks.
 ```
 
 # Roadmap

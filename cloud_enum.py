@@ -62,19 +62,16 @@ def parse_arguments():
                         default='8.8.8.8',
                         help='DNS server to use in brute-force.')
 
-    # Allow the user to specify a custom AWS region (NOT YET IMPLEMENTED)
-    #parser.add_argument('-ar', '--aws_region', type=str, action='append',
-    #                    help='Limit to specific AWS region/s (see list in'
-    #                    ' aws_checks source code). Defaults to all regions.'
-    #                    ' Can use argument multiple times.')
+    parser.add_argument('--disable-aws', action='store_true',
+                        help='Disable Amazon checks.')
+
+    parser.add_argument('--disable-azure', action='store_true',
+                        help='Disable Azure checks.')
+
+    parser.add_argument('--disable-gcp', action='store_true',
+                        help='Disable Google checks.')
 
     args = parser.parse_args()
-
-    #if args.aws_region:
-    #    for region in args.aws_region:
-    #        if region not in aws_checks.AWS_REGIONS:
-    #            print("[!] Unknown region {}, exiting.".format(region))
-    #            sys.exit()
 
     # Ensure mutations file is readable
     if not os.access(args.mutations, os.R_OK):
@@ -148,9 +145,12 @@ def main():
     names = build_names(args.keyword, mutations)
 
     # All the work is done in the individual modules
-    aws_checks.run_all(names, args.threads)
-    azure_checks.run_all(names, args.brute, args.threads, args.nameserver)
-    gcp_checks.run_all(names, args.threads)
+    if not args.disable_aws:
+        aws_checks.run_all(names, args.threads)
+    if not args.disable_azure:
+        azure_checks.run_all(names, args.brute, args.threads, args.nameserver)
+    if not args.disable_gcp:
+        gcp_checks.run_all(names, args.threads)
 
     # Best of luck to you!
     print("\n[+] All done, happy hacking!\n")
