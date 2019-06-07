@@ -2,15 +2,20 @@
 Multi-cloud OSINT tool. Enumerate public resources in AWS, Azure, and Google Cloud.
 
 Currently enumerates:
-- Open Amazon S3 Buckets
-- Protected Amazon S3 Buckets
-- Microsoft Azure Storage Accounts
-- Microsoft Azure hosted databases
-- Microsoft Azure Virtual Machines (across multiple DNS regions)
-- Open Microsoft Azure Containers
-- Registered Azure Website DNS (PaaS web apps)
-- Open Google Cloud Platform Buckets
-- Protected Google Cloud Platform Buckets
+**Amazon Web Services**:
+- Open S3 Buckets
+- Protected S3 Buckets
+
+**Microsoft Azure**:
+- Storage Accounts
+- Open Blob Storage Containers
+- Hosted Databases
+- Virtual Machines
+- Web Apps
+
+**Google Cloud Platform**
+- Open GCP Buckets
+- Protected GCP Buckets
 
 By "open" buckets/containers, I mean those that allow anonymous users to list contents. if you discover a protected bucket/container, it is still worth trying to brute force the contents with another tool.
 
