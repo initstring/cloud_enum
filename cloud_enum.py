@@ -20,9 +20,9 @@ import os
 import sys
 import argparse
 import re
-from cloud_enum import aws_checks
-from cloud_enum import azure_checks
-from cloud_enum import gcp_checks
+from enum_tools import aws_checks
+from enum_tools import azure_checks
+from enum_tools import gcp_checks
 
 BANNER = '''
 ##########################
@@ -39,6 +39,9 @@ def parse_arguments():
     desc = "Multi-cloud enumeration utility. All hail OSINT!"
     parser = argparse.ArgumentParser(description=desc)
 
+    # Grab the current dir of the script, for setting some defaults below
+    script_path = os.path.dirname(__file__)
+
     # Keyword can given multiple times
     parser.add_argument('-k', '--keyword', type=str, action='append',
                         required=True,
@@ -46,14 +49,14 @@ def parse_arguments():
 
     # Use included mutations file by default, or let the user provide one
     parser.add_argument('-m', '--mutations', type=str, action='store',
-                        default='cloud_enum/mutations.txt',
-                        help='Mutations. Default: cloud_enum/mutations.txt.')
+                        default=script_path + '/enum_tools/mutations.txt',
+                        help='Mutations. Default: enum_tools/mutations.txt.')
 
     # Use include container brute-force or let the user provide one
     parser.add_argument('-b', '--brute', type=str, action='store',
-                        default='cloud_enum/brute.txt',
+                        default=script_path + '/enum_tools/brute.txt',
                         help='List to brute-force Azure container names.'
-                        '  Default: cloud_enum/brute.txt.')
+                        '  Default: enum_tools/brute.txt.')
 
     parser.add_argument('-t', '--threads', type=int, action='store',
                         default=5, help='Threads for HTTP brute-force.'
@@ -76,7 +79,8 @@ def parse_arguments():
 
     # Ensure mutations file is readable
     if not os.access(args.mutations, os.R_OK):
-        print("[!] Cannot access mutations file, exiting")
+        print("[!] Cannot access mutations file: {}"
+              .format(args.mutations))
         sys.exit()
 
     # Ensure brute file is readable

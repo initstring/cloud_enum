@@ -3,7 +3,7 @@ Google-specific checks. Part of the cloud_enum package available at
 github.com/initstring/cloud_enum
 """
 
-from cloud_enum import utils
+from enum_tools import utils
 
 BANNER = '''
 ++++++++++++++++++++++++++

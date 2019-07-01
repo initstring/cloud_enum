@@ -4,7 +4,7 @@ github.com/initstring/cloud_enum
 """
 
 import sys
-from cloud_enum import utils
+from enum_tools import utils
 
 BANNER = '''
 ++++++++++++++++++++++++++

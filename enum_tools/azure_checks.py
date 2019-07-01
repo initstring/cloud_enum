@@ -4,8 +4,8 @@ github.com/initstring/cloud_enum
 """
 
 import re
-from cloud_enum import utils
-from cloud_enum import azure_regions
+from enum_tools import utils
+from enum_tools import azure_regions
 
 BANNER = '''
 ++++++++++++++++++++++++++
