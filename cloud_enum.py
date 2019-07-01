@@ -19,6 +19,7 @@ Enjoy!
 import os
 import sys
 import argparse
+import re
 from cloud_enum import aws_checks
 from cloud_enum import azure_checks
 from cloud_enum import gcp_checks
@@ -104,6 +105,16 @@ def read_mutations(mutations_file):
     print("[+] Mutations list imported: {} items".format(len(mutations)))
     return mutations
 
+def clean_text(text):
+    """
+    Clean text to be RFC compliant for hostnames / DNS
+    """
+    banned_chars = re.compile('[^a-z0-9.-]')
+    text_lower = text.lower()
+    text_clean = banned_chars.sub('', text_lower)
+
+    return text_clean
+
 def build_names(base_list, mutations):
     """
     Combine base and mutations for processing by individual modules.
@@ -111,10 +122,16 @@ def build_names(base_list, mutations):
     names = []
 
     for base in base_list:
+        # Clean base
+        base = clean_text(base)
+
         # First, include with no mutations
         names.append(base)
 
         for mutation in mutations:
+            # Clean mutation
+            mutation = clean_text(mutation)
+
             # Then, do appends
             names.append("{}{}".format(base, mutation))
             names.append("{}.{}".format(base, mutation))
