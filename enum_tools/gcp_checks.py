@@ -107,6 +107,6 @@ def run_all(names, threads):
     """
     print(BANNER)
 
-    #check_gcp_buckets(names, threads)
+    check_gcp_buckets(names, threads)
     check_appspot(names, threads)
     return ''
