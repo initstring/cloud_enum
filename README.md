@@ -17,6 +17,7 @@ Currently enumerates the following:
 **Google Cloud Platform**
 - Open GCP Buckets
 - Protected GCP Buckets
+- Google App Engine sites
 
 By "open" buckets/containers, I mean those that allow anonymous users to list contents. if you discover a protected bucket/container, it is still worth trying to brute force the contents with another tool.
 
