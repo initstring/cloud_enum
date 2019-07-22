@@ -4,6 +4,7 @@ github.com/initstring/cloud_enum
 """
 
 import re
+import requests
 from enum_tools import utils
 from enum_tools import azure_regions
 
@@ -31,6 +32,9 @@ def print_account_response(reply):
     """
     if reply.status_code == 404:
         pass
+    elif 'Server failed to authenticate the request' in reply.reason:
+        utils.printc("    Auth-Only Storage Account: {}\n"
+                     .format(reply.url), 'red')
     elif 'The specified account is disabled' in reply.reason:
         utils.printc("    Disabled Storage Account: {}\n"
                      .format(reply.url), 'red')
@@ -40,9 +44,10 @@ def print_account_response(reply):
     elif 'The account being accessed' in reply.reason:
         utils.printc("    HTTPS-Only Storage Account: {}\n"
                      .format(reply.url), 'orange')
-    else: print("    Unknown status codes being received:\n"
-                "       {}: {}"
-                .format(reply.status_code, reply.reason))
+    else:
+        print("    Unknown status codes being received from {}:\n"
+              "       {}: {}"
+              .format(reply.url, reply.status_code, reply.reason))
 
 def check_storage_accounts(names, threads, nameserver):
     """
@@ -103,9 +108,12 @@ def print_container_response(reply):
                      .format(reply.url), 'green')
     elif 'One of the request inputs is out of range' in reply.reason:
         pass
-    else: print("    Unknown status codes being received:\n"
-                "       {}: {}"
-                .format(reply.status_code, reply.reason))
+    elif 'The request URI is invalid' in reply.reason:
+        pass
+    else:
+        print("    Unknown status codes being received from {}:\n"
+              "       {}: {}"
+              .format(reply.url, reply.status_code, reply.reason))
 
 def brute_force_containers(storage_accounts, brute_list, threads):
     """
@@ -114,17 +122,34 @@ def brute_force_containers(storage_accounts, brute_list, threads):
     Here is the URL format to list Azure Blog Container contents:
     <account>.blob.core.windows.net/<container>/?restype=container&comp=list
     """
+
+    # We have a list of valid DNS names that might not be worth scraping,
+    # such as disabled accounts or authentication required. Let's quickly
+    # weed those out.
+    valid_accounts = []
+    for account in storage_accounts:
+        reply = requests.get('https://{}/'.format(account))
+        if 'Server failed to authenticate the request' in reply.reason:
+            storage_accounts.remove(account)
+        elif 'The specified account is disabled' in reply.reason:
+            storage_accounts.remove(account)
+        else:
+            valid_accounts.append(account)
+
     # Read the brute force file into memory
     with open(brute_list, encoding="utf8", errors="ignore") as infile:
         names = infile.read().splitlines()
 
-    print("[+] Brute-forcing {} container names in each valid account"
-          .format(len(names)))
-
     # Start a counter to report on elapsed time
     start_time = utils.start_timer()
 
-    for account in storage_accounts:
+    print("[*] Brute-forcing container names in {} storage accounts"
+          .format(len(valid_accounts)))
+
+    for account in valid_accounts:
+        print("[*] Brute-forcing container names in {}"
+              .format(account))
+
         # Initialize the list of correctly formatted urls
         candidates = []
 
