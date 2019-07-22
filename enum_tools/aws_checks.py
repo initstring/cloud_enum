@@ -56,9 +56,10 @@ def print_s3_response(reply):
     elif 'Slow Down' in reply.reason:
         print("[!] You've been rate limited, exiting.")
         sys.exit()
-    else: print("    Unknown status codes being received:\n"
-                "       {}: {}"
-                .format(reply.status_code, reply.reason))
+    else:
+        print("    Unknown status codes being received from {}:\n"
+              "       {}: {}"
+              .format(reply.url, reply.status_code, reply.reason))
 
 def check_s3_buckets(names, threads):
     """
