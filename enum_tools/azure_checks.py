@@ -115,7 +115,7 @@ def brute_force_containers(storage_accounts, brute_list, threads):
     <account>.blob.core.windows.net/<container>/?restype=container&comp=list
     """
     # Read the brute force file into memory
-    with open(brute_list) as infile:
+    with open(brute_list, encoding="utf8", errors="ignore") as infile:
         names = infile.read().splitlines()
 
     print("[+] Brute-forcing {} container names in each valid account"

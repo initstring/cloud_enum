@@ -103,7 +103,7 @@ def read_mutations(mutations_file):
     """
     Read mutations file into memory for processing.
     """
-    with open(mutations_file) as infile:
+    with open(mutations_file, encoding="utf8", errors="ignore") as infile:
         mutations = infile.read().splitlines()
 
     print("[+] Mutations list imported: {} items".format(len(mutations)))
