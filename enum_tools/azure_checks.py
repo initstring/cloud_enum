@@ -149,7 +149,7 @@ def brute_force_containers(storage_accounts, brute_list, threads):
     for name in names:
         name = name.lower()
         name = banned_chars.sub('', name)
-        if 63 <= len(name) >= 3:
+        if 63 >= len(name) >= 3:
             if name not in clean_names:
                 clean_names.append(name)
 
