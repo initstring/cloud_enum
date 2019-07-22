@@ -30,9 +30,10 @@ def print_bucket_response(reply):
     elif reply.status_code == 403:
         utils.printc("    Protected Google Bucket: {}\n"
                      .format(reply.url), 'orange')
-    else: print("    Unknown status codes being received:\n"
-                "       {}: {}"
-                .format(reply.status_code, reply.reason))
+    else:
+        print("    Unknown status codes being received from {}:\n"
+              "       {}: {}"
+              .format(reply.url, reply.status_code, reply.reason))
 
 def check_gcp_buckets(names, threads):
     """
@@ -67,12 +68,13 @@ def print_appspot_response(reply):
     """
     if reply.status_code == 404:
         pass
-    elif reply.status_code == 200 or repl.status_code == 302:
+    elif reply.status_code == 200 or reply.status_code == 302:
         utils.printc("    Google App Engine app: {}\n"
                      .format(reply.url), 'green')
-    else: print("    Unknown status codes being received:\n"
-                "       {}: {}"
-                .format(reply.status_code, reply.reason))
+    else:
+        print("    Unknown status codes being received from {}:\n"
+              "       {}: {}"
+              .format(reply.url, reply.status_code, reply.reason))
 
 def check_appspot(names, threads):
     """
