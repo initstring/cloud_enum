@@ -39,3 +39,5 @@ database
 git
 src
 source
+appspot
+appspot.com
