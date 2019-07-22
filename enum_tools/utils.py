@@ -45,7 +45,10 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5):
 
         # First, grab the pending async request and store it in a dict
         for url in batch:
-            batch_pending[url] = session.get(proto + url)
+            try:
+                batch_pending[url] = session.get(proto + url)
+            except ConnectionResetError:
+                print("[!] Connection reset error... Slow down?")
 
         # Then, grab all the results from the queue
         for url in batch_pending:
