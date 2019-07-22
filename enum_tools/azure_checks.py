@@ -23,6 +23,7 @@ DATABASE_URL = 'database.windows.net'
 #   {whatever}.{region}.cloudapp.azure.com
 VM_URL = 'cloudapp.azure.com'
 
+
 def print_account_response(reply):
     """
     Parses the HTTP reply of a brute-force attempt
@@ -94,10 +95,12 @@ def print_container_response(reply):
     """
     # Stop brute forcing disabled accounts
     if 'The specified account is disabled' in reply.reason:
+        print("[!] Breaking out early, account disabled.")
         return 'breakout'
 
     # Stop brute forcing accounts without permission
     if 'not authorized to perform this operation' in reply.reason:
+        print("[!] Breaking out early, auth errors.")
         return 'breakout'
 
     # Handle other responses
@@ -140,6 +143,15 @@ def brute_force_containers(storage_accounts, brute_list, threads):
     with open(brute_list, encoding="utf8", errors="ignore") as infile:
         names = infile.read().splitlines()
 
+    # Clean up the names to usable for containers
+    banned_chars = re.compile('[^a-z0-9-]')
+    clean_names = []
+    for name in names:
+        name = name.lower()
+        name = banned_chars.sub('', name)
+        if name not in clean_names:
+            clean_names.append(name)
+
     # Start a counter to report on elapsed time
     start_time = utils.start_timer()
 
@@ -147,14 +159,14 @@ def brute_force_containers(storage_accounts, brute_list, threads):
           .format(len(valid_accounts)))
 
     for account in valid_accounts:
-        print("[*] Brute-forcing container names in {}"
-              .format(account))
+        print("[*] Brute-forcing {} container names in {}"
+              .format(len(clean_names), account))
 
         # Initialize the list of correctly formatted urls
         candidates = []
 
         # Take each mutated keyword and craft a url with correct format
-        for name in names:
+        for name in clean_names:
             candidates.append('{}/{}/?restype=container&comp=list'
                               .format(account, name))
 
