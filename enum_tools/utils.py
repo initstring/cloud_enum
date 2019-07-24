@@ -5,6 +5,8 @@ Helper functions for network requests, etc
 import time
 import sys
 import subprocess
+import re
+import requests
 try:
     from concurrent.futures import ThreadPoolExecutor
     from requests_futures.sessions import FuturesSession
@@ -47,7 +49,7 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5):
         for url in batch:
             try:
                 batch_pending[url] = session.get(proto + url)
-            except ConnectionError:
+            except OSError:
                 print("[!] Connection error on {}. Investigate if there are"
                       "many of these.".format(url))
 
@@ -128,6 +130,30 @@ def fast_dns_lookup(names, nameserver, callback='', threads=25):
 
     # Return the list of valid dns names
     return valid_names
+
+def list_bucket_contents(bucket):
+    """
+    Provides a list of full URLs to each open bucket
+    """
+    key_regex = re.compile(r'<(?:Key|Name)>(.*?)</(?:Key|Name)>')
+    reply = requests.get(bucket)
+
+    # Make a list of all the relative-path key name
+    keys = re.findall(key_regex, reply.text)
+
+    # Need to remove URL parameters before appending file names
+    # from Azure buckets
+    sub_regex = re.compile(r'(\?.*)')
+    bucket = sub_regex.sub('', bucket)
+
+    # Format them to full URLs and print to console
+    if keys:
+        print("      FILES:")
+        for key in keys:
+            url = bucket + key
+            print("      {}".format(url))
+    else:
+        print("      ...empty bucket, so sad. :(")
 
 def printc(text, color):
     """

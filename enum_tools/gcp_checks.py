@@ -27,6 +27,7 @@ def print_bucket_response(reply):
     elif reply.status_code == 200:
         utils.printc("    OPEN GOOGLE BUCKET: {}\n"
                      .format(reply.url), 'green')
+        utils.list_bucket_contents(reply.url)
     elif reply.status_code == 403:
         utils.printc("    Protected Google Bucket: {}\n"
                      .format(reply.url), 'orange')
