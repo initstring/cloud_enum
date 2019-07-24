@@ -110,6 +110,7 @@ def print_container_response(reply):
     elif reply.status_code == 200:
         utils.printc("    OPEN AZURE CONTAINER: {}\n"
                      .format(reply.url), 'green')
+        utils.list_bucket_contents(reply.url)
     elif 'One of the request inputs is out of range' in reply.reason:
         pass
     elif 'The request URI is invalid' in reply.reason:

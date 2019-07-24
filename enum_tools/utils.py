@@ -135,11 +135,16 @@ def list_bucket_contents(bucket):
     """
     Provides a list of full URLs to each open bucket
     """
-    key_regex = re.compile(r'<Key>(.*?)</Key>')
+    key_regex = re.compile(r'<(?:Key|Name)>(.*?)</(?:Key|Name)>')
     reply = requests.get(bucket)
 
-    # Make a list of all the relative-path key names
+    # Make a list of all the relative-path key name
     keys = re.findall(key_regex, reply.text)
+
+    # Need to remove URL parameters before appending file names
+    # from Azure buckets
+    sub_regex = re.compile(r'(\?.*)')
+    bucket = sub_regex.sub('', bucket)
 
     # Format them to full URLs and print to console
     if keys:
