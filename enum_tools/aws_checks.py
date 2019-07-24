@@ -50,6 +50,7 @@ def print_s3_response(reply):
     elif reply.status_code == 200:
         utils.printc("    OPEN S3 BUCKET: {}\n"
                      .format(reply.url), 'green')
+        utils.list_bucket_contents(reply.url)
     elif reply.status_code == 403:
         utils.printc("    Protected S3 Bucket: {}\n"
                      .format(reply.url), 'orange')
