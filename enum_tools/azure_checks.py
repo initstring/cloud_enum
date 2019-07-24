@@ -130,6 +130,8 @@ def brute_force_containers(storage_accounts, brute_list, threads):
     # We have a list of valid DNS names that might not be worth scraping,
     # such as disabled accounts or authentication required. Let's quickly
     # weed those out.
+    print("[*] Checking {} accounts for status before brute-forcing"
+          .format(len(storage_accounts)))
     valid_accounts = []
     for account in storage_accounts:
         reply = requests.get('https://{}/'.format(account))
