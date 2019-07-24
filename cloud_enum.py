@@ -49,14 +49,14 @@ def parse_arguments():
 
     # Use included mutations file by default, or let the user provide one
     parser.add_argument('-m', '--mutations', type=str, action='store',
-                        default=script_path + '/enum_tools/mutations.txt',
-                        help='Mutations. Default: enum_tools/mutations.txt.')
+                        default=script_path + '/enum_tools/fuzz.txt',
+                        help='Mutations. Default: enum_tools/fuzz.txt')
 
     # Use include container brute-force or let the user provide one
     parser.add_argument('-b', '--brute', type=str, action='store',
-                        default=script_path + '/enum_tools/brute.txt',
+                        default=script_path + '/enum_tools/fuzz.txt',
                         help='List to brute-force Azure container names.'
-                        '  Default: enum_tools/brute.txt.')
+                        '  Default: enum_tools/fuzz.txt')
 
     parser.add_argument('-t', '--threads', type=int, action='store',
                         default=5, help='Threads for HTTP brute-force.'

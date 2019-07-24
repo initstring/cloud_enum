@@ -36,13 +36,11 @@ pip3 install -r ./requirements.txt
 ```
 
 ## Running
-The only required argument is at least one keyword. This is what will be used to find the names of S3 Buckets, Azure Storage Accounts, and Google Cloud Buckets. This keyword will be mutated by prepending and then appending the strings in `cloudenum/mutations.txt`.
+The only required argument is at least one keyword. You can use the built-in fuzzing strings, but you will get better results if you supply your own with `-m` and/or `-b`.
 
 You can provide multiple keywords by specifying the `-k` argument multiple times.
 
-Azure Containers required two levels of brute-forcing, both handled automatically by this tool. First, by finding valid accounts. Then, by brute-forcing the name of containers inside that account. That second layer of discovery will use the strings in the `cloud_enum/brute.txt` file.
-
-Alternatively, you can specify your own mutation and brute files.
+Azure Containers required two levels of brute-forcing, both handled automatically by this tool. First, by finding valid accounts (DNS). Then, by brute-forcing container names inside that account (HTTP scraping). The tool uses the same fuzzing file for both by default, but you can specificy individual files separately if you'd like.
 
 Let's say you were researching "somecompany" whose website is "somecompany.io" that makes a product called "blockchaindoohickey". You could run the tool like this:
 
@@ -82,8 +80,6 @@ optional arguments:
   --disable-gcp         Disable Google checks.
 ```
 
-# Roadmap
-I plan to implement some more things, like:
-- Adding content to `mutations.txt` and `brute.txt` - they are most POC-length right now.
-- Adding additional public resources, where it makes sense
-
+# Thanks
+So far, I have borrowed from:
+- Some of the permutations from [GCPBucketBrute](https://github.com/RhinoSecurityLabs/GCPBucketBrute/blob/master/permutations.txt)
