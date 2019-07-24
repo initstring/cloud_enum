@@ -47,8 +47,9 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5):
         for url in batch:
             try:
                 batch_pending[url] = session.get(proto + url)
-            except ConnectionResetError:
-                print("[!] Connection reset error... Slow down?")
+            except ConnectionError:
+                print("[!] Connection error on {}. Investigate if there are"
+                      "many of these.".format(url))
 
         # Then, grab all the results from the queue
         for url in batch_pending:
@@ -72,12 +73,9 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5):
     # Clear the status message
     sys.stdout.write('                            \r')
 
-def fast_dns_lookup(names, nameserver, callback='', threads=5):
+def fast_dns_lookup(names, nameserver, callback='', threads=25):
     """
-    Helper function to resolve DNS names.
-
-    This is not actually fast yet. A future improvement should be threading
-    and raw socket DNS lookups, as opposed to host system calls.
+    Helper function to resolve DNS names. Uses subprocess for threading.
     """
     total = len(names)
     current = 0

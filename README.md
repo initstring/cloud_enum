@@ -50,12 +50,12 @@ Let's say you were researching "somecompany" whose website is "somecompany.io" t
 cloudenum.py -k somecompany -k somecompany.io -k blockchaindoohickey
 ```
 
-By default, the tool uses 5 HTTP threads for brute forcing and enumerating. You can try increasing this, but eventually the cloud providers will rate limit you. Here is an example to increase to 8.
+DNS brute-forcing uses a hard-coded 25 threads, leveraging subprocess and the Linux `host` command.
 
-DNS brute-forcing uses a hard-coded 5 threads.
+HTTP scraping uses 5 threads by default. You can try increasing this, but eventually the cloud providers will rate limit you. Here is an example to increase to 10.
 
 ```sh
-cloudenum.py -k keyword -t 8
+cloudenum.py -k keyword -t 10
 ```
 
 **Complete Usage Details**

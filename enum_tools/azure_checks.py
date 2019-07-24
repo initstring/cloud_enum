@@ -84,7 +84,8 @@ def check_storage_accounts(names, threads, nameserver):
     # Stop the timer
     utils.stop_timer(start_time)
 
-    return valid_names
+    # de-dupe the results and return
+    return list(set(valid_names))
 
 def print_container_response(reply):
     """
@@ -158,7 +159,6 @@ def brute_force_containers(storage_accounts, brute_list, threads):
 
     print("[*] Brute-forcing container names in {} storage accounts"
           .format(len(valid_accounts)))
-
     for account in valid_accounts:
         print("[*] Brute-forcing {} container names in {}"
               .format(len(clean_names), account))
