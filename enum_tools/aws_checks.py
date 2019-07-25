@@ -55,8 +55,8 @@ def print_s3_response(reply):
         utils.printc("    Protected S3 Bucket: {}\n"
                      .format(reply.url), 'orange')
     elif 'Slow Down' in reply.reason:
-        print("[!] You've been rate limited, exiting.")
-        sys.exit()
+        print("[!] You've been rate limited, skipping rest of check...")
+        return 'breakout'
     else:
         print("    Unknown status codes being received from {}:\n"
               "       {}: {}"
