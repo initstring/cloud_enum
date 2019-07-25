@@ -53,9 +53,15 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5):
                 print("[!] Connection error on {}. Investigate if there are"
                       "many of these.".format(url))
 
-        # Then, grab all the results from the queue
+        # Then, grab all the results from the queue.
+        # This is where we need to catch exceptions that occur with large
+        # fuzz lists and dodgy connections.
         for url in batch_pending:
-            batch_results[url] = batch_pending[url].result()
+            try:
+                batch_results[url] = batch_pending[url].result()
+            except requests.exceptions.ConnectionError:
+                print("[!] Connection error on {}. Investigate if there are"
+                      "many of these.".format(url))
 
         # Now, send all the results to the callback function for analysis
         # We need a way to stop processing unnecessary brute-forces, so the
