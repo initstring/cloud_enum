@@ -50,8 +50,8 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5):
             try:
                 batch_pending[url] = session.get(proto + url)
             except OSError:
-                print("[!] Connection error on {}. Investigate if there are"
-                      "many of these.".format(url))
+                print("[!] Connection error on {}. Investigate if you see"
+                      " many of these.".format(url))
 
         # Then, grab all the results from the queue.
         # This is where we need to catch exceptions that occur with large
