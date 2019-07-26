@@ -10,8 +10,9 @@ import requests
 try:
     from concurrent.futures import ThreadPoolExecutor
     from requests_futures.sessions import FuturesSession
+    from concurrent.futures._base import TimeoutError
 except ImportError:
-    print("[!] You'll need to pip install requests-futures for this tool.")
+    print("[!] You'll need to pip install requests_futures for this tool.")
     sys.exit()
 
 
@@ -47,21 +48,22 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5):
 
         # First, grab the pending async request and store it in a dict
         for url in batch:
-            try:
-                batch_pending[url] = session.get(proto + url)
-            except OSError:
-                print("[!] Connection error on {}. Investigate if you see"
-                      " many of these.".format(url))
+            batch_pending[url] = session.get(proto + url)
 
         # Then, grab all the results from the queue.
         # This is where we need to catch exceptions that occur with large
         # fuzz lists and dodgy connections.
         for url in batch_pending:
             try:
-                batch_results[url] = batch_pending[url].result()
+                # Timeout is set due to observation of some large jobs simply
+                # hanging forever with no exception raised.
+                batch_results[url] = batch_pending[url].result(timeout=30)
             except requests.exceptions.ConnectionError:
-                print("[!] Connection error on {}. Investigate if there are"
-                      "many of these.".format(url))
+                print("    [!] Connection error on {}. Investigate if there"
+                      " are many of these.".format(url))
+            except TimeoutError:
+                print("    [!] Timeout on {}. Investigate if there are"
+                      " many of these".format(url))
 
         # Now, send all the results to the callback function for analysis
         # We need a way to stop processing unnecessary brute-forces, so the
