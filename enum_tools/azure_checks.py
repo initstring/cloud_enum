@@ -96,12 +96,17 @@ def print_container_response(reply):
     """
     # Stop brute forcing disabled accounts
     if 'The specified account is disabled' in reply.reason:
-        print("[!] Breaking out early, account disabled.")
+        print("    [!] Breaking out early, account disabled.")
         return 'breakout'
 
     # Stop brute forcing accounts without permission
     if 'not authorized to perform this operation' in reply.reason:
-        print("[!] Breaking out early, auth errors.")
+        print("    [!] Breaking out early, auth errors.")
+        return 'breakout'
+
+    # Stop brute forcing unsupported accounts
+    if 'Blob API is not yet supported' in reply.reason:
+        print("    [!] Breaking out early, Hierarchical namespace account")
         return 'breakout'
 
     # Handle other responses
