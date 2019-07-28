@@ -69,7 +69,7 @@ def print_appspot_response(reply):
     """
     if reply.status_code == 404:
         pass
-    if reply.status_code == 500 or reply.status_code == 503:
+    elif reply.status_code == 500 or reply.status_code == 503:
         utils.printc("    Google App Engine app with a 50x error: {}\n"
                      .format(reply.url), 'orange')
     elif reply.status_code == 200 or reply.status_code == 302:
