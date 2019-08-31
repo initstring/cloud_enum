@@ -171,12 +171,12 @@ def list_bucket_contents(bucket):
 
     # Format them to full URLs and print to console
     if keys:
-        print("      FILES:")
+        printc("      FILES:\n", 'none')
         for key in keys:
             url = bucket + key
-            print("      {}".format(url))
+            printc("      {}\n".format(url), 'none')
     else:
-        print("      ...empty bucket, so sad. :(")
+        printc("      ...empty bucket, so sad. :(\n", 'none')
 
 def printc(text, color):
     """
@@ -197,6 +197,8 @@ def printc(text, color):
         sys.stdout.write(bold + red + text + end)
     if color == 'black':
         sys.stdout.write(bold + text + end)
+    if color == 'none':
+        sys.stdout.write(text)
 
     if LOGFILE:
         with open(LOGFILE, 'a')  as log_writer:
