@@ -174,7 +174,7 @@ def list_bucket_contents(bucket):
         printc("      FILES:\n", 'none')
         for key in keys:
             url = bucket + key
-            printc("      {}\n".format(url), 'none')
+            printc("      ->{}\n".format(url), 'none')
     else:
         printc("      ...empty bucket, so sad. :(\n", 'none')
 
