@@ -285,7 +285,7 @@ def run_all(names, args):
     valid_accounts = check_storage_accounts(names, args.threads,
                                             args.nameserver)
     if valid_accounts:
-        brute_force_containers(valid_accounts, args.brute_list, args.threads)
+        brute_force_containers(valid_accounts, args.brute, args.threads)
 
     check_azure_websites(names, args.nameserver)
     check_azure_databases(names, args.nameserver)

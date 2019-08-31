@@ -220,6 +220,5 @@ def stop_timer(start_time):
 
     # Print some statistics
     print("")
-    printc("    DONE", 'black')
     print(" Elapsed time: {}".format(formatted_time))
     print("")
