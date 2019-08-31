@@ -5,6 +5,7 @@ Helper functions for network requests, etc
 import time
 import sys
 import subprocess
+import datetime
 import re
 import requests
 try:
@@ -15,6 +16,20 @@ except ImportError:
     print("[!] You'll need to pip install requests_futures for this tool.")
     sys.exit()
 
+LOGFILE = False
+
+def init_logfile(logfile):
+    """
+    Initialize the global logfile if specified as a user-supplied argument
+    """
+    if logfile:
+        global LOGFILE
+        LOGFILE = logfile
+
+        now = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        with open(logfile, 'a') as log_writer:
+            log_writer.write("#### CLOUD_ENUM {} ####\n\n"
+                             .format(now))
 
 def get_url_batch(url_list, use_ssl=False, callback='', threads=5):
     """
@@ -182,6 +197,10 @@ def printc(text, color):
         sys.stdout.write(bold + red + text + end)
     if color == 'black':
         sys.stdout.write(bold + text + end)
+
+    if LOGFILE:
+        with open(LOGFILE, 'a')  as log_writer:
+            log_writer.write(text.lstrip())
 
 def start_timer():
     """

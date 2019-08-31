@@ -77,6 +77,8 @@ optional arguments:
                         Threads for HTTP brute-force. Default = 5
   -ns NAMESERVER, --nameserver NAMESERVER
                         DNS server to use in brute-force.
+  -l LOGFILE, --logfile LOGFILE
+                        Will APPEND found items to specified file.
   --disable-aws         Disable Amazon checks.
   --disable-azure       Disable Azure checks.
   --disable-gcp         Disable Google checks.

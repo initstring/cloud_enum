@@ -16,6 +16,7 @@ import re
 from enum_tools import aws_checks
 from enum_tools import azure_checks
 from enum_tools import gcp_checks
+from enum_tools import utils
 
 BANNER = '''
 ##########################
@@ -24,6 +25,8 @@ BANNER = '''
 ##########################
 
 '''
+
+LOGFILE = False
 
 def parse_arguments():
     """
@@ -64,6 +67,9 @@ def parse_arguments():
                         default='8.8.8.8',
                         help='DNS server to use in brute-force.')
 
+    parser.add_argument('-l', '--logfile', type=str, action='store',
+                        help='Will APPEND found items to specified file.')
+
     parser.add_argument('--disable-aws', action='store_true',
                         help='Disable Amazon checks.')
 
@@ -95,6 +101,25 @@ def parse_arguments():
         # Parse keywords from input file
         with open(args.keyfile) as infile:
             args.keyword = [keyword.strip() for keyword in infile]
+
+    # Ensure log file is writeable
+    if args.logfile:
+        if os.path.isdir(args.logfile):
+            print("[!] Can't specify a directory as the logfile, exiting.")
+            sys.exit()
+        if os.path.isfile(args.logfile):
+            target = args.logfile
+        else:
+            target = os.path.dirname(args.logfile)
+            if target == '':
+                target = '.'
+
+        if not os.access(target, os.W_OK):
+            print("[!] Cannot write to log file, exiting")
+            sys.exit()
+
+        # Set the global in the utils file, where logging needs to happen
+        utils.init_logfile(args.logfile)
 
     return args
 
@@ -163,9 +188,6 @@ def main():
     Main program function.
     """
     args = parse_arguments()
-
-    
-
     print(BANNER)
 
     # Generate a basic status on targets and parameters
@@ -177,11 +199,11 @@ def main():
 
     # All the work is done in the individual modules
     if not args.disable_aws:
-        aws_checks.run_all(names, args.threads)
+        aws_checks.run_all(names, args)
     if not args.disable_azure:
-        azure_checks.run_all(names, args.brute, args.threads, args.nameserver)
+        azure_checks.run_all(names, args)
     if not args.disable_gcp:
-        gcp_checks.run_all(names, args.threads)
+        gcp_checks.run_all(names, args)
 
     # Best of luck to you!
     print("\n[+] All done, happy hacking!\n")

@@ -276,16 +276,17 @@ def check_azure_vms(names, nameserver):
     # Stop the timer
     utils.stop_timer(start_time)
 
-def run_all(names, brute_list, threads, nameserver):
+def run_all(names, args):
     """
     Function is called by main program
     """
     print(BANNER)
 
-    valid_accounts = check_storage_accounts(names, threads, nameserver)
+    valid_accounts = check_storage_accounts(names, args.threads,
+                                            args.nameserver)
     if valid_accounts:
-        brute_force_containers(valid_accounts, brute_list, threads)
+        brute_force_containers(valid_accounts, args.brute_list, args.threads)
 
-    check_azure_websites(names, nameserver)
-    check_azure_databases(names, nameserver)
-    check_azure_vms(names, nameserver)
+    check_azure_websites(names, args.nameserver)
+    check_azure_databases(names, args.nameserver)
+    check_azure_vms(names, args.nameserver)
