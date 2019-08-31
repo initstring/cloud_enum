@@ -198,12 +198,16 @@ def main():
     names = build_names(args.keyword, mutations)
 
     # All the work is done in the individual modules
-    if not args.disable_aws:
-        aws_checks.run_all(names, args)
-    if not args.disable_azure:
-        azure_checks.run_all(names, args)
-    if not args.disable_gcp:
-        gcp_checks.run_all(names, args)
+    try:
+        if not args.disable_aws:
+            aws_checks.run_all(names, args)
+        if not args.disable_azure:
+            azure_checks.run_all(names, args)
+        if not args.disable_gcp:
+            gcp_checks.run_all(names, args)
+    except KeyboardInterrupt:
+        print("Thanks for playing!")
+        sys.exit()
 
     # Best of luck to you!
     print("\n[+] All done, happy hacking!\n")
