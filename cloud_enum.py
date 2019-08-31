@@ -3,15 +3,8 @@
 """
 cloud_enum by initstring (github.com/initstring)
 
-Multi-cloud OSINT tool designed to find:
-
-Storage Buckets:
-- Amazon S3 buckets
-- Azure Blob Storage
-- Google Cloud Storage
-
-Development sites:
-- Azure
+Multi-cloud OSINT tool designed to enumerate storage and services in AWS,
+Azure, and GCP.
 
 Enjoy!
 """
@@ -42,10 +35,15 @@ def parse_arguments():
     # Grab the current dir of the script, for setting some defaults below
     script_path = os.path.dirname(__file__)
 
+    kw_group = parser.add_mutually_exclusive_group(required=True)
+
     # Keyword can given multiple times
-    parser.add_argument('-k', '--keyword', type=str, action='append',
-                        required=True,
-                        help='Keyword. Can use argument multiple times.')
+    kw_group.add_argument('-k', '--keyword', type=str, action='append',
+                          help='Keyword. Can use argument multiple times.')
+
+    # OR, a keyword file can be used
+    kw_group.add_argument('-kf', '--keyfile', type=str, action='store',
+                          help='Input file with a single keyword per line.')
 
     # Use included mutations file by default, or let the user provide one
     parser.add_argument('-m', '--mutations', type=str, action='store',
@@ -87,6 +85,16 @@ def parse_arguments():
     if not os.access(args.brute, os.R_OK):
         print("[!] Cannot access brute-force file, exiting")
         sys.exit()
+
+    # Ensure keywords file is readable
+    if args.keyfile:
+        if not os.access(args.keyfile, os.R_OK):
+            print("[!] Cannot access keyword file, exiting")
+            sys.exit()
+
+        # Parse keywords from input file
+        with open(args.keyfile) as infile:
+            args.keyword = [keyword.strip() for keyword in infile]
 
     return args
 
@@ -155,6 +163,8 @@ def main():
     Main program function.
     """
     args = parse_arguments()
+
+    
 
     print(BANNER)
 

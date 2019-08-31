@@ -66,6 +66,8 @@ optional arguments:
   -h, --help            show this help message and exit
   -k KEYWORD, --keyword KEYWORD
                         Keyword. Can use argument multiple times.
+  -kf KEYFILE, --keyfile KEYFILE
+                        Input file with a single keyword per line.
   -m MUTATIONS, --mutations MUTATIONS
                         Mutations. Default: cloud_enum/mutations.txt.
   -b BRUTE, --brute BRUTE
