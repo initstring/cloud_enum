@@ -28,7 +28,7 @@ def init_logfile(logfile):
 
         now = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         with open(logfile, 'a') as log_writer:
-            log_writer.write("#### CLOUD_ENUM {} ####\n\n"
+            log_writer.write("\n\n#### CLOUD_ENUM {} ####\n"
                              .format(now))
 
 def get_url_batch(url_list, use_ssl=False, callback='', threads=5):
