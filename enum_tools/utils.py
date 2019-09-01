@@ -5,6 +5,7 @@ Helper functions for network requests, etc
 import time
 import sys
 import subprocess
+import datetime
 import re
 import requests
 try:
@@ -15,6 +16,20 @@ except ImportError:
     print("[!] You'll need to pip install requests_futures for this tool.")
     sys.exit()
 
+LOGFILE = False
+
+def init_logfile(logfile):
+    """
+    Initialize the global logfile if specified as a user-supplied argument
+    """
+    if logfile:
+        global LOGFILE
+        LOGFILE = logfile
+
+        now = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        with open(logfile, 'a') as log_writer:
+            log_writer.write("\n\n#### CLOUD_ENUM {} ####\n"
+                             .format(now))
 
 def get_url_batch(url_list, use_ssl=False, callback='', threads=5):
     """
@@ -156,12 +171,12 @@ def list_bucket_contents(bucket):
 
     # Format them to full URLs and print to console
     if keys:
-        print("      FILES:")
+        printc("      FILES:\n", 'none')
         for key in keys:
             url = bucket + key
-            print("      {}".format(url))
+            printc("      ->{}\n".format(url), 'none')
     else:
-        print("      ...empty bucket, so sad. :(")
+        printc("      ...empty bucket, so sad. :(\n", 'none')
 
 def printc(text, color):
     """
@@ -182,6 +197,12 @@ def printc(text, color):
         sys.stdout.write(bold + red + text + end)
     if color == 'black':
         sys.stdout.write(bold + text + end)
+    if color == 'none':
+        sys.stdout.write(text)
+
+    if LOGFILE:
+        with open(LOGFILE, 'a')  as log_writer:
+            log_writer.write(text.lstrip())
 
 def start_timer():
     """
@@ -201,6 +222,5 @@ def stop_timer(start_time):
 
     # Print some statistics
     print("")
-    printc("    DONE", 'black')
     print(" Elapsed time: {}".format(formatted_time))
     print("")

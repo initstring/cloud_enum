@@ -23,4 +23,4 @@ REGIONS = ['eastasia', 'southeastasia', 'centralus', 'eastus', 'eastus2',
 
 
 # And here I am limiting the search by overwriting this variable:
-REGIONS = ['eastus', 'australiaeast']
+REGIONS = ['eastus',]

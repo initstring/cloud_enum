@@ -3,7 +3,6 @@ AWS-specific checks. Part of the cloud_enum package available at
 github.com/initstring/cloud_enum
 """
 
-import sys
 from enum_tools import utils
 
 BANNER = '''
@@ -86,7 +85,7 @@ def check_s3_buckets(names, threads):
     # Stop the time
     utils.stop_timer(start_time)
 
-def run_all(names, threads):
+def run_all(names, args):
     """
     Function is called by main program
     """
@@ -95,5 +94,5 @@ def run_all(names, threads):
     # Use user-supplied AWS region if provided
     #if not regions:
     #    regions = AWS_REGIONS
-    check_s3_buckets(names, threads)
+    check_s3_buckets(names, args.threads)
     return ''

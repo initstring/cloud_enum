@@ -107,12 +107,12 @@ def check_appspot(names, threads):
     # Stop the time
     utils.stop_timer(start_time)
 
-def run_all(names, threads):
+def run_all(names, args):
     """
     Function is called by main program
     """
     print(BANNER)
 
-    check_gcp_buckets(names, threads)
-    check_appspot(names, threads)
+    check_gcp_buckets(names, args.threads)
+    check_appspot(names, args.threads)
     return ''
