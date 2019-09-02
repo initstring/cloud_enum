@@ -46,6 +46,8 @@ def print_s3_response(reply):
     """
     if reply.status_code == 404:
         pass
+    elif 'Bad Request' in reply.reason:
+        pass
     elif reply.status_code == 200:
         utils.printc("    OPEN S3 BUCKET: {}\n"
                      .format(reply.url), 'green')
