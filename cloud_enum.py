@@ -36,7 +36,7 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description=desc)
 
     # Grab the current dir of the script, for setting some defaults below
-    script_path = os.path.dirname(__file__)
+    script_path = os.path.split(os.path.abspath(sys.argv[0]))[0]
 
     kw_group = parser.add_mutually_exclusive_group(required=True)
 
