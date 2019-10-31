@@ -1,5 +1,5 @@
 # cloud_enum
-Multi-cloud OSINT tool. Enumerate public resources in AWS, Azure, and Google Cloud.
+Multi-cloud OSINT tool. Enumerate public resources in AWS, Azure, and Google Cloud. Must be run from a \*nix environment.
 
 Currently enumerates the following:
 
