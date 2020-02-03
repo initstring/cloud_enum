@@ -108,6 +108,9 @@ def fast_dns_lookup(names, nameserver, callback='', threads=25):
 
     print("[*] Brute-forcing a list of {} possible DNS names".format(total))
 
+    # Quickly check to make sure we have the OS utility `host` installed
+    
+
     # Break the url list into smaller lists based on thread size
     queue = [names[x:x+threads] for x in range(0, len(names), threads)]
 
@@ -126,9 +129,14 @@ def fast_dns_lookup(names, nameserver, callback='', threads=25):
             cmd = ['host', '{}'.format(name), '{}'.format(nameserver)]
 
             # Run the command and store the pending output
-            batch_pending[name] = subprocess.Popen(cmd,
-                                                   stdout=subprocess.DEVNULL,
-                                                   stderr=subprocess.DEVNULL)
+            null = subprocess.DEVNULL
+            try:
+                batch_pending[name] = subprocess.Popen(cmd, stdout=null,
+                                                       stderr=null)
+            except FileNotFoundError:
+                print("[!] Can't find the 'host' command. Please install it"
+                      " and try again.")
+                sys.exit()
 
         # Then, grab all the results from the queue
         for name in batch_pending:
