@@ -8,6 +8,8 @@ import subprocess
 import datetime
 import re
 import requests
+import os
+from dns import resolver
 try:
     from concurrent.futures import ThreadPoolExecutor
     from requests_futures.sessions import FuturesSession
@@ -98,10 +100,52 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5):
     # Clear the status message
     sys.stdout.write('                            \r')
 
+def python_dns_lookup(names, nameserver, callback=''):
+    """
+    Helper function to resolve DNS names. Uses dnspython library to give
+    platform agnostic name lookups instead of using the shell.
+    """
+    total = len(names)
+    current = 0
+    valid_names = []
+
+    print("[*] Brute-forcing a list of {} possible DNS names".format(total))
+
+    res = resolver.Resolver()
+    res.nameservers = [nameserver]
+
+    for name in names:
+        try:
+            res.query(name)
+            # If no exception is thrown, save it as a valid DNS name and send to callback
+            # if defined.
+            valid_names.append(name)
+            if callback:
+                callback(name)
+        except:
+            # Name cannot be found, continue
+            pass 
+        
+        current += 1
+
+        # Update the status message
+        sys.stdout.flush()
+        sys.stdout.write("    {}/{} complete...".format(current, total))
+        sys.stdout.write('\r')
+    
+    # Clear the status message
+    sys.stdout.write('                            \r')
+
+    return valid_names
+
 def fast_dns_lookup(names, nameserver, callback='', threads=25):
     """
     Helper function to resolve DNS names. Uses subprocess for threading.
     """
+    # If we are running on windows use the python dns library instead
+    if os.name == 'nt':
+        return python_dns_lookup(names, nameserver, callback)
+
     total = len(names)
     current = 0
     valid_names = []
