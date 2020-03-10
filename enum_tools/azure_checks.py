@@ -197,7 +197,7 @@ def print_website_response(hostname):
     utils.printc("    Registered Azure Website DNS Name: {}\n"
                  .format(hostname), 'green')
 
-def check_azure_websites(names, nameserver):
+def check_azure_websites(names, nameserver, threads):
     """
     Checks for Azure Websites (PaaS)
     """
@@ -225,7 +225,7 @@ def print_database_response(hostname):
     utils.printc("    Registered Azure Database DNS Name: {}\n"
                  .format(hostname), 'green')
 
-def check_azure_databases(names, nameserver):
+def check_azure_databases(names, nameserver, threads):
     """
     Checks for Azure Databases
     """
@@ -253,7 +253,7 @@ def print_vm_response(hostname):
     utils.printc("    Registered Azure Virtual Machine DNS Name: {}\n"
                  .format(hostname), 'green')
 
-def check_azure_vms(names, nameserver):
+def check_azure_vms(names, nameserver, threads):
     """
     Checks for Azure Virtual Machines
     """
@@ -292,6 +292,6 @@ def run_all(names, args):
     if valid_accounts:
         brute_force_containers(valid_accounts, args.brute, args.threads)
 
-    check_azure_websites(names, args.nameserver)
-    check_azure_databases(names, args.nameserver)
-    check_azure_vms(names, args.nameserver)
+    check_azure_websites(names, args.nameserver, args.threads)
+    check_azure_databases(names, args.nameserver, args.threads)
+    check_azure_vms(names, args.nameserver, args.threads)
