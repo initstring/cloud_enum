@@ -118,8 +118,7 @@ def dns_lookup(nameserver, name):
 
 def fast_dns_lookup(names, nameserver, callback='', threads=5):
     """
-    Helper function to resolve DNS names. Uses dnspython library to give
-    platform agnostic name lookups instead of using the shell.
+    Helper function to resolve DNS names. Uses multithreading.
     """
     total = len(names)
     current = 0
@@ -136,6 +135,7 @@ def fast_dns_lookup(names, nameserver, callback='', threads=5):
         # Because pool.map takes only a single function arg, we need to
         # define this partial so that each iteration uses the same ns
         dns_lookup_params = partial(dns_lookup, nameserver)
+
         results = pool.map(dns_lookup_params, batch)
 
         # We should now have the batch of results back, process them.
