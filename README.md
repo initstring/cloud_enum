@@ -48,7 +48,7 @@ Let's say you were researching "somecompany" whose website is "somecompany.io" t
 cloudenum.py -k somecompany -k somecompany.io -k blockchaindoohickey
 ```
 
-HTTP scraping and DNS lookips use 5 threads each by default. You can try increasing this, but eventually the cloud providers will rate limit you. Here is an example to increase to 10.
+HTTP scraping and DNS lookups use 5 threads each by default. You can try increasing this, but eventually the cloud providers will rate limit you. Here is an example to increase to 10.
 
 ```sh
 cloudenum.py -k keyword -t 10
