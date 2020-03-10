@@ -132,6 +132,19 @@ def print_status(args):
     print("Brute-list:  {}".format(args.brute))
     print("")
 
+def check_windows():
+    """
+    Fixes pretty color printing for Windows users. Keeping out of
+    requirements.txt to avoid the library requirement for most users.
+    """
+    if os.name == 'nt':
+        try:
+            import colorama
+            colorama.init()
+        except ModuleNotFoundError:
+            print("[!] Yo, Windows user - if you want pretty colors, you can"
+                  " install the colorama python package.")
+
 def read_mutations(mutations_file):
     """
     Read mutations file into memory for processing.
@@ -192,6 +205,9 @@ def main():
 
     # Generate a basic status on targets and parameters
     print_status(args)
+
+    # Give our Windows friends a chance at pretty colors
+    check_windows()
 
     # First, build a sort base list of target names
     mutations = read_mutations(args.mutations)
