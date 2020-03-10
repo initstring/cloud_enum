@@ -74,7 +74,8 @@ def check_storage_accounts(names, threads, nameserver):
             candidates.append('{}.{}'.format(name, BLOB_URL))
 
     # Azure Storage Accounts use DNS sub-domains. First, see which are valid.
-    valid_names = utils.fast_dns_lookup(candidates, nameserver)
+    valid_names = utils.fast_dns_lookup(candidates, nameserver,
+                                        threads=threads)
 
     # Send the valid names to the batch HTTP processor
     utils.get_url_batch(valid_names, use_ssl=False,
@@ -210,7 +211,8 @@ def check_azure_websites(names, nameserver):
 
     # Azure Websites use DNS sub-domains. If it resolves, it is registered.
     utils.fast_dns_lookup(candidates, nameserver,
-                          callback=print_website_response)
+                          callback=print_website_response,
+                          threads=threads)
 
     # Stop the timer
     utils.stop_timer(start_time)
@@ -237,7 +239,8 @@ def check_azure_databases(names, nameserver):
 
     # Azure databases use DNS sub-domains. If it resolves, it is registered.
     utils.fast_dns_lookup(candidates, nameserver,
-                          callback=print_database_response)
+                          callback=print_database_response,
+                          threads=threads)
 
     # Stop the timer
     utils.stop_timer(start_time)
@@ -272,7 +275,8 @@ def check_azure_vms(names, nameserver):
 
         # Azure VMs use DNS sub-domains. If it resolves, it is registered.
         utils.fast_dns_lookup(candidates, nameserver,
-                              callback=print_vm_response)
+                              callback=print_vm_response,
+                              threads=threads)
 
     # Stop the timer
     utils.stop_timer(start_time)
