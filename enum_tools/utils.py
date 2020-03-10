@@ -7,6 +7,7 @@ import sys
 import datetime
 import re
 from multiprocessing.dummy import Pool as ThreadPool
+from functools import partial
 try:
     import requests
     import dns
@@ -100,7 +101,7 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5):
     # Clear the status message
     sys.stdout.write('                            \r')
 
-def dns_lookup(name, nameserver="8.8.8.8"):
+def dns_lookup(nameserver, name):
     """
     This function performs the actual DNS lookup when called in a threadpool
     by the fast_dns_lookup function.
@@ -131,7 +132,13 @@ def fast_dns_lookup(names, nameserver, callback='', threads=5):
 
     for batch in queue:
         pool = ThreadPool(threads)
-        results = pool.map(dns_lookup, batch)
+
+        # Because pool.map takes only a single function arg, we need to
+        # define this partial so that each iteration uses the same ns
+        dns_lookup_params = partial(dns_lookup, nameserver)
+        results = pool.map(dns_lookup_params, batch)
+
+        # We should now have the batch of results back, process them.
         for name in results:
             if name:
                 if callback:
