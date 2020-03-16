@@ -4,16 +4,19 @@ Helper functions for network requests, etc
 
 import time
 import sys
-import subprocess
 import datetime
 import re
-import requests
+from multiprocessing.dummy import Pool as ThreadPool
+from functools import partial
 try:
+    import requests
+    import dns
+    import dns.resolver
     from concurrent.futures import ThreadPoolExecutor
     from requests_futures.sessions import FuturesSession
     from concurrent.futures._base import TimeoutError
 except ImportError:
-    print("[!] You'll need to pip install requests_futures for this tool.")
+    print("[!] Please pip install requirements.txt.")
     sys.exit()
 
 LOGFILE = False
@@ -98,9 +101,24 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5):
     # Clear the status message
     sys.stdout.write('                            \r')
 
-def fast_dns_lookup(names, nameserver, callback='', threads=25):
+def dns_lookup(nameserver, name):
     """
-    Helper function to resolve DNS names. Uses subprocess for threading.
+    This function performs the actual DNS lookup when called in a threadpool
+    by the fast_dns_lookup function.
+    """
+    res = dns.resolver.Resolver()
+    res.nameservers = [nameserver]
+
+    try:
+        res.query(name)
+        # If no exception is thrown, return the valid name
+        return name
+    except dns.resolver.NXDOMAIN:
+        return ''
+
+def fast_dns_lookup(names, nameserver, callback='', threads=5):
+    """
+    Helper function to resolve DNS names. Uses multithreading.
     """
     total = len(names)
     current = 0
@@ -108,50 +126,28 @@ def fast_dns_lookup(names, nameserver, callback='', threads=25):
 
     print("[*] Brute-forcing a list of {} possible DNS names".format(total))
 
-    # Quickly check to make sure we have the OS utility `host` installed
-    
-
     # Break the url list into smaller lists based on thread size
     queue = [names[x:x+threads] for x in range(0, len(names), threads)]
 
-    # Work through the smaller lists in batches. Using Python's subprocess
-    # module, those host OS will execute the `host` command. Python will
-    # move on to the next and then check the output of the OS command when
-    # finished queueing the batch. A status code of 0 means the host lookup
-    # succeeded.
     for batch in queue:
-        batch_pending = {}
-        batch_results = {}
+        pool = ThreadPool(threads)
 
-        # First, grab the pending async request and store it in a dict
-        for name in batch:
-            # Build the OS command to lookup a DNS name
-            cmd = ['host', '{}'.format(name), '{}'.format(nameserver)]
+        # Because pool.map takes only a single function arg, we need to
+        # define this partial so that each iteration uses the same ns
+        dns_lookup_params = partial(dns_lookup, nameserver)
 
-            # Run the command and store the pending output
-            null = subprocess.DEVNULL
-            try:
-                batch_pending[name] = subprocess.Popen(cmd, stdout=null,
-                                                       stderr=null)
-            except FileNotFoundError:
-                print("[!] Can't find the 'host' command. Please install it"
-                      " and try again.")
-                sys.exit()
+        results = pool.map(dns_lookup_params, batch)
 
-        # Then, grab all the results from the queue
-        for name in batch_pending:
-            batch_pending[name].wait()
-            batch_results[name] = batch_pending[name].poll()
-
-            # If we get a 0, save it as a valid DNS name and send to callback
-            # if defined.
-            if batch_results[name] == 0:
-                valid_names.append(name)
+        # We should now have the batch of results back, process them.
+        for name in results:
+            if name:
                 if callback:
                     callback(name)
+                valid_names.append(name)
 
-        # Refresh a status message
         current += threads
+
+        # Update the status message
         sys.stdout.flush()
         sys.stdout.write("    {}/{} complete...".format(current, total))
         sys.stdout.write('\r')
@@ -159,7 +155,6 @@ def fast_dns_lookup(names, nameserver, callback='', threads=25):
     # Clear the status message
     sys.stdout.write('                            \r')
 
-    # Return the list of valid dns names
     return valid_names
 
 def list_bucket_contents(bucket):

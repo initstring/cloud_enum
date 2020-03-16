@@ -1,1 +1,3 @@
-requests_futures==0.9.9
+dnspython
+requests
+requests_futures

@@ -1,5 +1,5 @@
 # cloud_enum
-Multi-cloud OSINT tool. Enumerate public resources in AWS, Azure, and Google Cloud. Must be run from a \*nix environment.
+Multi-cloud OSINT tool. Enumerate public resources in AWS, Azure, and Google Cloud.
 
 Currently enumerates the following:
 
@@ -29,7 +29,7 @@ By "open" buckets/containers, I mean those that allow anonymous users to list co
 # Usage
 
 ## Setup
-You'll need the `requests-futures` python package, as this tool uses it for multi-threading HTTP requests. It's a very cool package if you're already using `requests`, I highly recommend it.
+Several non-standard libaries are required to support threaded HTTP requests and dns lookups. You'll need to install the requirements as follows:
 
 ```sh
 pip3 install -r ./requirements.txt
@@ -48,9 +48,7 @@ Let's say you were researching "somecompany" whose website is "somecompany.io" t
 cloudenum.py -k somecompany -k somecompany.io -k blockchaindoohickey
 ```
 
-DNS brute-forcing uses a hard-coded 25 threads, leveraging subprocess and the Linux `host` command.
-
-HTTP scraping uses 5 threads by default. You can try increasing this, but eventually the cloud providers will rate limit you. Here is an example to increase to 10.
+HTTP scraping and DNS lookups use 5 threads each by default. You can try increasing this, but eventually the cloud providers will rate limit you. Here is an example to increase to 10.
 
 ```sh
 cloudenum.py -k keyword -t 10
