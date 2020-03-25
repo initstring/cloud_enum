@@ -1,8 +1,6 @@
 # cloud_enum
 Multi-cloud OSINT tool. Enumerate public resources in AWS, Azure, and Google Cloud.
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/pTUDJhWJ1m0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
 Currently enumerates the following:
 
 **Amazon Web Services**:
@@ -24,6 +22,8 @@ Currently enumerates the following:
 By "open" buckets/containers, I mean those that allow anonymous users to list contents. if you discover a protected bucket/container, it is still worth trying to brute force the contents with another tool.
 
 **IMPORTANT**: Azure Virtual Machine DNS records can span a lot of geo regions. To save time scanning, there is a "REGIONS" variable defined in cloudenum/azure_regions.py. You'll want to look at this file and edit it to be relevant to your own work.
+
+See it in action in [Codingo](https://github.com/codingo)'s video demo [here](https://www.youtube.com/embed/pTUDJhWJ1m0).
 
 <img src="https://initstring.keybase.pub/host/images/cloud_enum.png" align="center"/>
 
