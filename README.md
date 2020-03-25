@@ -23,6 +23,8 @@ By "open" buckets/containers, I mean those that allow anonymous users to list co
 
 **IMPORTANT**: Azure Virtual Machine DNS records can span a lot of geo regions. To save time scanning, there is a "REGIONS" variable defined in cloudenum/azure_regions.py. You'll want to look at this file and edit it to be relevant to your own work.
 
+See it in action in [Codingo](https://github.com/codingo)'s video demo [here](https://www.youtube.com/embed/pTUDJhWJ1m0).
+
 <img src="https://initstring.keybase.pub/host/images/cloud_enum.png" align="center"/>
 
 
