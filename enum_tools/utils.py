@@ -107,6 +107,7 @@ def dns_lookup(nameserver, name):
     by the fast_dns_lookup function.
     """
     res = dns.resolver.Resolver()
+    res.timeout = 10
     res.nameservers = [nameserver]
 
     try:
@@ -115,6 +116,9 @@ def dns_lookup(nameserver, name):
         return name
     except dns.resolver.NXDOMAIN:
         return ''
+    except dns.exception.Timeout:
+        print("    [!] DNS Timeut on {}. Investigate if there are many"
+              " of these.".format(name))
 
 def fast_dns_lookup(names, nameserver, callback='', threads=5):
     """
@@ -151,6 +155,7 @@ def fast_dns_lookup(names, nameserver, callback='', threads=5):
         sys.stdout.flush()
         sys.stdout.write("    {}/{} complete...".format(current, total))
         sys.stdout.write('\r')
+        pool.close()
 
     # Clear the status message
     sys.stdout.write('                            \r')
