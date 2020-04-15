@@ -117,7 +117,7 @@ def dns_lookup(nameserver, name):
     except dns.resolver.NXDOMAIN:
         return ''
     except dns.exception.Timeout:
-        print("    [!] DNS Timeut on {}. Investigate if there are many"
+        print("    [!] DNS Timeout on {}. Investigate if there are many"
               " of these.".format(name))
 
 def fast_dns_lookup(names, nameserver, callback='', threads=5):

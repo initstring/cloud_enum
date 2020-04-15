@@ -13,6 +13,7 @@ BANNER = '''
 
 # Known S3 domain names
 S3_URL = 's3.amazonaws.com'
+APPS_URL = 'awsapps.com'
 
 # Known AWS region names. This global will be used unless the user passes
 # in a specific region name. (NOT YET IMPLEMENTED)
@@ -63,6 +64,38 @@ def print_s3_response(reply):
               "       {}: {}"
               .format(reply.url, reply.status_code, reply.reason))
 
+def print_awsapps_response(reply):
+    """
+    Parses the HTTP reply of a brute-force attempt
+
+    This function is passed into the class object so we can view results
+    in real-time.
+    """
+    if reply.status_code == 404:
+        pass
+    elif 'Bad Request' in reply.reason:
+        pass
+    elif reply.status_code == 200:
+        utils.printc("    App Found: {}\n"
+                     .format(reply.url), 'orange')
+    elif 'Slow Down' in reply.reason:
+        print("[!] You've been rate limited, skipping rest of check...")
+        return 'breakout'
+    else:
+        print("    Unknown status codes being received from {}:\n"
+              "       {}: {}"
+              .format(reply.url, reply.status_code, reply.reason))
+
+    """
+    Parses the HTTP reply of a brute-force attempt
+
+    This function is passed into the class object so we can view results
+    in real-time.
+    """
+    if reply.status_code == 404:
+        pass
+
+
 def check_s3_buckets(names, threads):
     """
     Checks for open and restricted Amazon S3 buckets
@@ -87,6 +120,41 @@ def check_s3_buckets(names, threads):
     # Stop the time
     utils.stop_timer(start_time)
 
+def check_awsapps(names, threads, nameserver):
+    """
+    Checks for existence of AWS Apps
+    (ie. WorkDocs, WorkMail, Connect, etc.)
+    """
+    print("[+] Checking for AWS Apps")
+
+    # Start a counter to report on elapsed time
+    start_time = utils.start_timer()
+
+    # Initialize the list of domain names to look up
+    candidates = []
+
+    # Initialize the list of valid hostnames
+    valid_names = []
+
+    # Take each mutated keyword craft a domain name to lookup.
+    for name in names:
+        candidates.append('{}.{}'.format(name, APPS_URL))
+
+    # AWS Apps use DNS sub-domains. First, see which are valid.
+    valid_names = utils.fast_dns_lookup(candidates, nameserver,
+                                        threads=threads)
+
+    # Send the valid names to the batch HTTP processor
+    utils.get_url_batch(valid_names, use_ssl=False,
+                        callback=print_awsapps_response,
+                        threads=threads)
+
+    # Stop the timer
+    utils.stop_timer(start_time)
+
+    # de-dupe the results and return
+    return list(set(valid_names))
+
 def run_all(names, args):
     """
     Function is called by main program
@@ -97,4 +165,5 @@ def run_all(names, args):
     #if not regions:
     #    regions = AWS_REGIONS
     check_s3_buckets(names, args.threads)
+    check_awsapps(names, args.threads, args.nameserver)
     return ''
