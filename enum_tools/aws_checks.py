@@ -86,16 +86,6 @@ def print_awsapps_response(reply):
               "       {}: {}"
               .format(reply.url, reply.status_code, reply.reason))
 
-    """
-    Parses the HTTP reply of a brute-force attempt
-
-    This function is passed into the class object so we can view results
-    in real-time.
-    """
-    if reply.status_code == 404:
-        pass
-
-
 def check_s3_buckets(names, threads):
     """
     Checks for open and restricted Amazon S3 buckets
