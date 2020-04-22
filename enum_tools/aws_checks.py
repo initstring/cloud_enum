@@ -64,28 +64,6 @@ def print_s3_response(reply):
               "       {}: {}"
               .format(reply.url, reply.status_code, reply.reason))
 
-def print_awsapps_response(reply):
-    """
-    Parses the HTTP reply of a brute-force attempt
-
-    This function is passed into the class object so we can view results
-    in real-time.
-    """
-    if reply.status_code == 404:
-        pass
-    elif 'Bad Request' in reply.reason:
-        pass
-    elif reply.status_code == 200:
-        utils.printc("    App Found: {}\n"
-                     .format(reply.url), 'orange')
-    elif 'Slow Down' in reply.reason:
-        print("[!] You've been rate limited, skipping rest of check...")
-        return 'breakout'
-    else:
-        print("    Unknown status codes being received from {}:\n"
-              "       {}: {}"
-              .format(reply.url, reply.status_code, reply.reason))
-
 def check_s3_buckets(names, threads):
     """
     Checks for open and restricted Amazon S3 buckets
@@ -134,16 +112,11 @@ def check_awsapps(names, threads, nameserver):
     valid_names = utils.fast_dns_lookup(candidates, nameserver,
                                         threads=threads)
 
-    # Send the valid names to the batch HTTP processor
-    utils.get_url_batch(valid_names, use_ssl=False,
-                        callback=print_awsapps_response,
-                        threads=threads)
+    for name in valid_names:
+        utils.printc("    App Found: https://{}\n" .format(name), 'orange')
 
     # Stop the timer
     utils.stop_timer(start_time)
-
-    # de-dupe the results and return
-    return list(set(valid_names))
 
 def run_all(names, args):
     """
@@ -156,4 +129,3 @@ def run_all(names, args):
     #    regions = AWS_REGIONS
     check_s3_buckets(names, args.threads)
     check_awsapps(names, args.threads, args.nameserver)
-    return ''
