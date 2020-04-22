@@ -115,4 +115,3 @@ def run_all(names, args):
 
     check_gcp_buckets(names, args.threads)
     check_appspot(names, args.threads)
-    return ''
