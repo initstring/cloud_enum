@@ -28,6 +28,7 @@ alpha
 amazon
 analytics
 android
+api
 app
 appengine
 appspot
@@ -70,6 +71,7 @@ consultants
 contact
 container
 content
+core
 corp
 corporate
 data
@@ -105,6 +107,7 @@ fileshare
 filestore
 firestore
 functions
+gateway
 gcp
 gcp-logs
 gcplogs
@@ -115,6 +118,7 @@ gke
 graphite
 graphql
 gs
+gw
 help
 hub
 iam

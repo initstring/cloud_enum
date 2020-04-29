@@ -6,6 +6,7 @@ Currently enumerates the following:
 **Amazon Web Services**:
 - Open S3 Buckets
 - Protected S3 Buckets
+- awsapps (WorkMail, WorkDocs, Connect, etc.)
 
 **Microsoft Azure**:
 - Storage Accounts

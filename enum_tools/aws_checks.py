@@ -13,6 +13,7 @@ BANNER = '''
 
 # Known S3 domain names
 S3_URL = 's3.amazonaws.com'
+APPS_URL = 'awsapps.com'
 
 # Known AWS region names. This global will be used unless the user passes
 # in a specific region name. (NOT YET IMPLEMENTED)
@@ -87,6 +88,36 @@ def check_s3_buckets(names, threads):
     # Stop the time
     utils.stop_timer(start_time)
 
+def check_awsapps(names, threads, nameserver):
+    """
+    Checks for existence of AWS Apps
+    (ie. WorkDocs, WorkMail, Connect, etc.)
+    """
+    print("[+] Checking for AWS Apps")
+
+    # Start a counter to report on elapsed time
+    start_time = utils.start_timer()
+
+    # Initialize the list of domain names to look up
+    candidates = []
+
+    # Initialize the list of valid hostnames
+    valid_names = []
+
+    # Take each mutated keyword craft a domain name to lookup.
+    for name in names:
+        candidates.append('{}.{}'.format(name, APPS_URL))
+
+    # AWS Apps use DNS sub-domains. First, see which are valid.
+    valid_names = utils.fast_dns_lookup(candidates, nameserver,
+                                        threads=threads)
+
+    for name in valid_names:
+        utils.printc("    App Found: https://{}\n" .format(name), 'orange')
+
+    # Stop the timer
+    utils.stop_timer(start_time)
+
 def run_all(names, args):
     """
     Function is called by main program
@@ -97,4 +128,4 @@ def run_all(names, args):
     #if not regions:
     #    regions = AWS_REGIONS
     check_s3_buckets(names, args.threads)
-    return ''
+    check_awsapps(names, args.threads, args.nameserver)
