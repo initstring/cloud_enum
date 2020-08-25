@@ -4,6 +4,7 @@ github.com/initstring/cloud_enum
 """
 
 from enum_tools import utils
+from enum_tools import gcp_regions
 
 BANNER = '''
 ++++++++++++++++++++++++++
@@ -11,9 +12,14 @@ BANNER = '''
 ++++++++++++++++++++++++++
 '''
 
-# Known S3 domain names
+# Known GCP domain names
 GCP_URL = 'storage.googleapis.com'
 APPSPOT_URL = 'appspot.com'
+FUNC_URL = 'cloudfunctions.net'
+
+# Hacky, I know. Used to store project/region combos that report at least
+# one cloud function, to brute force later on
+HAS_FUNCS = []
 
 def print_bucket_response(reply):
     """
@@ -107,6 +113,113 @@ def check_appspot(names, threads):
     # Stop the time
     utils.stop_timer(start_time)
 
+def print_functions_response1(reply):
+    """
+    Parses the HTTP reply the initial Cloud Functions check
+
+    This function is passed into the class object so we can view results
+    in real-time.
+    """
+    if reply.status_code == 404:
+        pass
+    elif reply.status_code == 302:
+        utils.printc("    Contains at least 1 Cloud Function: {}\n"
+                     .format(reply.url), 'green')
+        HAS_FUNCS.append(reply.url)
+    else:
+        print("    Unknown status codes being received from {}:\n"
+              "       {}: {}"
+              .format(reply.url, reply.status_code, reply.reason))
+
+def print_functions_response2(reply):
+    """
+    Parses the HTTP reply from the secondary, brute-force Cloud Functions check
+
+    This function is passed into the class object so we can view results
+    in real-time.
+    """
+    if reply.status_code == 302:
+        pass
+    elif reply.status_code == 403:
+        utils.printc("    AUTH REQUIRED Cloud Function: {}\n"
+                     .format(reply.url), 'red')
+    elif reply.status_code == 405:
+        utils.printc("    UNAUTH Cloud Function (POST-Only): {}\n"
+                     .format(reply.url), 'green')
+    elif reply.status_code == 200:
+        utils.printc("    UNAUTH Cloud Function (GET-OK): {}\n"
+                     .format(reply.url), 'green')
+    else:
+        print("    Unknown status codes being received from {}:\n"
+              "       {}: {}"
+              .format(reply.url, reply.status_code, reply.reason))
+
+def check_functions(names, brute_list, threads):
+    """
+    Checks for Google Cloud Functions running on cloudfunctions.net
+
+    This is a two-part process. First, we want to find region/project combos
+    that have existing Cloud Functions. The URL for a function looks like this:
+    https://[ZONE]-[PROJECT-ID].cloudfunctions.net/[FUNCTION-NAME]
+
+    We look for a 302 in [ZONE]-[PROJECT-ID].cloudfunctions.net. That means
+    there are some functions defined in that region. Then, we brute force a list
+    of possible function names there.
+
+    See gcp_regions.py to define which regions to check. The tool currently
+    defaults to only 1 region, so you should really modify it for best results.
+    """
+    print("[+] Checking for project/zones with Google Cloud Functions.")
+
+    # Start a counter to report on elapsed time
+    start_time = utils.start_timer()
+
+    # Pull the regions from a config file
+    regions = gcp_regions.REGIONS
+
+    print("[*] Testing across {} regions defined in the config file"
+          .format(len(regions)))
+
+    for region in regions:
+        # Initialize the list of initial URLs to check
+        candidates = [region + '-' + name + '.' + FUNC_URL for name in names]
+
+    # Send the valid names to the batch HTTP processor
+    utils.get_url_batch(candidates, use_ssl=False,
+                        callback=print_functions_response1,
+                        threads=threads,
+                        redir=False)
+
+    # Retun from function if we have not found any valid combos
+    if not HAS_FUNCS:
+        utils.stop_timer(start_time)
+        return
+
+    # If we did find something, we'll use the brute list. This will allow people
+    # to provide a separate fuzzing list if they choose.
+    print("[*] Now, brute forcing the valid combos for actual function names")
+
+    # Load brute list in memory, based on allowed chars/etc
+    brute_strings = utils.get_brute(brute_list)
+
+    # The global was built in a previous function. We only want to brute force
+    # project/region combos that we know have existing functions defined
+    for func in HAS_FUNCS:
+        # Initialize the list of initial URLs to check. Strip out the HTTP
+        # protocol first, as that is handled in the utility
+        func = func.replace("http://", "")
+
+        candidates = [func + brute for brute in brute_strings]
+
+        # Send the valid names to the batch HTTP processor
+        utils.get_url_batch(candidates, use_ssl=False,
+                            callback=print_functions_response2,
+                            threads=threads,
+                            redir=False)
+
+    # Stop the time
+    utils.stop_timer(start_time)
+
 def run_all(names, args):
     """
     Function is called by main program
@@ -115,3 +228,4 @@ def run_all(names, args):
 
     check_gcp_buckets(names, args.threads)
     check_appspot(names, args.threads)
+    check_functions(names, args.brute, args.threads)
