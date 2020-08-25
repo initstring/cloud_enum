@@ -140,7 +140,7 @@ def print_functions_response2(reply):
     """
     if reply.status_code == 302:
         pass
-    elif reply.status_code == 403:
+    elif reply.status_code == 403 or reply.status_code == 401:
         utils.printc("    AUTH REQUIRED Cloud Function: {}\n"
                      .format(reply.url), 'red')
     elif reply.status_code == 405:
