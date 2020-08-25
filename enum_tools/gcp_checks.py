@@ -138,16 +138,16 @@ def print_functions_response2(reply):
     This function is passed into the class object so we can view results
     in real-time.
     """
-    if reply.status_code == 302:
+    if 'accounts.google.com/ServiceLogin' in reply.url:
         pass
     elif reply.status_code == 403 or reply.status_code == 401:
-        utils.printc("    AUTH REQUIRED Cloud Function: {}\n"
-                     .format(reply.url), 'red')
+        utils.printc("    Auth required Cloud Function: {}\n"
+                     .format(reply.url), 'orange')
     elif reply.status_code == 405:
-        utils.printc("    UNAUTH Cloud Function (POST-Only): {}\n"
+        utils.printc("    UNAUTHENTICATED Cloud Function (POST-Only): {}\n"
                      .format(reply.url), 'green')
     elif reply.status_code == 200:
-        utils.printc("    UNAUTH Cloud Function (GET-OK): {}\n"
+        utils.printc("    UNAUTHENTICATED Cloud Function (GET-OK): {}\n"
                      .format(reply.url), 'green')
     else:
         print("    Unknown status codes being received from {}:\n"
@@ -209,13 +209,15 @@ def check_functions(names, brute_list, threads):
         # protocol first, as that is handled in the utility
         func = func.replace("http://", "")
 
-        candidates = [func + brute for brute in brute_strings]
+        # Noticed weird behaviour with functions when a slash is not appended.
+        # Works for some, but not others. However, appending a slash seems to
+        # get consistent results. Might need further validation.
+        candidates = [func + brute + '/' for brute in brute_strings]
 
         # Send the valid names to the batch HTTP processor
         utils.get_url_batch(candidates, use_ssl=False,
                             callback=print_functions_response2,
-                            threads=threads,
-                            redir=False)
+                            threads=threads)
 
     # Stop the time
     utils.stop_timer(start_time)
