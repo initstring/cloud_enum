@@ -199,7 +199,8 @@ def check_functions(names, brute_list, threads):
 
     # If we did find something, we'll use the brute list. This will allow people
     # to provide a separate fuzzing list if they choose.
-    print("[*] Now, brute forcing the valid combos for actual function names")
+    print("[*] Brute-forcing function names in {} project/region combos"
+          .format(len(HAS_FUNCS)))
 
     # Load brute list in memory, based on allowed chars/etc
     brute_strings = utils.get_brute(brute_list)
@@ -207,6 +208,8 @@ def check_functions(names, brute_list, threads):
     # The global was built in a previous function. We only want to brute force
     # project/region combos that we know have existing functions defined
     for func in HAS_FUNCS:
+        print("[*] Brute-forcing {} function names in {}"
+              .format(len(brute_strings), func))
         # Initialize the list of initial URLs to check. Strip out the HTTP
         # protocol first, as that is handled in the utility
         func = func.replace("http://", "")
