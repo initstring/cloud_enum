@@ -148,7 +148,7 @@ def print_functions_response2(reply):
     elif reply.status_code == 405:
         utils.printc("    UNAUTHENTICATED Cloud Function (POST-Only): {}\n"
                      .format(reply.url), 'green')
-    elif reply.status_code == 200:
+    elif reply.status_code == 200 or reply.status_code == 404:
         utils.printc("    UNAUTHENTICATED Cloud Function (GET-OK): {}\n"
                      .format(reply.url), 'green')
     else:
