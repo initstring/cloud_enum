@@ -102,8 +102,10 @@ def print_container_response(reply):
 
     # Stop brute forcing accounts without permission
     if ('not authorized to perform this operation' in reply.reason or
-            'not have sufficient permissions' in reply.reason):
-        print("    [!] Breaking out early, auth errors.")
+            'not have sufficient permissions' in reply.reason or
+            'Public access is not permitted' in reply.reason or
+            'Server failed to authenticate the request' in reply.reason):
+        print("    [!] Breaking out early, auth required.")
         return 'breakout'
 
     # Stop brute forcing unsupported accounts
