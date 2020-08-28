@@ -23,7 +23,7 @@ Currently enumerates the following:
 
 By "open" buckets/containers, I mean those that allow anonymous users to list contents. if you discover a protected bucket/container, it is still worth trying to brute force the contents with another tool.
 
-**IMPORTANT**: Azure Virtual Machine DNS records can span a lot of geo regions. To save time scanning, there is a "REGIONS" variable defined in cloudenum/azure_regions.py. You'll want to look at this file and edit it to be relevant to your own work.
+**IMPORTANT**: Some resources (Azure Containers, GCP Functions) are discovered per-region. To save time scanning, there is a "REGIONS" variable defined in `cloudenum/azure_regions.py and cloudenum/gcp_regions.py` that is set by default to use only 1 region. You may want to look at these files and edit them to be relevant to your own work.
 
 See it in action in [Codingo](https://github.com/codingo)'s video demo [here](https://www.youtube.com/embed/pTUDJhWJ1m0).
 
@@ -44,7 +44,7 @@ The only required argument is at least one keyword. You can use the built-in fuz
 
 You can provide multiple keywords by specifying the `-k` argument multiple times.
 
-Azure Containers required two levels of brute-forcing, both handled automatically by this tool. First, by finding valid accounts (DNS). Then, by brute-forcing container names inside that account (HTTP scraping). The tool uses the same fuzzing file for both by default, but you can specificy individual files separately if you'd like.
+Keywords are mutated automatically using strings from `enum_tools/fuzz.txt` or a file you provide with the `-m` flag. Services that require a second-level of brute forcing (Azure Containers and GCP Functions) will also use `fuzz.txt` by default or a file you provide with the `-b` flag.
 
 Let's say you were researching "somecompany" whose website is "somecompany.io" that makes a product called "blockchaindoohickey". You could run the tool like this:
 
