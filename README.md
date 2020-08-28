@@ -21,10 +21,6 @@ Currently enumerates the following:
 - Google App Engine sites
 - Cloud Functions (enumerates project/regions with existing functions, then brute forces actual function names)
 
-By "open" buckets/containers, I mean those that allow anonymous users to list contents. if you discover a protected bucket/container, it is still worth trying to brute force the contents with another tool.
-
-**IMPORTANT**: Some resources (Azure Containers, GCP Functions) are discovered per-region. To save time scanning, there is a "REGIONS" variable defined in `cloudenum/azure_regions.py and cloudenum/gcp_regions.py` that is set by default to use only 1 region. You may want to look at these files and edit them to be relevant to your own work.
-
 See it in action in [Codingo](https://github.com/codingo)'s video demo [here](https://www.youtube.com/embed/pTUDJhWJ1m0).
 
 <img src="https://initstring.keybase.pub/host/images/cloud_enum.png" align="center"/>
@@ -57,6 +53,8 @@ HTTP scraping and DNS lookups use 5 threads each by default. You can try increas
 ```sh
 cloudenum.py -k keyword -t 10
 ```
+
+**IMPORTANT**: Some resources (Azure Containers, GCP Functions) are discovered per-region. To save time scanning, there is a "REGIONS" variable defined in `cloudenum/azure_regions.py and cloudenum/gcp_regions.py` that is set by default to use only 1 region. You may want to look at these files and edit them to be relevant to your own work.
 
 **Complete Usage Details**
 ```
