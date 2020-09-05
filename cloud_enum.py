@@ -50,13 +50,13 @@ def parse_arguments():
 
     # Use included mutations file by default, or let the user provide one
     parser.add_argument('-m', '--mutations', type=str, action='store',
-                        default=script_path + '/enum_tools/fuzz.txt',
-                        help='Mutations. Default: enum_tools/fuzz.txt')
+                        default=None,
+                        help='Mutations. Default: None')
 
     # Use include container brute-force or let the user provide one
     parser.add_argument('-b', '--brute', type=str, action='store',
                         default=script_path + '/enum_tools/fuzz.txt',
-                        help='List to brute-force Azure container names.'
+                        help='List to brute-force container names.'
                         '  Default: enum_tools/fuzz.txt')
 
     parser.add_argument('-t', '--threads', type=int, action='store',
@@ -82,7 +82,7 @@ def parse_arguments():
     args = parser.parse_args()
 
     # Ensure mutations file is readable
-    if not os.access(args.mutations, os.R_OK):
+    if args.mutations and not os.access(args.mutations, os.R_OK):
         print("[!] Cannot access mutations file: {}"
               .format(args.mutations))
         sys.exit()
@@ -210,8 +210,11 @@ def main():
     check_windows()
 
     # First, build a sort base list of target names
-    mutations = read_mutations(args.mutations)
-    names = build_names(args.keyword, mutations)
+    if args.mutations:
+        mutations = read_mutations(args.mutations)
+        names = build_names(args.keyword, mutations)
+    else:
+        names = args.keyword
 
     # All the work is done in the individual modules
     try:
