@@ -102,8 +102,10 @@ def print_container_response(reply):
 
     # Stop brute forcing accounts without permission
     if ('not authorized to perform this operation' in reply.reason or
-            'not have sufficient permissions' in reply.reason):
-        print("    [!] Breaking out early, auth errors.")
+            'not have sufficient permissions' in reply.reason or
+            'Public access is not permitted' in reply.reason or
+            'Server failed to authenticate the request' in reply.reason):
+        print("    [!] Breaking out early, auth required.")
         return 'breakout'
 
     # Stop brute forcing unsupported accounts
@@ -151,18 +153,7 @@ def brute_force_containers(storage_accounts, brute_list, threads):
             valid_accounts.append(account)
 
     # Read the brute force file into memory
-    with open(brute_list, encoding="utf8", errors="ignore") as infile:
-        names = infile.read().splitlines()
-
-    # Clean up the names to usable for containers
-    banned_chars = re.compile('[^a-z0-9-]')
-    clean_names = []
-    for name in names:
-        name = name.lower()
-        name = banned_chars.sub('', name)
-        if 63 >= len(name) >= 3:
-            if name not in clean_names:
-                clean_names.append(name)
+    clean_names = utils.get_brute(brute_list, mini=3)
 
     # Start a counter to report on elapsed time
     start_time = utils.start_timer()

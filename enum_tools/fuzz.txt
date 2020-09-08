@@ -120,6 +120,7 @@ graphql
 gs
 gw
 help
+iaas
 hub
 iam
 images
@@ -131,6 +132,7 @@ ios
 iot
 jira
 js
+k8s
 kube
 kubeengine
 kubernetes
@@ -156,6 +158,7 @@ ops
 oracle
 org
 packages
+paas
 passwords
 photos
 pics
@@ -180,6 +183,7 @@ repo
 reports
 resources
 s3
+saas
 screenshots
 scripts
 sec
@@ -210,6 +214,7 @@ store
 subversion
 support
 svn
+svc
 syslog
 tasks
 teamcity
@@ -228,6 +233,7 @@ userpictures
 users
 ux
 videos
+vm
 web
 website
 wp

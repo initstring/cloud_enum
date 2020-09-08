@@ -34,7 +34,7 @@ def init_logfile(logfile):
             log_writer.write("\n\n#### CLOUD_ENUM {} ####\n"
                              .format(now))
 
-def get_url_batch(url_list, use_ssl=False, callback='', threads=5):
+def get_url_batch(url_list, use_ssl=False, callback='', threads=5, redir=True):
     """
     Processes a list of URLs, sending the results back to the calling
     function in real-time via the `callback` parameter
@@ -66,7 +66,7 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5):
 
         # First, grab the pending async request and store it in a dict
         for url in batch:
-            batch_pending[url] = session.get(proto + url)
+            batch_pending[url] = session.get(proto + url, allow_redirects=redir)
 
         # Then, grab all the results from the queue.
         # This is where we need to catch exceptions that occur with large
@@ -211,6 +211,26 @@ def printc(text, color):
     if LOGFILE:
         with open(LOGFILE, 'a')  as log_writer:
             log_writer.write(text.lstrip())
+
+def get_brute(brute_file, mini=1, maxi=63, banned='[^a-z0-9_-]'):
+    """
+    Generates a list of brute-force words based on length and allowed chars
+    """
+    # Read the brute force file into memory
+    with open(brute_file, encoding="utf8", errors="ignore") as infile:
+        names = infile.read().splitlines()
+
+    # Clean up the names to usable for containers
+    banned_chars = re.compile(banned)
+    clean_names = []
+    for name in names:
+        name = name.lower()
+        name = banned_chars.sub('', name)
+        if maxi >= len(name) >= mini:
+            if name not in clean_names:
+                clean_names.append(name)
+
+    return clean_names
 
 def start_timer():
     """
