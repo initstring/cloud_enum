@@ -59,7 +59,7 @@ cloudenum.py -k keyword -t 10
 
 **Complete Usage Details**
 ```
-usage: cloud_enum.py [-h] -k KEYWORD [-m MUTATIONS] [-b BRUTE]
+usage: cloud_enum.py [-h] -k KEYWORD [-m fuzz.txt] [-b BRUTE]
 
 Multi-cloud enumeration utility. All hail OSINT!
 
@@ -70,7 +70,7 @@ optional arguments:
   -kf KEYFILE, --keyfile KEYFILE
                         Input file with a single keyword per line.
   -m MUTATIONS, --mutations MUTATIONS
-                        Mutations. Default: cloud_enum/mutations.txt.
+                        Mutations.
   -b BRUTE, --brute BRUTE
                         List to brute-force Azure container names. Default:
                         cloud_enum/brute.txt.
