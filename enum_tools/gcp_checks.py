@@ -14,6 +14,7 @@ BANNER = '''
 
 # Known GCP domain names
 GCP_URL = 'storage.googleapis.com'
+FBRTDB_URL = 'firebaseio.com'
 APPSPOT_URL = 'appspot.com'
 FUNC_URL = 'cloudfunctions.net'
 
@@ -66,6 +67,57 @@ def check_gcp_buckets(names, threads):
     # Stop the time
     utils.stop_timer(start_time)
 
+def print_fbrtdb_response(reply):
+    """
+    Parses the HTTP reply of a brute-force attempt
+
+    This function is passed into the class object so we can view results
+    in real-time.
+    """
+    if reply.status_code == 404:
+        pass
+    elif reply.status_code == 200:
+        utils.printc("    OPEN GOOGLE FIREBASE RTDB: {}\n"
+                     .format(reply.url), 'green')
+    elif reply.status_code == 401:
+        utils.printc("    Protected Google Firebase RTDB: {}\n"
+                     .format(reply.url), 'orange')
+    elif reply.status_code == 402:
+        utils.printc("    Payment required on Google Firebase RTDB: {}\n"
+                     .format(reply.url), 'orange')
+    else:
+        print("    Unknown status codes being received from {}:\n"
+              "       {}: {}"
+              .format(reply.url, reply.status_code, reply.reason))
+
+def check_fbrtdb(names, threads):
+    """
+    Checks for Google Firebase RTDB
+    """
+    print("[+] Checking for Google Firebase Realtime Databases")
+
+    # Start a counter to report on elapsed time
+    start_time = utils.start_timer()
+
+    # Initialize the list of correctly formatted urls
+    candidates = []
+
+    # Take each mutated keyword craft a url with the correct format
+    for name in names:
+        # Firebase RTDB names cannot include a period. We'll exlcude
+        # those from the global candidates list
+        if '.' not in name:
+            candidates.append('{}.{}/.json'.format(name, FBRTDB_URL))
+
+    # Send the valid names to the batch HTTP processor
+    utils.get_url_batch(candidates, use_ssl=True,
+                        callback=print_fbrtdb_response,
+                        threads=threads,
+                        redir=False)
+
+    # Stop the time
+    utils.stop_timer(start_time)
+
 def print_appspot_response(reply):
     """
     Parses the HTTP reply of a brute-force attempt
@@ -75,12 +127,12 @@ def print_appspot_response(reply):
     """
     if reply.status_code == 404:
         pass
-    elif (str(reply.status_code)[0] == 5):
+    elif str(reply.status_code)[0] == 5:
         utils.printc("    Google App Engine app with a 50x error: {}\n"
                      .format(reply.url), 'orange')
     elif (reply.status_code == 200
-            or reply.status_code == 302
-            or reply.status_code == 404):
+          or reply.status_code == 302
+          or reply.status_code == 404):
         utils.printc("    Google App Engine app: {}\n"
                      .format(reply.url), 'green')
     else:
@@ -156,7 +208,7 @@ def print_functions_response2(reply):
               "       {}: {}"
               .format(reply.url, reply.status_code, reply.reason))
 
-def check_functions(names, brute_list, threads):
+def check_functions(names, brute_list, quickscan, threads):
     """
     Checks for Google Cloud Functions running on cloudfunctions.net
 
@@ -197,6 +249,10 @@ def check_functions(names, brute_list, threads):
         utils.stop_timer(start_time)
         return
 
+    # Also bail out if doing a quick scan
+    if quickscan:
+        return
+
     # If we did find something, we'll use the brute list. This will allow people
     # to provide a separate fuzzing list if they choose.
     print("[*] Brute-forcing function names in {} project/region combos"
@@ -233,6 +289,7 @@ def run_all(names, args):
     """
     print(BANNER)
 
-    check_gcp_buckets(names, args.threads)
-    check_appspot(names, args.threads)
-    check_functions(names, args.brute, args.threads)
+    #check_gcp_buckets(names, args.threads)
+    check_fbrtdb(names, args.threads)
+    #check_appspot(names, args.threads)
+    #check_functions(names, args.brute, args.quickscan, args.threads)

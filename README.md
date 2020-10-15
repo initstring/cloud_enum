@@ -4,8 +4,7 @@ Multi-cloud OSINT tool. Enumerate public resources in AWS, Azure, and Google Clo
 Currently enumerates the following:
 
 **Amazon Web Services**:
-- Open S3 Buckets
-- Protected S3 Buckets
+- Open / Protected S3 Buckets
 - awsapps (WorkMail, WorkDocs, Connect, etc.)
 
 **Microsoft Azure**:
@@ -16,8 +15,8 @@ Currently enumerates the following:
 - Web Apps
 
 **Google Cloud Platform**
-- Open GCP Buckets
-- Protected GCP Buckets
+- Open / Protected GCP Buckets
+- Open / Protected Firebase Realtime Databases
 - Google App Engine sites
 - Cloud Functions (enumerates project/regions with existing functions, then brute forces actual function names)
 
@@ -71,10 +70,10 @@ optional arguments:
   -kf KEYFILE, --keyfile KEYFILE
                         Input file with a single keyword per line.
   -m MUTATIONS, --mutations MUTATIONS
-                        Mutations. Default: cloud_enum/mutations.txt.
+                        Mutations. Default: enum_tools/fuzz.txt
   -b BRUTE, --brute BRUTE
                         List to brute-force Azure container names. Default:
-                        cloud_enum/brute.txt.
+                        enum_tools/fuzz.txt
   -t THREADS, --threads THREADS
                         Threads for HTTP brute-force. Default = 5
   -ns NAMESERVER, --nameserver NAMESERVER
@@ -84,6 +83,8 @@ optional arguments:
   --disable-aws         Disable Amazon checks.
   --disable-azure       Disable Azure checks.
   --disable-gcp         Disable Google checks.
+  -qs, --quickscan      Disable all mutations and second-level scans
+
 ```
 
 # Thanks

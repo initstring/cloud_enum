@@ -54,13 +54,16 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5, redir=True):
     else:
         proto = 'http://'
 
-    # Start a requests object
-    session = FuturesSession(executor=ThreadPoolExecutor(max_workers=threads))
-
     # Using the async requests-futures module, work in batches based on
     # the 'queue' list created above. Call each URL, sending the results
     # back to the callback function.
     for batch in queue:
+        # I used to initialize the session object outside of this loop, BUT
+        # there were a lot of errors that looked related to pool cleanup not
+        # happening. Putting it in here fixes the issue.
+        # There is an unresolved discussion here:
+        # https://github.com/ross/requests-futures/issues/20
+        session = FuturesSession(executor=ThreadPoolExecutor(max_workers=threads+5))
         batch_pending = {}
         batch_results = {}
 
@@ -76,9 +79,9 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5, redir=True):
                 # Timeout is set due to observation of some large jobs simply
                 # hanging forever with no exception raised.
                 batch_results[url] = batch_pending[url].result(timeout=30)
-            except requests.exceptions.ConnectionError:
-                print("    [!] Connection error on {}. Investigate if there"
-                      " are many of these.".format(url))
+            except requests.exceptions.ConnectionError as error_msg:
+                print("    [!] Connection error on {}:".format(url))
+                print(error_msg)
             except TimeoutError:
                 print("    [!] Timeout on {}. Investigate if there are"
                       " many of these".format(url))
