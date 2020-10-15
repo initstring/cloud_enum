@@ -289,7 +289,7 @@ def run_all(names, args):
     """
     print(BANNER)
 
-    #check_gcp_buckets(names, args.threads)
+    check_gcp_buckets(names, args.threads)
     check_fbrtdb(names, args.threads)
-    #check_appspot(names, args.threads)
-    #check_functions(names, args.brute, args.quickscan, args.threads)
+    check_appspot(names, args.threads)
+    check_functions(names, args.brute, args.quickscan, args.threads)
