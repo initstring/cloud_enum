@@ -79,6 +79,9 @@ def parse_arguments():
     parser.add_argument('--disable-gcp', action='store_true',
                         help='Disable Google checks.')
 
+    parser.add_argument('-qs', '--quickscan', action='store_true',
+                        help='Disable all mutations and second-level scans')
+
     args = parser.parse_args()
 
     # Ensure mutations file is readable
@@ -128,7 +131,10 @@ def print_status(args):
     Print a short pre-run status message
     """
     print("Keywords:    {}".format(', '.join(args.keyword)))
-    print("Mutations:   {}".format(args.mutations))
+    if args.quickscan:
+        print("Mutations:   NONE! (Using quickscan)")
+    else:
+        print("Mutations:   {}".format(args.mutations))
     print("Brute-list:  {}".format(args.brute))
     print("")
 
@@ -209,8 +215,11 @@ def main():
     # Give our Windows friends a chance at pretty colors
     check_windows()
 
-    # First, build a sort base list of target names
-    mutations = read_mutations(args.mutations)
+    # First, build a sorted base list of target names
+    if args.quickscan:
+        mutations = []
+    else:
+        mutations = read_mutations(args.mutations)
     names = build_names(args.keyword, mutations)
 
     # All the work is done in the individual modules

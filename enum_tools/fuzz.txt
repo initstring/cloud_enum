@@ -105,6 +105,7 @@ export
 files
 fileshare
 filestore
+firebase
 firestore
 functions
 gateway
@@ -182,6 +183,7 @@ qa
 repo
 reports
 resources
+rtdb
 s3
 saas
 screenshots
