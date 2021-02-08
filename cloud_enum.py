@@ -236,7 +236,7 @@ def main():
             aws_checks.run_all(names, args)
         if not args.disable_azure:
             azure_checks.run_all(names, args)
-        if not args.disable_gcp:         
+        if not args.disable_gcp:
             gcp_checks.run_all(names, args)
         if args.jsonfile :
             with open(args.jsonfile, 'a')  as log_writer:
@@ -251,5 +251,5 @@ def main():
     sys.exit()
 
 
-if __name__ == '__main__': 
+if __name__ == '__main__':
     main()
