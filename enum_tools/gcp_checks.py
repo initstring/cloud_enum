@@ -92,7 +92,6 @@ def print_fbrtdb_response(reply):
         utils.printc("    Payment required on Google Firebase RTDB: {}\n"
                      .format(reply.url), 'orange')
         settings.results["gcp"]["firebase"]["payment"].append(reply.url)
-
     else:
         print("    Unknown status codes being received from {}:\n"
               "       {}: {}"

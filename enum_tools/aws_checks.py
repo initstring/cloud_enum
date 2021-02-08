@@ -16,7 +16,6 @@ BANNER = '''
 S3_URL = 's3.amazonaws.com'
 APPS_URL = 'awsapps.com'
 
-
 # Known AWS region names. This global will be used unless the user passes
 # in a specific region name. (NOT YET IMPLEMENTED)
 AWS_REGIONS = ['amazonaws.com',
@@ -40,7 +39,6 @@ AWS_REGIONS = ['amazonaws.com',
                'eu-north-1.amazonaws.com',
                'sa-east-1.amazonaws.com']
 
-
 def print_s3_response(reply):
     """
     Parses the HTTP reply of a brute-force attempt
@@ -48,7 +46,6 @@ def print_s3_response(reply):
     This function is passed into the class object so we can view results
     in real-time.
     """
-
     if reply.status_code == 404:
         pass
     elif 'Bad Request' in reply.reason:
