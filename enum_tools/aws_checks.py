@@ -4,6 +4,7 @@ github.com/initstring/cloud_enum
 """
 
 from enum_tools import utils
+from enum_tools import settings
 
 BANNER = '''
 ++++++++++++++++++++++++++
@@ -14,6 +15,7 @@ BANNER = '''
 # Known S3 domain names
 S3_URL = 's3.amazonaws.com'
 APPS_URL = 'awsapps.com'
+
 
 # Known AWS region names. This global will be used unless the user passes
 # in a specific region name. (NOT YET IMPLEMENTED)
@@ -38,6 +40,7 @@ AWS_REGIONS = ['amazonaws.com',
                'eu-north-1.amazonaws.com',
                'sa-east-1.amazonaws.com']
 
+
 def print_s3_response(reply):
     """
     Parses the HTTP reply of a brute-force attempt
@@ -45,6 +48,7 @@ def print_s3_response(reply):
     This function is passed into the class object so we can view results
     in real-time.
     """
+
     if reply.status_code == 404:
         pass
     elif 'Bad Request' in reply.reason:
@@ -52,10 +56,14 @@ def print_s3_response(reply):
     elif reply.status_code == 200:
         utils.printc("    OPEN S3 BUCKET: {}\n"
                      .format(reply.url), 'green')
+        aws_s3["open"].append(reply.url)
+        settings.results["s3"]["open"].append(reply.url)
         utils.list_bucket_contents(reply.url)
     elif reply.status_code == 403:
         utils.printc("    Protected S3 Bucket: {}\n"
                      .format(reply.url), 'orange')
+        aws_s3["protected"].append(reply.url)
+        settings.results["s3"]["protected"].append(reply.url)
     elif 'Slow Down' in reply.reason:
         print("[!] You've been rate limited, skipping rest of check...")
         return 'breakout'
@@ -114,6 +122,7 @@ def check_awsapps(names, threads, nameserver):
 
     for name in valid_names:
         utils.printc("    App Found: https://{}\n" .format(name), 'orange')
+        settings.results["aws"]["apps"].append("https://{}".format(name))
 
     # Stop the timer
     utils.stop_timer(start_time)

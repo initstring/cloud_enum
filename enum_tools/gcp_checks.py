@@ -5,6 +5,7 @@ github.com/initstring/cloud_enum
 
 from enum_tools import utils
 from enum_tools import gcp_regions
+from enum_tools import settings
 
 BANNER = '''
 ++++++++++++++++++++++++++
@@ -34,10 +35,12 @@ def print_bucket_response(reply):
     elif reply.status_code == 200:
         utils.printc("    OPEN GOOGLE BUCKET: {}\n"
                      .format(reply.url), 'green')
+        settings.results["gcp"]["bucket"]["open"].append(reply.url)
         utils.list_bucket_contents(reply.url + '/')
     elif reply.status_code == 403:
         utils.printc("    Protected Google Bucket: {}\n"
                      .format(reply.url), 'orange')
+        settings.results["gcp"]["bucket"]["protected"].append(reply.url)
     else:
         print("    Unknown status codes being received from {}:\n"
               "       {}: {}"
@@ -79,12 +82,17 @@ def print_fbrtdb_response(reply):
     elif reply.status_code == 200:
         utils.printc("    OPEN GOOGLE FIREBASE RTDB: {}\n"
                      .format(reply.url), 'green')
+        settings.results["gcp"]["firebase"]["open"].append(reply.url)
     elif reply.status_code == 401:
         utils.printc("    Protected Google Firebase RTDB: {}\n"
                      .format(reply.url), 'orange')
+        settings.results["gcp"]["firebase"]["protected"].append(reply.url)
+        
     elif reply.status_code == 402:
         utils.printc("    Payment required on Google Firebase RTDB: {}\n"
                      .format(reply.url), 'orange')
+        settings.results["gcp"]["firebase"]["payment"].append(reply.url)
+
     else:
         print("    Unknown status codes being received from {}:\n"
               "       {}: {}"
@@ -130,11 +138,14 @@ def print_appspot_response(reply):
     elif str(reply.status_code)[0] == 5:
         utils.printc("    Google App Engine app with a 50x error: {}\n"
                      .format(reply.url), 'orange')
+        settings.results["gcp"]["appspot"]["error"].append(reply.url)
     elif (reply.status_code == 200
           or reply.status_code == 302
           or reply.status_code == 404):
         utils.printc("    Google App Engine app: {}\n"
                      .format(reply.url), 'green')
+        settings.results["gcp"]["appspot"]["open"].append(reply.url)
+
     else:
         print("    Unknown status codes being received from {}:\n"
               "       {}: {}"
@@ -197,12 +208,16 @@ def print_functions_response2(reply):
     elif reply.status_code == 403 or reply.status_code == 401:
         utils.printc("    Auth required Cloud Function: {}\n"
                      .format(reply.url), 'orange')
+        settings.results["gcp"]["function"]["authRequired"].append(reply.url)
+
     elif reply.status_code == 405:
         utils.printc("    UNAUTHENTICATED Cloud Function (POST-Only): {}\n"
                      .format(reply.url), 'green')
+        settings.results["gcp"]["function"]["open"]["post"].append(reply.url)
     elif reply.status_code == 200 or reply.status_code == 404:
         utils.printc("    UNAUTHENTICATED Cloud Function (GET-OK): {}\n"
                      .format(reply.url), 'green')
+        settings.results["gcp"]["function"]["open"]["get"].append(reply.url)
     else:
         print("    Unknown status codes being received from {}:\n"
               "       {}: {}"
