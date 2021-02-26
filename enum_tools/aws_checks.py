@@ -53,13 +53,11 @@ def print_s3_response(reply):
     elif reply.status_code == 200:
         utils.printc("    OPEN S3 BUCKET: {}\n"
                      .format(reply.url), 'green')
-        aws_s3["open"].append(reply.url)
         settings.results["s3"]["open"].append(reply.url)
         utils.list_bucket_contents(reply.url)
     elif reply.status_code == 403:
         utils.printc("    Protected S3 Bucket: {}\n"
                      .format(reply.url), 'orange')
-        aws_s3["protected"].append(reply.url)
         settings.results["s3"]["protected"].append(reply.url)
     elif 'Slow Down' in reply.reason:
         print("[!] You've been rate limited, skipping rest of check...")
