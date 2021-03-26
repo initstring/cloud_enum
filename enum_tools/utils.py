@@ -114,7 +114,7 @@ def dns_lookup(nameserver, name):
     res.nameservers = [nameserver]
 
     try:
-        res.query(name)
+        res.resolve(name)
         # If no exception is thrown, return the valid name
         return name
     except dns.resolver.NXDOMAIN:
