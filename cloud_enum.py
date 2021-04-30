@@ -239,7 +239,7 @@ def main():
         if not args.disable_gcp:
             gcp_checks.run_all(names, args)
         if args.jsonfile :
-            with open(args.jsonfile, 'a')  as log_writer:
+            with open(args.jsonfile, 'w')  as log_writer:
                 log_writer.write(json.dumps(settings.results))
                 
     except KeyboardInterrupt:
