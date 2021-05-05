@@ -53,11 +53,13 @@ HTTP scraping and DNS lookups use 5 threads each by default. You can try increas
 cloudenum.py -k keyword -t 10
 ```
 
+If you want to have json output you can use `-j` parameter tp specify json output file.
+
 **IMPORTANT**: Some resources (Azure Containers, GCP Functions) are discovered per-region. To save time scanning, there is a "REGIONS" variable defined in `cloudenum/azure_regions.py and cloudenum/gcp_regions.py` that is set by default to use only 1 region. You may want to look at these files and edit them to be relevant to your own work.
 
 **Complete Usage Details**
 ```
-usage: cloud_enum.py [-h] -k KEYWORD [-m MUTATIONS] [-b BRUTE]
+usage: cloud_enum.py [-h] (-k KEYWORD | -kf KEYFILE) [-m MUTATIONS] [-b BRUTE] [-t THREADS] [-ns NAMESERVER] [-l LOGFILE] [--disable-aws] [--disable-azure] [--disable-gcp] [-qs] [-j JSONFILE]
 
 Multi-cloud enumeration utility. All hail OSINT!
 
@@ -70,8 +72,7 @@ optional arguments:
   -m MUTATIONS, --mutations MUTATIONS
                         Mutations. Default: enum_tools/fuzz.txt
   -b BRUTE, --brute BRUTE
-                        List to brute-force Azure container names. Default:
-                        enum_tools/fuzz.txt
+                        List to brute-force Azure container names. Default: enum_tools/fuzz.txt
   -t THREADS, --threads THREADS
                         Threads for HTTP brute-force. Default = 5
   -ns NAMESERVER, --nameserver NAMESERVER
@@ -82,7 +83,8 @@ optional arguments:
   --disable-azure       Disable Azure checks.
   --disable-gcp         Disable Google checks.
   -qs, --quickscan      Disable all mutations and second-level scans
-
+  -j JSONFILE, --jsonfile JSONFILE
+                        JSON output file
 ```
 
 # Thanks

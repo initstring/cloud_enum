@@ -7,6 +7,7 @@ import re
 import requests
 from enum_tools import utils
 from enum_tools import azure_regions
+from enum_tools import settings
 
 BANNER = '''
 ++++++++++++++++++++++++++
@@ -187,6 +188,7 @@ def print_website_response(hostname):
     """
     utils.printc("    Registered Azure Website DNS Name: {}\n"
                  .format(hostname), 'green')
+    settings.results["azure"]["websites"].append(hostname)
 
 def check_azure_websites(names, nameserver, threads):
     """
@@ -215,6 +217,7 @@ def print_database_response(hostname):
     """
     utils.printc("    Registered Azure Database DNS Name: {}\n"
                  .format(hostname), 'green')
+    settings.results["azure"]["databases"].append(hostname)
 
 def check_azure_databases(names, nameserver, threads):
     """
@@ -243,6 +246,7 @@ def print_vm_response(hostname):
     """
     utils.printc("    Registered Azure Virtual Machine DNS Name: {}\n"
                  .format(hostname), 'green')
+    settings.results["azure"]["vms"].append(hostname)
 
 def check_azure_vms(names, nameserver, threads):
     """

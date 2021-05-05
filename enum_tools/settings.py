@@ -1,0 +1,27 @@
+results = {}
+def init():
+    results["aws"] = {}
+    results["aws"]["s3"] = {}
+    results["aws"]["s3"]["open"] = []
+    results["aws"]["s3"]["protected"] = []
+    results["aws"]["apps"] = []
+    results["azure"] = {}
+    results["azure"]["websites"] = []
+    results["azure"]["databases"] = []
+    results["azure"]["vms"] = []
+    results["gcp"] = {}
+    results["gcp"]["bucket"] = {}
+    results["gcp"]["bucket"]["open"] = []
+    results["gcp"]["bucket"]["protected"] = []
+    results["gcp"]["firebase"] = {}
+    results["gcp"]["firebase"]["open"] = []
+    results["gcp"]["firebase"]["protected"] = []
+    results["gcp"]["firebase"]["payment"] = []
+    results["gcp"]["appspot"] = {}
+    results["gcp"]["appspot"]["error"] = []
+    results["gcp"]["appspot"]["open"] = []
+    results["gcp"]["function"] = {}
+    results["gcp"]["function"]["authRequired"] = []
+    results["gcp"]["function"]["open"] = {}
+    results["gcp"]["function"]["open"]["get"] = []
+    results["gcp"]["function"]["open"]["post"] = []
