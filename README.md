@@ -1,3 +1,5 @@
+[![Docker Image CI](https://github.com/salaheldinaz/cloud_enum/actions/workflows/docker-image.yml/badge.svg)](https://github.com/salaheldinaz/cloud_enum/actions/workflows/docker-image.yml)
+
 # cloud_enum
 Multi-cloud OSINT tool. Enumerate public resources in AWS, Azure, and Google Cloud.
 
