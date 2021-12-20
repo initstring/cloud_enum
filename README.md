@@ -28,7 +28,6 @@ See it in action in [Codingo](https://github.com/codingo)'s video demo [here](ht
 # Usage
 
 ## Setup
-
 ### Using Python
 Several non-standard libaries are required to support threaded HTTP requests and dns lookups. You'll need to install the requirements as follows:
 ```shell
@@ -36,7 +35,6 @@ pip3 install -r ./requirements.txt
 ```
 
 ### Using Docker
-
 Build the tool image
 ```shell
 docker build -t cloud_enum .
