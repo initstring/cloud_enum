@@ -14,19 +14,22 @@ jobs:
 
     steps:
       -
+        name: Checkout 
+        uses: actions/checkout@v2
+      -
         name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
       -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      -
         name: Build and push
         uses: docker/build-push-action@v2
         with:
-          context: ./
+          context: .
           file: ./Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/cloud_enum:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/cloud_enum:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/cloud_enum:buildcache,mode=max
