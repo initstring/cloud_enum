@@ -3,8 +3,8 @@
 # cloud_enum
 Multi-cloud OSINT tool. Enumerate public resources in AWS, Azure, and Google Cloud.
 
-Currently enumerates the following:
 
+Currently enumerates the following:
 **Amazon Web Services**:
 - Open / Protected S3 Buckets
 - awsapps (WorkMail, WorkDocs, Connect, etc.)
