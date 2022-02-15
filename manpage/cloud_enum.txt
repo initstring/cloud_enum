@@ -1,0 +1,53 @@
+NAME
+  cloud_enum - enumerates public resources matching user requested keyword
+
+SYNOPSIS
+  cloud_enum [OPTIONS] [ARGS] ...
+
+DESCRIPTION
+  Multi-cloud OSINT tool. Enumerate public resources in AWS, Azure, and Google Cloud.
+  Currently enumerates the following:
+
+    Amazon Web Services:
+     Open / Protected S3 Buckets
+     awsapps (WorkMail, WorkDocs, Connect, etc.)
+
+    Microsoft Azure:
+     Storage Accounts
+     Open Blob Storage Containers
+     Hosted Databases
+     Virtual Machines
+     Web Apps
+
+    Google Cloud Platform
+     Open / Protected GCP Buckets
+     Open / Protected Firebase Realtime Databases
+     Google App Engine sites
+     Cloud Functions (enumerates project/regions with existing functions, then brute forces actual function names)
+
+OPTIONS
+  -h, --help                                Show this help message and exit.
+  -k KEYWORD, --keyword KEYWORD             Keyword. Can use argument multiple times.
+  -kf KEYFILE, --keyfile KEYFILE            Input file with a single keyword per line.
+  -m MUTATIONS, --mutations MUTATIONS       Mutations. Default: /usr/lib/cloud-enum/enum_tools/fuzz.txt.
+  -b BRUTE, --brute BRUTE                   List to brute-force Azure container names. Default: /usr/lib/cloud-enum/enum_tools/fuzz.txt.
+  -t THREADS, --threads THREADS             Threads for HTTP brute-force. Default = 5.
+  -ns NAMESERVER, --nameserver NAMESERVER   DNS server to use in brute-force.
+  -l LOGFILE, --logfile LOGFILE             Will APPEND found items to specified file.
+  --disable-aws                             Disable Amazon checks.
+  --disable-azure                           Disable Azure checks.
+  --disable-gcp                             Disable Google checks.
+  -qs, --quickscan                          Disable all mutations and second-level scan.
+
+EXAMPLES
+  cloud_enum -k keyword
+
+  cloud_enum -k keyword -t 10
+
+  cloud_enum -k somecompany -k somecompany.io -k blockchaindoohickey
+
+AUTHOR
+  Written by initstring <initstring@protonmail.com>
+
+  This manual page was written by Guilherme de Paula Xavier Segundo
+  <guilherme.lnx@gmail.com> for the Debian project (but may be used by others).
