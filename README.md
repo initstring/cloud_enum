@@ -70,19 +70,19 @@ optional arguments:
   -m MUTATIONS, --mutations MUTATIONS
                         Mutations. Default: enum_tools/fuzz.txt
   -b BRUTE, --brute BRUTE
-                        List to brute-force Azure container names. Default:
-                        enum_tools/fuzz.txt
+                        List to brute-force Azure container names. Default: enum_tools/fuzz.txt
   -t THREADS, --threads THREADS
                         Threads for HTTP brute-force. Default = 5
   -ns NAMESERVER, --nameserver NAMESERVER
                         DNS server to use in brute-force.
   -l LOGFILE, --logfile LOGFILE
                         Will APPEND found items to specified file.
+  -f FORMAT, --format FORMAT
+                        Format for log file (json or csv, defaults to json)
   --disable-aws         Disable Amazon checks.
   --disable-azure       Disable Azure checks.
   --disable-gcp         Disable Google checks.
   -qs, --quickscan      Disable all mutations and second-level scans
-
 ```
 
 # Thanks

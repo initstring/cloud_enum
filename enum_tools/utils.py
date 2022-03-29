@@ -22,14 +22,18 @@ except ImportError:
     sys.exit()
 
 LOGFILE = False
+LOGFILE_FMT = ''
 
-def init_logfile(logfile):
+def init_logfile(logfile, format):
     """
     Initialize the global logfile if specified as a user-supplied argument
     """
     if logfile:
         global LOGFILE
         LOGFILE = logfile
+
+        global LOGFILE_FMT
+        LOGFILE_FMT = format
 
         now = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         with open(logfile, 'a') as log_writer:
@@ -191,7 +195,7 @@ def list_bucket_contents(bucket):
     else:
         print("      ...empty bucket, so sad. :(")
 
-def fmt_output(data, color='', format='json'):
+def fmt_output(data, color=''):
     """
     Handles the output - printing and logging based on a specified format
 
@@ -216,10 +220,10 @@ def fmt_output(data, color='', format='json'):
 
     if LOGFILE:
         with open(LOGFILE, 'a')  as log_writer:
-            if format == 'csv':
+            if LOGFILE_FMT == 'csv':
                 w = csv.DictWriter(log_writer, data.keys())
                 w.writerow(data)
-            if format == 'json':
+            if LOGFILE_FMT == 'json':
                 log_writer.write(json.dumps(data) + '\n')
 
 
