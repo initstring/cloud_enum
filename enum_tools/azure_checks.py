@@ -31,20 +31,26 @@ def print_account_response(reply):
     This function is passed into the class object so we can view results
     in real-time.
     """
+    data = {'platform': 'azure', 'msg': '', 'target': ''}
+
     if reply.status_code == 404:
         pass
     elif 'Server failed to authenticate the request' in reply.reason:
-        utils.printc("    Auth-Only Storage Account: {}\n"
-                     .format(reply.url), 'red')
+        data['msg'] = 'Auth-Only Storage Account'
+        data['target'] = reply.url
+        utils.fmt_output(data, 'red')
     elif 'The specified account is disabled' in reply.reason:
-        utils.printc("    Disabled Storage Account: {}\n"
-                     .format(reply.url), 'red')
+        data['msg'] = 'Disabled Storage Account'
+        data['target'] = reply.url
+        utils.fmt_output(data, 'red')
     elif 'Value for one of the query' in reply.reason:
-        utils.printc("    HTTP-OK Storage Account: {}\n"
-                     .format(reply.url), 'orange')
+        data['msg'] = 'HTTP-OK Storage Account'
+        data['target'] = reply.url
+        utils.fmt_output(data, 'orange')
     elif 'The account being accessed' in reply.reason:
-        utils.printc("    HTTPS-Only Storage Account: {}\n"
-                     .format(reply.url), 'orange')
+        data['msg'] = 'HTTPS-Only Storage Account'
+        data['target'] = reply.url
+        utils.fmt_output(data, 'orange')
     else:
         print("    Unknown status codes being received from {}:\n"
               "       {}: {}"
@@ -95,6 +101,8 @@ def print_container_response(reply):
     This function is passed into the class object so we can view results
     in real-time.
     """
+    data = {'platform': 'azure', 'msg': '', 'target': ''}
+
     # Stop brute forcing disabled accounts
     if 'The specified account is disabled' in reply.reason:
         print("    [!] Breaking out early, account disabled.")
@@ -117,8 +125,9 @@ def print_container_response(reply):
     if reply.status_code == 404:
         pass
     elif reply.status_code == 200:
-        utils.printc("    OPEN AZURE CONTAINER: {}\n"
-                     .format(reply.url), 'green')
+        data['msg'] = 'OPEN AZURE CONTAINER'
+        data['target'] = reply.url
+        utils.fmt_output(data, 'green')
         utils.list_bucket_contents(reply.url)
     elif 'One of the request inputs is out of range' in reply.reason:
         pass
@@ -185,8 +194,11 @@ def print_website_response(hostname):
     This function is passed into the DNS brute force as a callback,
     so we can get real-time results.
     """
-    utils.printc("    Registered Azure Website DNS Name: {}\n"
-                 .format(hostname), 'green')
+    data = {'platform': 'azure', 'msg': '', 'target': ''}
+
+    data['msg'] = 'Registered Azure Website DNS Name'
+    data['target'] = hostname
+    utils.fmt_output(data, 'green')
 
 def check_azure_websites(names, nameserver, threads):
     """
@@ -213,8 +225,11 @@ def print_database_response(hostname):
     This function is passed into the DNS brute force as a callback,
     so we can get real-time results.
     """
-    utils.printc("    Registered Azure Database DNS Name: {}\n"
-                 .format(hostname), 'green')
+    data = {'platform': 'azure', 'msg': '', 'target': ''}
+
+    data['msg'] = 'Registered Azure Database DNS Name'
+    data['target'] = hostname
+    utils.fmt_output(data, 'green')
 
 def check_azure_databases(names, nameserver, threads):
     """
@@ -241,8 +256,11 @@ def print_vm_response(hostname):
     This function is passed into the DNS brute force as a callback,
     so we can get real-time results.
     """
-    utils.printc("    Registered Azure Virtual Machine DNS Name: {}\n"
-                 .format(hostname), 'green')
+    data = {'platform': 'azure', 'msg': '', 'target': ''}
+
+    data['msg'] = 'Registered Azure Virtual Machine DNS Name'
+    data['target'] = hostname
+    utils.fmt_output(data, 'green')
 
 def check_azure_vms(names, nameserver, threads):
     """

@@ -45,17 +45,21 @@ def print_s3_response(reply):
     This function is passed into the class object so we can view results
     in real-time.
     """
+    data = {'platform': 'aws', 'msg': '', 'target': ''}
+
     if reply.status_code == 404:
         pass
     elif 'Bad Request' in reply.reason:
         pass
     elif reply.status_code == 200:
-        utils.printc("    OPEN S3 BUCKET: {}\n"
-                     .format(reply.url), 'green')
+        data['msg'] = 'OPEN S3 BUCKET'
+        data['target'] = reply.url
+        utils.fmt_output(data, 'green')
         utils.list_bucket_contents(reply.url)
     elif reply.status_code == 403:
-        utils.printc("    Protected S3 Bucket: {}\n"
-                     .format(reply.url), 'orange')
+        data['msg'] = 'Protected S3 Bucket'
+        data['target'] = reply.url
+        utils.fmt_output(data, 'orange')
     elif 'Slow Down' in reply.reason:
         print("[!] You've been rate limited, skipping rest of check...")
         return 'breakout'
@@ -93,6 +97,8 @@ def check_awsapps(names, threads, nameserver):
     Checks for existence of AWS Apps
     (ie. WorkDocs, WorkMail, Connect, etc.)
     """
+    data = {'platform': 'aws', 'msg': 'AWS App Found:', 'target': ''}
+
     print("[+] Checking for AWS Apps")
 
     # Start a counter to report on elapsed time
@@ -113,7 +119,8 @@ def check_awsapps(names, threads, nameserver):
                                         threads=threads)
 
     for name in valid_names:
-        utils.printc("    App Found: https://{}\n" .format(name), 'orange')
+        data['target'] = f'https://{name}'
+        utils.fmt_output(data, 'orange')
 
     # Stop the timer
     utils.stop_timer(start_time)

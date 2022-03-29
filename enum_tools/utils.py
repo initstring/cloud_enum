@@ -6,6 +6,8 @@ import time
 import sys
 import datetime
 import re
+import csv
+import json
 from multiprocessing.dummy import Pool as ThreadPool
 from functools import partial
 try:
@@ -182,38 +184,44 @@ def list_bucket_contents(bucket):
 
     # Format them to full URLs and print to console
     if keys:
-        printc("      FILES:\n", 'none')
+        print("      FILES:")
         for key in keys:
             url = bucket + key
-            printc("      ->{}\n".format(url), 'none')
+            print(f"      ->{url}")
     else:
-        printc("      ...empty bucket, so sad. :(\n", 'none')
+        print("      ...empty bucket, so sad. :(")
 
-def printc(text, color):
+def fmt_output(data, color='', format='json'):
     """
-    Prints colored text to screen
+    Handles the output - printing and logging based on a specified format
+
+    Optionally, the caller can specify a color for pretty printing.
     """
     # ANSI escape sequences
-    green = '\033[92m'
-    orange = '\033[33m'
-    red = '\033[31m'
     bold = '\033[1m'
-    end = '\033[0m'
-
+    ansi = ''
+    end = ''
+    if color:
+        end = '\033[0m'
     if color == 'orange':
-        sys.stdout.write(bold + orange + text + end)
+        ansi = bold + '\033[33m'
     if color == 'green':
-        sys.stdout.write(bold + green + text + end)
-    if color == 'red':
-        sys.stdout.write(bold + red + text + end)
+        ansi = bold + '\033[92m'
+    if color == bold + 'red':
+        ansi = bold + '\033[31m'
     if color == 'black':
-        sys.stdout.write(bold + text + end)
-    if color == 'none':
-        sys.stdout.write(text)
+        ansi = 'bold + '
+
+    sys.stdout.write('  ' + ansi + data['msg'] + ': ' + data['target'] + end + '\n')
 
     if LOGFILE:
         with open(LOGFILE, 'a')  as log_writer:
-            log_writer.write(text.lstrip())
+            if format == 'csv':
+                w = csv.DictWriter(log_writer, data.keys())
+                w.writerow(data)
+            if format == 'json':
+                log_writer.write(json.dumps(data) + '\n')
+
 
 def get_brute(brute_file, mini=1, maxi=63, banned='[^a-z0-9_-]'):
     """

@@ -29,15 +29,19 @@ def print_bucket_response(reply):
     This function is passed into the class object so we can view results
     in real-time.
     """
+    data = {'platform': 'gcp', 'msg': '', 'target': ''}
+
     if reply.status_code == 404:
         pass
     elif reply.status_code == 200:
-        utils.printc("    OPEN GOOGLE BUCKET: {}\n"
-                     .format(reply.url), 'green')
+        data['msg'] = 'OPEN GOOGLE BUCKET'
+        data['target'] = reply.url
+        utils.fmt_output(data, 'green')
         utils.list_bucket_contents(reply.url + '/')
     elif reply.status_code == 403:
-        utils.printc("    Protected Google Bucket: {}\n"
-                     .format(reply.url), 'orange')
+        data['msg'] = 'Protected Google Bucket'
+        data['target'] = reply.url
+        utils.fmt_output(data, 'orange')
     else:
         print("    Unknown status codes being received from {}:\n"
               "       {}: {}"
@@ -74,17 +78,22 @@ def print_fbrtdb_response(reply):
     This function is passed into the class object so we can view results
     in real-time.
     """
+    data = {'platform': 'gcp', 'msg': '', 'target': ''}
+
     if reply.status_code == 404:
         pass
     elif reply.status_code == 200:
-        utils.printc("    OPEN GOOGLE FIREBASE RTDB: {}\n"
-                     .format(reply.url), 'green')
+        data['msg'] = 'OPEN GOOGLE FIREBASE RTDB'
+        data['target'] = reply.url
+        utils.fmt_output(data, 'green')
     elif reply.status_code == 401:
-        utils.printc("    Protected Google Firebase RTDB: {}\n"
-                     .format(reply.url), 'orange')
+        data['msg'] = 'Protected Google Firebase RTDB'
+        data['target'] = reply.url
+        utils.fmt_output(data, 'orange')
     elif reply.status_code == 402:
-        utils.printc("    Payment required on Google Firebase RTDB: {}\n"
-                     .format(reply.url), 'orange')
+        data['msg'] = 'Payment required on Google Firebase RTDB'
+        data['target'] = reply.url
+        utils.fmt_output(data, 'orange')
     else:
         print("    Unknown status codes being received from {}:\n"
               "       {}: {}"
@@ -125,16 +134,20 @@ def print_appspot_response(reply):
     This function is passed into the class object so we can view results
     in real-time.
     """
+    data = {'platform': 'gcp', 'msg': '', 'target': ''}
+
     if reply.status_code == 404:
         pass
     elif str(reply.status_code)[0] == 5:
-        utils.printc("    Google App Engine app with a 50x error: {}\n"
-                     .format(reply.url), 'orange')
+        data['msg'] = 'Google App Engine app with a 50x error'
+        data['target'] = reply.url
+        utils.fmt_output(data, 'orange')
     elif (reply.status_code == 200
           or reply.status_code == 302
           or reply.status_code == 404):
-        utils.printc("    Google App Engine app: {}\n"
-                     .format(reply.url), 'green')
+        data['msg'] = 'Google App Engine app'
+        data['target'] = reply.url
+        utils.fmt_output(data, 'green')
     else:
         print("    Unknown status codes being received from {}:\n"
               "       {}: {}"
@@ -174,11 +187,14 @@ def print_functions_response1(reply):
     This function is passed into the class object so we can view results
     in real-time.
     """
+    data = {'platform': 'gcp', 'msg': '', 'target': ''}
+
     if reply.status_code == 404:
         pass
     elif reply.status_code == 302:
-        utils.printc("    Contains at least 1 Cloud Function: {}\n"
-                     .format(reply.url), 'green')
+        data['msg'] = 'Contains at least 1 Cloud Function'
+        data['target'] = reply.url
+        utils.fmt_output(data, 'green')
         HAS_FUNCS.append(reply.url)
     else:
         print("    Unknown status codes being received from {}:\n"
@@ -192,17 +208,22 @@ def print_functions_response2(reply):
     This function is passed into the class object so we can view results
     in real-time.
     """
+    data = {'platform': 'gcp', 'msg': '', 'target': ''}
+
     if 'accounts.google.com/ServiceLogin' in reply.url:
         pass
     elif reply.status_code == 403 or reply.status_code == 401:
-        utils.printc("    Auth required Cloud Function: {}\n"
-                     .format(reply.url), 'orange')
+        data['msg'] = 'Auth required Cloud Function'
+        data['target'] = reply.url
+        utils.fmt_output(data, 'orange')
     elif reply.status_code == 405:
-        utils.printc("    UNAUTHENTICATED Cloud Function (POST-Only): {}\n"
-                     .format(reply.url), 'green')
+        data['msg'] = 'UNAUTHENTICATED Cloud Function (POST-Only)'
+        data['target'] = reply.url
+        utils.fmt_output(data, 'green')
     elif reply.status_code == 200 or reply.status_code == 404:
-        utils.printc("    UNAUTHENTICATED Cloud Function (GET-OK): {}\n"
-                     .format(reply.url), 'green')
+        data['msg'] = 'UNAUTHENTICATED Cloud Function (GET-OK)'
+        data['target'] = reply.url
+        utils.fmt_output(data, 'green')
     else:
         print("    Unknown status codes being received from {}:\n"
               "       {}: {}"
