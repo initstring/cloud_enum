@@ -45,9 +45,8 @@ def print_bucket_response(reply):
         data['access'] = 'protected'
         utils.fmt_output(data)
     else:
-        print("    Unknown status codes being received from {}:\n"
-              "       {}: {}"
-              .format(reply.url, reply.status_code, reply.reason))
+        print(f"    Unknown status codes being received from {reply.url}:\n"
+              "       {reply.status_code}: {reply.reason}")
 
 def check_gcp_buckets(names, threads):
     """
@@ -63,7 +62,7 @@ def check_gcp_buckets(names, threads):
 
     # Take each mutated keyword craft a url with the correct format
     for name in names:
-        candidates.append('{}/{}'.format(GCP_URL, name))
+        candidates.append(f'{GCP_URL}/{name}')
 
     # Send the valid names to the batch HTTP processor
     utils.get_url_batch(candidates, use_ssl=False,
@@ -100,9 +99,8 @@ def print_fbrtdb_response(reply):
         data['access'] = 'disabled'
         utils.fmt_output(data)
     else:
-        print("    Unknown status codes being received from {}:\n"
-              "       {}: {}"
-              .format(reply.url, reply.status_code, reply.reason))
+        print(f"    Unknown status codes being received from {reply.url}:\n"
+              "       {reply.status_code}: {reply.reason}")
 
 def check_fbrtdb(names, threads):
     """
@@ -121,7 +119,7 @@ def check_fbrtdb(names, threads):
         # Firebase RTDB names cannot include a period. We'll exlcude
         # those from the global candidates list
         if '.' not in name:
-            candidates.append('{}.{}/.json'.format(name, FBRTDB_URL))
+            candidates.append(f'{name}.{FBRTDB_URL}/.json')
 
     # Send the valid names to the batch HTTP processor
     utils.get_url_batch(candidates, use_ssl=True,
@@ -148,17 +146,14 @@ def print_appspot_response(reply):
         data['target'] = reply.url
         data['access'] = 'public'
         utils.fmt_output(data)
-    elif (reply.status_code == 200
-          or reply.status_code == 302
-          or reply.status_code == 404):
+    elif reply.status_code in (200, 302, 404):
         data['msg'] = 'Google App Engine app'
         data['target'] = reply.url
         data['access'] = 'public'
         utils.fmt_output(data)
     else:
-        print("    Unknown status codes being received from {}:\n"
-              "       {}: {}"
-              .format(reply.url, reply.status_code, reply.reason))
+        print(f"    Unknown status codes being received from {reply.url}:\n"
+              "       {reply.status_code}: {reply.reason}")
 
 def check_appspot(names, threads):
     """
@@ -177,7 +172,7 @@ def check_appspot(names, threads):
         # App Engine project names cannot include a period. We'll exlcude
         # those from the global candidates list
         if '.' not in name:
-            candidates.append('{}.{}'.format(name, APPSPOT_URL))
+            candidates.append(f'{name}.{APPSPOT_URL}')
 
     # Send the valid names to the batch HTTP processor
     utils.get_url_batch(candidates, use_ssl=False,
@@ -205,9 +200,8 @@ def print_functions_response1(reply):
         utils.fmt_output(data)
         HAS_FUNCS.append(reply.url)
     else:
-        print("    Unknown status codes being received from {}:\n"
-              "       {}: {}"
-              .format(reply.url, reply.status_code, reply.reason))
+        print(f"    Unknown status codes being received from {reply.url}:\n"
+              "       {reply.status_code}: {reply.reason}")
 
 def print_functions_response2(reply):
     """
@@ -220,7 +214,7 @@ def print_functions_response2(reply):
 
     if 'accounts.google.com/ServiceLogin' in reply.url:
         pass
-    elif reply.status_code == 403 or reply.status_code == 401:
+    elif reply.status_code in (403, 401):
         data['msg'] = 'Auth required Cloud Function'
         data['target'] = reply.url
         data['access'] = 'protected'
@@ -230,15 +224,14 @@ def print_functions_response2(reply):
         data['target'] = reply.url
         data['access'] = 'public'
         utils.fmt_output(data)
-    elif reply.status_code == 200 or reply.status_code == 404:
+    elif reply.status_code in (200, 404):
         data['msg'] = 'UNAUTHENTICATED Cloud Function (GET-OK)'
         data['target'] = reply.url
         data['access'] = 'public'
         utils.fmt_output(data)
     else:
-        print("    Unknown status codes being received from {}:\n"
-              "       {}: {}"
-              .format(reply.url, reply.status_code, reply.reason))
+        print(f"    Unknown status codes being received from {reply.url}:\n"
+              "       {reply.status_code}: {reply.reason}")
 
 def check_functions(names, brute_list, quickscan, threads):
     """
@@ -263,8 +256,7 @@ def check_functions(names, brute_list, quickscan, threads):
     # Pull the regions from a config file
     regions = gcp_regions.REGIONS
 
-    print("[*] Testing across {} regions defined in the config file"
-          .format(len(regions)))
+    print(f"[*] Testing across {len(regions)} regions defined in the config file")
 
     for region in regions:
         # Initialize the list of initial URLs to check
@@ -287,8 +279,7 @@ def check_functions(names, brute_list, quickscan, threads):
 
     # If we did find something, we'll use the brute list. This will allow people
     # to provide a separate fuzzing list if they choose.
-    print("[*] Brute-forcing function names in {} project/region combos"
-          .format(len(HAS_FUNCS)))
+    print(f"[*] Brute-forcing function names in {len(HAS_FUNCS)} project/region combos")
 
     # Load brute list in memory, based on allowed chars/etc
     brute_strings = utils.get_brute(brute_list)
@@ -296,8 +287,7 @@ def check_functions(names, brute_list, quickscan, threads):
     # The global was built in a previous function. We only want to brute force
     # project/region combos that we know have existing functions defined
     for func in HAS_FUNCS:
-        print("[*] Brute-forcing {} function names in {}"
-              .format(len(brute_strings), func))
+        print(f"[*] Brute-forcing {len(brute_strings)} function names in {func}")
         # Initialize the list of initial URLs to check. Strip out the HTTP
         # protocol first, as that is handled in the utility
         func = func.replace("http://", "")

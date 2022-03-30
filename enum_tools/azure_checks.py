@@ -56,9 +56,8 @@ def print_account_response(reply):
         data['access'] = 'public'
         utils.fmt_output(data)
     else:
-        print("    Unknown status codes being received from {}:\n"
-              "       {}: {}"
-              .format(reply.url, reply.status_code, reply.reason))
+        print("    Unknown status codes being received from {reply.url}:\n"
+              "       {reply.status_code}: {reply.reason}")
 
 def check_storage_accounts(names, threads, nameserver):
     """
@@ -81,7 +80,7 @@ def check_storage_accounts(names, threads, nameserver):
     regex = re.compile('[^a-zA-Z0-9]')
     for name in names:
         if not re.search(regex, name):
-            candidates.append('{}.{}'.format(name, BLOB_URL))
+            candidates.append(f'{name}.{BLOB_URL}')
 
     # Azure Storage Accounts use DNS sub-domains. First, see which are valid.
     valid_names = utils.fast_dns_lookup(candidates, nameserver,
@@ -139,9 +138,8 @@ def print_container_response(reply):
     elif 'The request URI is invalid' in reply.reason:
         pass
     else:
-        print("    Unknown status codes being received from {}:\n"
-              "       {}: {}"
-              .format(reply.url, reply.status_code, reply.reason))
+        print(f"    Unknown status codes being received from {reply.url}:\n"
+              "       {reply.status_code}: {reply.reason}")
 
 def brute_force_containers(storage_accounts, brute_list, threads):
     """
@@ -154,11 +152,10 @@ def brute_force_containers(storage_accounts, brute_list, threads):
     # We have a list of valid DNS names that might not be worth scraping,
     # such as disabled accounts or authentication required. Let's quickly
     # weed those out.
-    print("[*] Checking {} accounts for status before brute-forcing"
-          .format(len(storage_accounts)))
+    print(f"[*] Checking {len(storage_accounts)} accounts for status before brute-forcing")
     valid_accounts = []
     for account in storage_accounts:
-        reply = requests.get('https://{}/'.format(account))
+        reply = requests.get(f'https://{account}/')
         if 'Server failed to authenticate the request' in reply.reason:
             storage_accounts.remove(account)
         elif 'The specified account is disabled' in reply.reason:
@@ -172,19 +169,16 @@ def brute_force_containers(storage_accounts, brute_list, threads):
     # Start a counter to report on elapsed time
     start_time = utils.start_timer()
 
-    print("[*] Brute-forcing container names in {} storage accounts"
-          .format(len(valid_accounts)))
+    print(f"[*] Brute-forcing container names in {len(valid_accounts)} storage accounts")
     for account in valid_accounts:
-        print("[*] Brute-forcing {} container names in {}"
-              .format(len(clean_names), account))
+        print(f"[*] Brute-forcing {len(clean_names)} container names in {account}")
 
         # Initialize the list of correctly formatted urls
         candidates = []
 
         # Take each mutated keyword and craft a url with correct format
         for name in clean_names:
-            candidates.append('{}/{}/?restype=container&comp=list'
-                              .format(account, name))
+            candidates.append(f'{account}/{name}/?restype=container&comp=list')
 
         # Send the valid names to the batch HTTP processor
         utils.get_url_batch(candidates, use_ssl=True,
@@ -282,8 +276,7 @@ def check_azure_vms(names, nameserver, threads):
     # Pull the regions from a config file
     regions = azure_regions.REGIONS
 
-    print("[*] Testing across {} regions defined in the config file"
-          .format(len(regions)))
+    print(f"[*] Testing across {len(regions)} regions defined in the config file")
 
     for region in regions:
 

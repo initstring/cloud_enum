@@ -37,8 +37,7 @@ def init_logfile(logfile, format):
 
         now = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         with open(logfile, 'a') as log_writer:
-            log_writer.write("\n\n#### CLOUD_ENUM {} ####\n"
-                             .format(now))
+            log_writer.write(f"\n\n#### CLOUD_ENUM {now} ####\n")
 
 def get_url_batch(url_list, use_ssl=False, callback='', threads=5, redir=True):
     """
@@ -86,11 +85,11 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5, redir=True):
                 # hanging forever with no exception raised.
                 batch_results[url] = batch_pending[url].result(timeout=30)
             except requests.exceptions.ConnectionError as error_msg:
-                print("    [!] Connection error on {}:".format(url))
+                print(f"    [!] Connection error on {url}:")
                 print(error_msg)
             except TimeoutError:
-                print("    [!] Timeout on {}. Investigate if there are"
-                      " many of these".format(url))
+                print(f"    [!] Timeout on {url}. Investigate if there are"
+                      " many of these")
 
         # Now, send all the results to the callback function for analysis
         # We need a way to stop processing unnecessary brute-forces, so the
@@ -103,8 +102,7 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5, redir=True):
         # Refresh a status message
         tick['current'] += threads
         sys.stdout.flush()
-        sys.stdout.write("    {}/{} complete..."
-                         .format(tick['current'], tick['total']))
+        sys.stdout.write(f"    {tick['current']}/{tick['total']} complete...")
         sys.stdout.write('\r')
 
     # Clear the status message
@@ -126,8 +124,8 @@ def dns_lookup(nameserver, name):
     except dns.resolver.NXDOMAIN:
         return ''
     except dns.exception.Timeout:
-        print("    [!] DNS Timeout on {}. Investigate if there are many"
-              " of these.".format(name))
+        print("    [!] DNS Timeout on {name}. Investigate if there are many"
+              " of these.")
 
 def fast_dns_lookup(names, nameserver, callback='', threads=5):
     """
@@ -137,7 +135,7 @@ def fast_dns_lookup(names, nameserver, callback='', threads=5):
     current = 0
     valid_names = []
 
-    print("[*] Brute-forcing a list of {} possible DNS names".format(total))
+    print("[*] Brute-forcing a list of {total} possible DNS names")
 
     # Break the url list into smaller lists based on thread size
     queue = [names[x:x+threads] for x in range(0, len(names), threads)]
@@ -162,7 +160,7 @@ def fast_dns_lookup(names, nameserver, callback='', threads=5):
 
         # Update the status message
         sys.stdout.flush()
-        sys.stdout.write("    {}/{} complete...".format(current, total))
+        sys.stdout.write(f"    {current}/{total} complete...")
         sys.stdout.write('\r')
         pool.close()
 
@@ -259,5 +257,5 @@ def stop_timer(start_time):
 
     # Print some statistics
     print("")
-    print(" Elapsed time: {}".format(formatted_time))
+    print(f" Elapsed time: {formatted_time}")
     print("")

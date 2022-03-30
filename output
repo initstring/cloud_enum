@@ -39,3 +39,21 @@
 {"platform": "aws", "msg": "Protected S3 Bucket", "target": "http://test.2.s3.amazonaws.com/", "access": "protected"}
 {"platform": "aws", "msg": "Protected S3 Bucket", "target": "http://test-2.s3.amazonaws.com/", "access": "protected"}
 {"platform": "aws", "msg": "Protected S3 Bucket", "target": "http://2test.s3.amazonaws.com/", "access": "protected"}
+
+
+#### CLOUD_ENUM 30/03/2022 22:44:12 ####
+{"platform": "aws", "msg": "Protected S3 Bucket", "target": "http://test.s3.amazonaws.com/", "access": "protected"}
+{"platform": "aws", "msg": "Protected S3 Bucket", "target": "http://test0.s3.amazonaws.com/", "access": "protected"}
+{"platform": "aws", "msg": "Protected S3 Bucket", "target": "http://test-0.s3.amazonaws.com/", "access": "protected"}
+{"platform": "aws", "msg": "Protected S3 Bucket", "target": "http://0test.s3.amazonaws.com/", "access": "protected"}
+{"platform": "aws", "msg": "Protected S3 Bucket", "target": "http://0.test.s3.amazonaws.com/", "access": "protected"}
+{"platform": "aws", "msg": "Protected S3 Bucket", "target": "http://test001.s3.amazonaws.com/", "access": "protected"}
+{"platform": "aws", "msg": "Protected S3 Bucket", "target": "http://test.001.s3.amazonaws.com/", "access": "protected"}
+{"platform": "aws", "msg": "Protected S3 Bucket", "target": "http://test-001.s3.amazonaws.com/", "access": "protected"}
+{"platform": "aws", "msg": "Protected S3 Bucket", "target": "http://001-test.s3.amazonaws.com/", "access": "protected"}
+{"platform": "aws", "msg": "Protected S3 Bucket", "target": "http://test002.s3.amazonaws.com/", "access": "protected"}
+{"platform": "aws", "msg": "Protected S3 Bucket", "target": "http://test-002.s3.amazonaws.com/", "access": "protected"}
+{"platform": "aws", "msg": "Protected S3 Bucket", "target": "http://002-test.s3.amazonaws.com/", "access": "protected"}
+{"platform": "aws", "msg": "Protected S3 Bucket", "target": "http://test003.s3.amazonaws.com/", "access": "protected"}
+{"platform": "aws", "msg": "Protected S3 Bucket", "target": "http://test-003.s3.amazonaws.com/", "access": "protected"}
+{"platform": "aws", "msg": "Protected S3 Bucket", "target": "http://003-test.s3.amazonaws.com/", "access": "protected"}

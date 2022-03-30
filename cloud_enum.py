@@ -67,7 +67,7 @@ def parse_arguments():
 
     parser.add_argument('-l', '--logfile', type=str, action='store',
                         help='Will APPEND found items to specified file.')
-    parser.add_argument('-f', '--format', type=str, action='store', default='json', 
+    parser.add_argument('-f', '--format', type=str, action='store', default='json',
                         help='Format for log file (json or csv, defaults to json)')
 
     parser.add_argument('--disable-aws', action='store_true',
@@ -86,8 +86,7 @@ def parse_arguments():
 
     # Ensure mutations file is readable
     if not os.access(args.mutations, os.R_OK):
-        print("[!] Cannot access mutations file: {}"
-              .format(args.mutations))
+        print(f"[!] Cannot access mutations file: {args.mutations}")
         sys.exit()
 
     # Ensure brute file is readable
@@ -134,12 +133,12 @@ def print_status(args):
     """
     Print a short pre-run status message
     """
-    print("Keywords:    {}".format(', '.join(args.keyword)))
+    print(f"Keywords:    {', '.join(args.keyword)}")
     if args.quickscan:
         print("Mutations:   NONE! (Using quickscan)")
     else:
-        print("Mutations:   {}".format(args.mutations))
-    print("Brute-list:  {}".format(args.brute))
+        print(f"Mutations:   {args.mutations}")
+    print(f"Brute-list:  {args.brute}")
     print("")
 
 def check_windows():
@@ -162,7 +161,7 @@ def read_mutations(mutations_file):
     with open(mutations_file, encoding="utf8", errors="ignore") as infile:
         mutations = infile.read().splitlines()
 
-    print("[+] Mutations list imported: {} items".format(len(mutations)))
+    print(f"[+] Mutations list imported: {len(mutations)} items")
     return mutations
 
 def clean_text(text):
@@ -193,16 +192,16 @@ def build_names(base_list, mutations):
             mutation = clean_text(mutation)
 
             # Then, do appends
-            names.append("{}{}".format(base, mutation))
-            names.append("{}.{}".format(base, mutation))
-            names.append("{}-{}".format(base, mutation))
+            names.append(f"{base}{mutation}")
+            names.append(f"{base}.{mutation}")
+            names.append(f"{base}-{mutation}")
 
             # Then, do prepends
-            names.append("{}{}".format(mutation, base))
-            names.append("{}.{}".format(mutation, base))
-            names.append("{}-{}".format(mutation, base))
+            names.append(f"{mutation}{base}")
+            names.append(f"{mutation}.{base}")
+            names.append(f"{mutation}-{base}")
 
-    print("[+] Mutated results: {} items".format(len(names)))
+    print(f"[+] Mutated results: {len(names)} items")
 
     return names
 

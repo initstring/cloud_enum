@@ -66,9 +66,8 @@ def print_s3_response(reply):
         print("[!] You've been rate limited, skipping rest of check...")
         return 'breakout'
     else:
-        print("    Unknown status codes being received from {}:\n"
-              "       {}: {}"
-              .format(reply.url, reply.status_code, reply.reason))
+        print(f"    Unknown status codes being received from {reply.url}:\n"
+              "       {reply.status_code}: {reply.reason}")
 
 def check_s3_buckets(names, threads):
     """
@@ -84,7 +83,7 @@ def check_s3_buckets(names, threads):
 
     # Take each mutated keyword craft a url with the correct format
     for name in names:
-        candidates.append('{}.{}'.format(name, S3_URL))
+        candidates.append(f'{name}.{S3_URL}')
 
     # Send the valid names to the batch HTTP processor
     utils.get_url_batch(candidates, use_ssl=False,
@@ -114,7 +113,7 @@ def check_awsapps(names, threads, nameserver):
 
     # Take each mutated keyword craft a domain name to lookup.
     for name in names:
-        candidates.append('{}.{}'.format(name, APPS_URL))
+        candidates.append(f'{name}.{APPS_URL}')
 
     # AWS Apps use DNS sub-domains. First, see which are valid.
     valid_names = utils.fast_dns_lookup(candidates, nameserver,
