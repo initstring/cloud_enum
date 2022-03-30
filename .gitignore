@@ -107,4 +107,4 @@ venv.bak/
 *.swp
 
 # vscode
-# .vscode/
+.vscode/
