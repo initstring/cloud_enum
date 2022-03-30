@@ -195,26 +195,20 @@ def list_bucket_contents(bucket):
     else:
         print("      ...empty bucket, so sad. :(")
 
-def fmt_output(data, color=''):
+def fmt_output(data):
     """
     Handles the output - printing and logging based on a specified format
-
-    Optionally, the caller can specify a color for pretty printing.
     """
-    # ANSI escape sequences
+    # ANSI escape sequences are set based on accessibility of target
+    # (basically, how public it is))
     bold = '\033[1m'
-    ansi = ''
-    end = ''
-    if color:
-        end = '\033[0m'
-    if color == 'orange':
-        ansi = bold + '\033[33m'
-    if color == 'green':
-        ansi = bold + '\033[92m'
-    if color == bold + 'red':
-        ansi = bold + '\033[31m'
-    if color == 'black':
-        ansi = 'bold + '
+    end = '\033[0m'
+    if data['access'] == 'public':
+        ansi = bold + '\033[92m' # green
+    if data['access'] == 'protected':
+        ansi = bold + '\033[33m' # orange
+    if data['access'] == 'disabled':
+        ansi = bold + '\033[31m' # red
 
     sys.stdout.write('  ' + ansi + data['msg'] + ': ' + data['target'] + end + '\n')
 
