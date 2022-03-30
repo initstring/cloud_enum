@@ -67,8 +67,8 @@ def parse_arguments():
 
     parser.add_argument('-l', '--logfile', type=str, action='store',
                         help='Will APPEND found items to specified file.')
-    parser.add_argument('-f', '--format', type=str, action='store', default='json',
-                        help='Format for log file (json or csv, defaults to json)')
+    parser.add_argument('-f', '--format', type=str, action='store', default='text',
+                        help='Format for log file (text,json,csv - defaults to text)')
 
     parser.add_argument('--disable-aws', action='store_true',
                         help='Disable Amazon checks.')
@@ -121,8 +121,8 @@ def parse_arguments():
             sys.exit()
 
         # Set up logging format
-        if args.format not in ('json', 'csv'):
-            print("[!] Sorry! Allowed log formats: 'json' or 'csv'")
+        if args.format not in ('text', 'json', 'csv'):
+            print("[!] Sorry! Allowed log formats: 'text', 'json', or 'csv'")
             sys.exit()
         # Set the global in the utils file, where logging needs to happen
         utils.init_logfile(args.logfile, args.format)

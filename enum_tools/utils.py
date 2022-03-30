@@ -212,6 +212,8 @@ def fmt_output(data):
 
     if LOGFILE:
         with open(LOGFILE, 'a')  as log_writer:
+            if LOGFILE_FMT == 'text':
+                log_writer.write(f'{data["msg"]}: {data["target"]}\n')
             if LOGFILE_FMT == 'csv':
                 w = csv.DictWriter(log_writer, data.keys())
                 w.writerow(data)
