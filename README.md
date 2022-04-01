@@ -78,7 +78,7 @@ optional arguments:
   -l LOGFILE, --logfile LOGFILE
                         Will APPEND found items to specified file.
   -f FORMAT, --format FORMAT
-                        Format for log file (json or csv, defaults to json)
+                        Format for log file (text,json,csv - defaults to text)
   --disable-aws         Disable Amazon checks.
   --disable-azure       Disable Azure checks.
   --disable-gcp         Disable Google checks.
