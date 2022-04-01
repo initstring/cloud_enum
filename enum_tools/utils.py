@@ -124,7 +124,9 @@ def dns_lookup(nameserver, name):
     except dns.resolver.NXDOMAIN:
         return ''
     except dns.resolver.NoNameservers as exc_text:
-        print("    [!] Error querying nameservers! This could be a problem. More Info:")
+        print("    [!] Error querying nameservers! This could be a problem.")
+        print("    [!] If you're using a VPN, try setting --ns to your VPN's nameserver.")
+        print("    [!] More Info:")
         print(f"    {exc_text}")
         return ''
     except dns.exception.Timeout:
