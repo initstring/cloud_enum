@@ -126,9 +126,10 @@ def dns_lookup(nameserver, name):
     except dns.resolver.NoNameservers as exc_text:
         print("    [!] Error querying nameservers! This could be a problem.")
         print("    [!] If you're using a VPN, try setting --ns to your VPN's nameserver.")
+        print("    [!] Bailing because you need to fix this")
         print("    [!] More Info:")
-        print(f"    {exc_text}")
-        return ''
+        print(exc_text)
+        return '-#BREAKOUT_DNS_ERROR#-'
     except dns.exception.Timeout:
         print("    [!] DNS Timeout on {name}. Investigate if there are many"
               " of these.")
@@ -159,6 +160,8 @@ def fast_dns_lookup(names, nameserver, callback='', threads=5):
         # We should now have the batch of results back, process them.
         for name in results:
             if name:
+                if name == '-#BREAKOUT_DNS_ERROR#-':
+                    sys.exit()
                 if callback:
                     callback(name)
                 valid_names.append(name)
