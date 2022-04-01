@@ -147,10 +147,16 @@ def print_appspot_response(reply):
         data['access'] = 'public'
         utils.fmt_output(data)
     elif reply.status_code in (200, 302, 404):
-        data['msg'] = 'Google App Engine app'
-        data['target'] = reply.url
-        data['access'] = 'public'
-        utils.fmt_output(data)
+        if 'accounts.google.com' in reply.url:
+            data['msg'] = 'Protected Google App Engine app'
+            data['target'] = reply.url
+            data['access'] = 'protected'
+            utils.fmt_output(data)
+        else:
+            data['msg'] = 'Open Google App Engine app'
+            data['target'] = reply.url
+            data['access'] = 'public'
+            utils.fmt_output(data)
     else:
         print(f"    Unknown status codes being received from {reply.url}:\n"
               "       {reply.status_code}: {reply.reason}")
