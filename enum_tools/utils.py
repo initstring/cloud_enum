@@ -140,7 +140,7 @@ def fast_dns_lookup(names, nameserver, callback='', threads=5):
     current = 0
     valid_names = []
 
-    print("[*] Brute-forcing a list of {total} possible DNS names")
+    print(f"[*] Brute-forcing a list of {total} possible DNS names")
 
     # Break the url list into smaller lists based on thread size
     queue = [names[x:x+threads] for x in range(0, len(names), threads)]
