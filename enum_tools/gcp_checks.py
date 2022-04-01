@@ -149,7 +149,7 @@ def print_appspot_response(reply):
     elif reply.status_code in (200, 302, 404):
         if 'accounts.google.com' in reply.url:
             data['msg'] = 'Protected Google App Engine app'
-            data['target'] = reply.url
+            data['target'] = reply.history[0].url
             data['access'] = 'protected'
             utils.fmt_output(data)
         else:
