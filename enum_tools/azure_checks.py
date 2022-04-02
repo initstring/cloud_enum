@@ -59,6 +59,7 @@ def print_account_response(reply):
         print("    Unknown status codes being received from {reply.url}:\n"
               "       {reply.status_code}: {reply.reason}")
 
+
 def check_storage_accounts(names, threads, nameserver):
     """
     Checks storage account names
@@ -96,6 +97,7 @@ def check_storage_accounts(names, threads, nameserver):
 
     # de-dupe the results and return
     return list(set(valid_names))
+
 
 def print_container_response(reply):
     """
@@ -140,6 +142,9 @@ def print_container_response(reply):
     else:
         print(f"    Unknown status codes being received from {reply.url}:\n"
               "       {reply.status_code}: {reply.reason}")
+
+    return None
+
 
 def brute_force_containers(storage_accounts, brute_list, threads):
     """
@@ -188,6 +193,7 @@ def brute_force_containers(storage_accounts, brute_list, threads):
     # Stop the timer
     utils.stop_timer(start_time)
 
+
 def print_website_response(hostname):
     """
     This function is passed into the DNS brute force as a callback,
@@ -199,6 +205,7 @@ def print_website_response(hostname):
     data['target'] = hostname
     data['access'] = 'public'
     utils.fmt_output(data)
+
 
 def check_azure_websites(names, nameserver, threads):
     """
@@ -220,6 +227,7 @@ def check_azure_websites(names, nameserver, threads):
     # Stop the timer
     utils.stop_timer(start_time)
 
+
 def print_database_response(hostname):
     """
     This function is passed into the DNS brute force as a callback,
@@ -231,6 +239,7 @@ def print_database_response(hostname):
     data['target'] = hostname
     data['access'] = 'public'
     utils.fmt_output(data)
+
 
 def check_azure_databases(names, nameserver, threads):
     """
@@ -252,6 +261,7 @@ def check_azure_databases(names, nameserver, threads):
     # Stop the timer
     utils.stop_timer(start_time)
 
+
 def print_vm_response(hostname):
     """
     This function is passed into the DNS brute force as a callback,
@@ -263,6 +273,7 @@ def print_vm_response(hostname):
     data['target'] = hostname
     data['access'] = 'public'
     utils.fmt_output(data)
+
 
 def check_azure_vms(names, nameserver, threads):
     """
@@ -290,6 +301,7 @@ def check_azure_vms(names, nameserver, threads):
 
     # Stop the timer
     utils.stop_timer(start_time)
+
 
 def run_all(names, args):
     """

@@ -24,7 +24,8 @@ except ImportError:
 LOGFILE = False
 LOGFILE_FMT = ''
 
-def init_logfile(logfile, format):
+
+def init_logfile(logfile, fmt):
     """
     Initialize the global logfile if specified as a user-supplied argument
     """
@@ -33,11 +34,12 @@ def init_logfile(logfile, format):
         LOGFILE = logfile
 
         global LOGFILE_FMT
-        LOGFILE_FMT = format
+        LOGFILE_FMT = fmt
 
         now = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        with open(logfile, 'a') as log_writer:
+        with open(logfile, 'a', encoding='utf-8') as log_writer:
             log_writer.write(f"\n\n#### CLOUD_ENUM {now} ####\n")
+
 
 def get_url_batch(url_list, use_ssl=False, callback='', threads=5, redir=True):
     """
@@ -108,6 +110,7 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5, redir=True):
     # Clear the status message
     sys.stdout.write('                            \r')
 
+
 def dns_lookup(nameserver, name):
     """
     This function performs the actual DNS lookup when called in a threadpool
@@ -134,6 +137,7 @@ def dns_lookup(nameserver, name):
         print(f"    [!] DNS Timeout on {name}. Investigate if there are many"
               " of these.")
         return ''
+
 
 def fast_dns_lookup(names, nameserver, callback='', threads=5):
     """
@@ -179,6 +183,7 @@ def fast_dns_lookup(names, nameserver, callback='', threads=5):
 
     return valid_names
 
+
 def list_bucket_contents(bucket):
     """
     Provides a list of full URLs to each open bucket
@@ -203,6 +208,7 @@ def list_bucket_contents(bucket):
     else:
         print("      ...empty bucket, so sad. :(")
 
+
 def fmt_output(data):
     """
     Handles the output - printing and logging based on a specified format
@@ -212,21 +218,21 @@ def fmt_output(data):
     bold = '\033[1m'
     end = '\033[0m'
     if data['access'] == 'public':
-        ansi = bold + '\033[92m' # green
+        ansi = bold + '\033[92m'  # green
     if data['access'] == 'protected':
-        ansi = bold + '\033[33m' # orange
+        ansi = bold + '\033[33m'  # orange
     if data['access'] == 'disabled':
-        ansi = bold + '\033[31m' # red
+        ansi = bold + '\033[31m'  # red
 
     sys.stdout.write('  ' + ansi + data['msg'] + ': ' + data['target'] + end + '\n')
 
     if LOGFILE:
-        with open(LOGFILE, 'a')  as log_writer:
+        with open(LOGFILE, 'a', encoding='utf-8') as log_writer:
             if LOGFILE_FMT == 'text':
                 log_writer.write(f'{data["msg"]}: {data["target"]}\n')
             if LOGFILE_FMT == 'csv':
-                w = csv.DictWriter(log_writer, data.keys())
-                w.writerow(data)
+                writer = csv.DictWriter(log_writer, data.keys())
+                writer.writerow(data)
             if LOGFILE_FMT == 'json':
                 log_writer.write(json.dumps(data) + '\n')
 
@@ -251,6 +257,7 @@ def get_brute(brute_file, mini=1, maxi=63, banned='[^a-z0-9_-]'):
 
     return clean_names
 
+
 def start_timer():
     """
     Starts a timer for functions in main module
@@ -258,6 +265,7 @@ def start_timer():
     # Start a counter to report on elapsed time
     start_time = time.time()
     return start_time
+
 
 def stop_timer(start_time):
     """

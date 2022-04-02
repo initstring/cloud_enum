@@ -22,6 +22,7 @@ FUNC_URL = 'cloudfunctions.net'
 # one cloud function, to brute force later on
 HAS_FUNCS = []
 
+
 def print_bucket_response(reply):
     """
     Parses the HTTP reply of a brute-force attempt
@@ -48,6 +49,7 @@ def print_bucket_response(reply):
         print(f"    Unknown status codes being received from {reply.url}:\n"
               "       {reply.status_code}: {reply.reason}")
 
+
 def check_gcp_buckets(names, threads):
     """
     Checks for open and restricted Google Cloud buckets
@@ -71,6 +73,7 @@ def check_gcp_buckets(names, threads):
 
     # Stop the time
     utils.stop_timer(start_time)
+
 
 def print_fbrtdb_response(reply):
     """
@@ -102,6 +105,7 @@ def print_fbrtdb_response(reply):
         print(f"    Unknown status codes being received from {reply.url}:\n"
               "       {reply.status_code}: {reply.reason}")
 
+
 def check_fbrtdb(names, threads):
     """
     Checks for Google Firebase RTDB
@@ -129,6 +133,7 @@ def check_fbrtdb(names, threads):
 
     # Stop the time
     utils.stop_timer(start_time)
+
 
 def print_appspot_response(reply):
     """
@@ -161,6 +166,7 @@ def print_appspot_response(reply):
         print(f"    Unknown status codes being received from {reply.url}:\n"
               "       {reply.status_code}: {reply.reason}")
 
+
 def check_appspot(names, threads):
     """
     Checks for Google App Engine sites running on appspot.com
@@ -188,6 +194,7 @@ def check_appspot(names, threads):
     # Stop the time
     utils.stop_timer(start_time)
 
+
 def print_functions_response1(reply):
     """
     Parses the HTTP reply the initial Cloud Functions check
@@ -208,6 +215,7 @@ def print_functions_response1(reply):
     else:
         print(f"    Unknown status codes being received from {reply.url}:\n"
               "       {reply.status_code}: {reply.reason}")
+
 
 def print_functions_response2(reply):
     """
@@ -238,6 +246,7 @@ def print_functions_response2(reply):
     else:
         print(f"    Unknown status codes being received from {reply.url}:\n"
               "       {reply.status_code}: {reply.reason}")
+
 
 def check_functions(names, brute_list, quickscan, threads):
     """
@@ -310,6 +319,7 @@ def check_functions(names, brute_list, quickscan, threads):
 
     # Stop the time
     utils.stop_timer(start_time)
+
 
 def run_all(names, args):
     """

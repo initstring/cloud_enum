@@ -26,6 +26,7 @@ BANNER = '''
 
 '''
 
+
 def parse_arguments():
     """
     Handles user-passed parameters
@@ -66,9 +67,11 @@ def parse_arguments():
                         help='DNS server to use in brute-force.')
 
     parser.add_argument('-l', '--logfile', type=str, action='store',
-                        help='Will APPEND found items to specified file.')
-    parser.add_argument('-f', '--format', type=str, action='store', default='text',
-                        help='Format for log file (text,json,csv - defaults to text)')
+                        help='Appends found items to specified file.')
+    parser.add_argument('-f', '--format', type=str, action='store',
+                        default='text',
+                        help='Format for log file (text,json,csv)'
+                             ' - default: text')
 
     parser.add_argument('--disable-aws', action='store_true',
                         help='Disable Amazon checks.')
@@ -101,7 +104,7 @@ def parse_arguments():
             sys.exit()
 
         # Parse keywords from input file
-        with open(args.keyfile) as infile:
+        with open(args.keyfile, encoding='utf-8') as infile:
             args.keyword = [keyword.strip() for keyword in infile]
 
     # Ensure log file is writeable
@@ -129,6 +132,7 @@ def parse_arguments():
 
     return args
 
+
 def print_status(args):
     """
     Print a short pre-run status message
@@ -140,6 +144,7 @@ def print_status(args):
         print(f"Mutations:   {args.mutations}")
     print(f"Brute-list:  {args.brute}")
     print("")
+
 
 def check_windows():
     """
@@ -154,6 +159,7 @@ def check_windows():
             print("[!] Yo, Windows user - if you want pretty colors, you can"
                   " install the colorama python package.")
 
+
 def read_mutations(mutations_file):
     """
     Read mutations file into memory for processing.
@@ -164,6 +170,7 @@ def read_mutations(mutations_file):
     print(f"[+] Mutations list imported: {len(mutations)} items")
     return mutations
 
+
 def clean_text(text):
     """
     Clean text to be RFC compliant for hostnames / DNS
@@ -173,6 +180,7 @@ def clean_text(text):
     text_clean = banned_chars.sub('', text_lower)
 
     return text_clean
+
 
 def build_names(base_list, mutations):
     """
@@ -204,6 +212,7 @@ def build_names(base_list, mutations):
     print(f"[+] Mutated results: {len(names)} items")
 
     return names
+
 
 def main():
     """

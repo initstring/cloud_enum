@@ -38,6 +38,7 @@ AWS_REGIONS = ['amazonaws.com',
                'eu-north-1.amazonaws.com',
                'sa-east-1.amazonaws.com']
 
+
 def print_s3_response(reply):
     """
     Parses the HTTP reply of a brute-force attempt
@@ -69,6 +70,9 @@ def print_s3_response(reply):
         print(f"    Unknown status codes being received from {reply.url}:\n"
               "       {reply.status_code}: {reply.reason}")
 
+    return None
+
+
 def check_s3_buckets(names, threads):
     """
     Checks for open and restricted Amazon S3 buckets
@@ -92,6 +96,7 @@ def check_s3_buckets(names, threads):
 
     # Stop the time
     utils.stop_timer(start_time)
+
 
 def check_awsapps(names, threads, nameserver):
     """
@@ -127,6 +132,7 @@ def check_awsapps(names, threads, nameserver):
     # Stop the timer
     utils.stop_timer(start_time)
 
+
 def run_all(names, args):
     """
     Function is called by main program
@@ -134,7 +140,7 @@ def run_all(names, args):
     print(BANNER)
 
     # Use user-supplied AWS region if provided
-    #if not regions:
+    # if not regions:
     #    regions = AWS_REGIONS
     check_s3_buckets(names, args.threads)
     check_awsapps(names, args.threads, args.nameserver)
