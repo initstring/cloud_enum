@@ -160,13 +160,17 @@ def brute_force_containers(storage_accounts, brute_list, threads):
     print(f"[*] Checking {len(storage_accounts)} accounts for status before brute-forcing")
     valid_accounts = []
     for account in storage_accounts:
-        reply = requests.get(f'https://{account}/')
-        if 'Server failed to authenticate the request' in reply.reason:
-            storage_accounts.remove(account)
-        elif 'The specified account is disabled' in reply.reason:
-            storage_accounts.remove(account)
-        else:
-            valid_accounts.append(account)
+        try:
+            reply = requests.get(f'https://{account}/')
+            if 'Server failed to authenticate the request' in reply.reason:
+                storage_accounts.remove(account)
+            elif 'The specified account is disabled' in reply.reason:
+                storage_accounts.remove(account)
+            else:
+                valid_accounts.append(account)
+        except requests.exceptions.ConnectionError as error_msg:
+            print(f"    [!] Connection error on {url}:")
+            print(error_msg)
 
     # Read the brute force file into memory
     clean_names = utils.get_brute(brute_list, mini=3)
