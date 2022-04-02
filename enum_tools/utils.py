@@ -131,7 +131,7 @@ def dns_lookup(nameserver, name):
         print(exc_text)
         return '-#BREAKOUT_DNS_ERROR#-'
     except dns.exception.Timeout:
-        print("    [!] DNS Timeout on {name}. Investigate if there are many"
+        print(f"    [!] DNS Timeout on {name}. Investigate if there are many"
               " of these.")
         return ''
 
