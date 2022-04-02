@@ -169,7 +169,7 @@ def brute_force_containers(storage_accounts, brute_list, threads):
             else:
                 valid_accounts.append(account)
         except requests.exceptions.ConnectionError as error_msg:
-            print(f"    [!] Connection error on {url}:")
+            print(f"    [!] Connection error on https://{account}:")
             print(error_msg)
 
     # Read the brute force file into memory
