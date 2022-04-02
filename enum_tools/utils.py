@@ -6,6 +6,8 @@ import time
 import sys
 import datetime
 import re
+import csv
+import json
 from multiprocessing.dummy import Pool as ThreadPool
 from functools import partial
 try:
@@ -20,8 +22,10 @@ except ImportError:
     sys.exit()
 
 LOGFILE = False
+LOGFILE_FMT = ''
 
-def init_logfile(logfile):
+
+def init_logfile(logfile, fmt):
     """
     Initialize the global logfile if specified as a user-supplied argument
     """
@@ -29,10 +33,13 @@ def init_logfile(logfile):
         global LOGFILE
         LOGFILE = logfile
 
+        global LOGFILE_FMT
+        LOGFILE_FMT = fmt
+
         now = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        with open(logfile, 'a') as log_writer:
-            log_writer.write("\n\n#### CLOUD_ENUM {} ####\n"
-                             .format(now))
+        with open(logfile, 'a', encoding='utf-8') as log_writer:
+            log_writer.write(f"\n\n#### CLOUD_ENUM {now} ####\n")
+
 
 def get_url_batch(url_list, use_ssl=False, callback='', threads=5, redir=True):
     """
@@ -80,11 +87,11 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5, redir=True):
                 # hanging forever with no exception raised.
                 batch_results[url] = batch_pending[url].result(timeout=30)
             except requests.exceptions.ConnectionError as error_msg:
-                print("    [!] Connection error on {}:".format(url))
+                print(f"    [!] Connection error on {url}:")
                 print(error_msg)
             except TimeoutError:
-                print("    [!] Timeout on {}. Investigate if there are"
-                      " many of these".format(url))
+                print(f"    [!] Timeout on {url}. Investigate if there are"
+                      " many of these")
 
         # Now, send all the results to the callback function for analysis
         # We need a way to stop processing unnecessary brute-forces, so the
@@ -97,12 +104,12 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5, redir=True):
         # Refresh a status message
         tick['current'] += threads
         sys.stdout.flush()
-        sys.stdout.write("    {}/{} complete..."
-                         .format(tick['current'], tick['total']))
+        sys.stdout.write(f"    {tick['current']}/{tick['total']} complete...")
         sys.stdout.write('\r')
 
     # Clear the status message
     sys.stdout.write('                            \r')
+
 
 def dns_lookup(nameserver, name):
     """
@@ -119,9 +126,18 @@ def dns_lookup(nameserver, name):
         return name
     except dns.resolver.NXDOMAIN:
         return ''
+    except dns.resolver.NoNameservers as exc_text:
+        print("    [!] Error querying nameservers! This could be a problem.")
+        print("    [!] If you're using a VPN, try setting --ns to your VPN's nameserver.")
+        print("    [!] Bailing because you need to fix this")
+        print("    [!] More Info:")
+        print(exc_text)
+        return '-#BREAKOUT_DNS_ERROR#-'
     except dns.exception.Timeout:
-        print("    [!] DNS Timeout on {}. Investigate if there are many"
-              " of these.".format(name))
+        print(f"    [!] DNS Timeout on {name}. Investigate if there are many"
+              " of these.")
+        return ''
+
 
 def fast_dns_lookup(names, nameserver, callback='', threads=5):
     """
@@ -131,7 +147,7 @@ def fast_dns_lookup(names, nameserver, callback='', threads=5):
     current = 0
     valid_names = []
 
-    print("[*] Brute-forcing a list of {} possible DNS names".format(total))
+    print(f"[*] Brute-forcing a list of {total} possible DNS names")
 
     # Break the url list into smaller lists based on thread size
     queue = [names[x:x+threads] for x in range(0, len(names), threads)]
@@ -148,6 +164,8 @@ def fast_dns_lookup(names, nameserver, callback='', threads=5):
         # We should now have the batch of results back, process them.
         for name in results:
             if name:
+                if name == '-#BREAKOUT_DNS_ERROR#-':
+                    sys.exit()
                 if callback:
                     callback(name)
                 valid_names.append(name)
@@ -156,7 +174,7 @@ def fast_dns_lookup(names, nameserver, callback='', threads=5):
 
         # Update the status message
         sys.stdout.flush()
-        sys.stdout.write("    {}/{} complete...".format(current, total))
+        sys.stdout.write(f"    {current}/{total} complete...")
         sys.stdout.write('\r')
         pool.close()
 
@@ -164,6 +182,7 @@ def fast_dns_lookup(names, nameserver, callback='', threads=5):
     sys.stdout.write('                            \r')
 
     return valid_names
+
 
 def list_bucket_contents(bucket):
     """
@@ -182,38 +201,41 @@ def list_bucket_contents(bucket):
 
     # Format them to full URLs and print to console
     if keys:
-        printc("      FILES:\n", 'none')
+        print("      FILES:")
         for key in keys:
             url = bucket + key
-            printc("      ->{}\n".format(url), 'none')
+            print(f"      ->{url}")
     else:
-        printc("      ...empty bucket, so sad. :(\n", 'none')
+        print("      ...empty bucket, so sad. :(")
 
-def printc(text, color):
+
+def fmt_output(data):
     """
-    Prints colored text to screen
+    Handles the output - printing and logging based on a specified format
     """
-    # ANSI escape sequences
-    green = '\033[92m'
-    orange = '\033[33m'
-    red = '\033[31m'
+    # ANSI escape sequences are set based on accessibility of target
+    # (basically, how public it is))
     bold = '\033[1m'
     end = '\033[0m'
+    if data['access'] == 'public':
+        ansi = bold + '\033[92m'  # green
+    if data['access'] == 'protected':
+        ansi = bold + '\033[33m'  # orange
+    if data['access'] == 'disabled':
+        ansi = bold + '\033[31m'  # red
 
-    if color == 'orange':
-        sys.stdout.write(bold + orange + text + end)
-    if color == 'green':
-        sys.stdout.write(bold + green + text + end)
-    if color == 'red':
-        sys.stdout.write(bold + red + text + end)
-    if color == 'black':
-        sys.stdout.write(bold + text + end)
-    if color == 'none':
-        sys.stdout.write(text)
+    sys.stdout.write('  ' + ansi + data['msg'] + ': ' + data['target'] + end + '\n')
 
     if LOGFILE:
-        with open(LOGFILE, 'a')  as log_writer:
-            log_writer.write(text.lstrip())
+        with open(LOGFILE, 'a', encoding='utf-8') as log_writer:
+            if LOGFILE_FMT == 'text':
+                log_writer.write(f'{data["msg"]}: {data["target"]}\n')
+            if LOGFILE_FMT == 'csv':
+                writer = csv.DictWriter(log_writer, data.keys())
+                writer.writerow(data)
+            if LOGFILE_FMT == 'json':
+                log_writer.write(json.dumps(data) + '\n')
+
 
 def get_brute(brute_file, mini=1, maxi=63, banned='[^a-z0-9_-]'):
     """
@@ -235,6 +257,7 @@ def get_brute(brute_file, mini=1, maxi=63, banned='[^a-z0-9_-]'):
 
     return clean_names
 
+
 def start_timer():
     """
     Starts a timer for functions in main module
@@ -242,6 +265,7 @@ def start_timer():
     # Start a counter to report on elapsed time
     start_time = time.time()
     return start_time
+
 
 def stop_timer(start_time):
     """
@@ -253,5 +277,5 @@ def stop_timer(start_time):
 
     # Print some statistics
     print("")
-    print(" Elapsed time: {}".format(formatted_time))
+    print(f" Elapsed time: {formatted_time}")
     print("")

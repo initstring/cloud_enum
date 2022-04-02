@@ -38,6 +38,7 @@ AWS_REGIONS = ['amazonaws.com',
                'eu-north-1.amazonaws.com',
                'sa-east-1.amazonaws.com']
 
+
 def print_s3_response(reply):
     """
     Parses the HTTP reply of a brute-force attempt
@@ -45,24 +46,32 @@ def print_s3_response(reply):
     This function is passed into the class object so we can view results
     in real-time.
     """
+    data = {'platform': 'aws', 'msg': '', 'target': '', 'access': ''}
+
     if reply.status_code == 404:
         pass
     elif 'Bad Request' in reply.reason:
         pass
     elif reply.status_code == 200:
-        utils.printc("    OPEN S3 BUCKET: {}\n"
-                     .format(reply.url), 'green')
+        data['msg'] = 'OPEN S3 BUCKET'
+        data['target'] = reply.url
+        data['access'] = 'public'
+        utils.fmt_output(data)
         utils.list_bucket_contents(reply.url)
     elif reply.status_code == 403:
-        utils.printc("    Protected S3 Bucket: {}\n"
-                     .format(reply.url), 'orange')
+        data['msg'] = 'Protected S3 Bucket'
+        data['target'] = reply.url
+        data['access'] = 'protected'
+        utils.fmt_output(data)
     elif 'Slow Down' in reply.reason:
         print("[!] You've been rate limited, skipping rest of check...")
         return 'breakout'
     else:
-        print("    Unknown status codes being received from {}:\n"
-              "       {}: {}"
-              .format(reply.url, reply.status_code, reply.reason))
+        print(f"    Unknown status codes being received from {reply.url}:\n"
+              "       {reply.status_code}: {reply.reason}")
+
+    return None
+
 
 def check_s3_buckets(names, threads):
     """
@@ -78,7 +87,7 @@ def check_s3_buckets(names, threads):
 
     # Take each mutated keyword craft a url with the correct format
     for name in names:
-        candidates.append('{}.{}'.format(name, S3_URL))
+        candidates.append(f'{name}.{S3_URL}')
 
     # Send the valid names to the batch HTTP processor
     utils.get_url_batch(candidates, use_ssl=False,
@@ -88,11 +97,14 @@ def check_s3_buckets(names, threads):
     # Stop the time
     utils.stop_timer(start_time)
 
+
 def check_awsapps(names, threads, nameserver):
     """
     Checks for existence of AWS Apps
     (ie. WorkDocs, WorkMail, Connect, etc.)
     """
+    data = {'platform': 'aws', 'msg': 'AWS App Found:', 'target': '', 'access': ''}
+
     print("[+] Checking for AWS Apps")
 
     # Start a counter to report on elapsed time
@@ -106,17 +118,20 @@ def check_awsapps(names, threads, nameserver):
 
     # Take each mutated keyword craft a domain name to lookup.
     for name in names:
-        candidates.append('{}.{}'.format(name, APPS_URL))
+        candidates.append(f'{name}.{APPS_URL}')
 
     # AWS Apps use DNS sub-domains. First, see which are valid.
     valid_names = utils.fast_dns_lookup(candidates, nameserver,
                                         threads=threads)
 
     for name in valid_names:
-        utils.printc("    App Found: https://{}\n" .format(name), 'orange')
+        data['target'] = f'https://{name}'
+        data['access'] = 'protected'
+        utils.fmt_output(data)
 
     # Stop the timer
     utils.stop_timer(start_time)
+
 
 def run_all(names, args):
     """
@@ -125,7 +140,7 @@ def run_all(names, args):
     print(BANNER)
 
     # Use user-supplied AWS region if provided
-    #if not regions:
+    # if not regions:
     #    regions = AWS_REGIONS
     check_s3_buckets(names, args.threads)
     check_awsapps(names, args.threads, args.nameserver)
