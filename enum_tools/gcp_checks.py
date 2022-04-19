@@ -101,6 +101,11 @@ def print_fbrtdb_response(reply):
         data['target'] = reply.url
         data['access'] = 'disabled'
         utils.fmt_output(data)
+    elif reply.status_code == 423:
+        data['msg'] = 'The Firebase database has been deactivated.'
+        data['target'] = reply.url
+        data['access'] = 'disabled'
+        utils.fmt_output(data)
     else:
         print(f"    Unknown status codes being received from {reply.url}:\n"
               "       {reply.status_code}: {reply.reason}")
