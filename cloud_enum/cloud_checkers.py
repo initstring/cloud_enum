@@ -5,6 +5,7 @@ The intent is to have a common foundation that can be used for all checks.
 """
 
 from enum import Enum
+import requests
 
 
 class AccessLevel(Enum):
@@ -33,7 +34,7 @@ class Checker:
             raise TypeError("Must be a list")
         self.targets.update(targets)
 
-    def add_sig(self, **args):
+    def add_sig(self, raw_sig):
         """
         Adds a definition of a finding.
 
@@ -44,32 +45,36 @@ class Checker:
         resp_code: for HTTP scraping, the response code (int)
         resp_text: for HTTP scraping, the response text (string)
         dns: for DNS scraping, set to True (bool)
+
+        There might be multiple signatures for a single type of target. For
+        example, a GCP bucket would have a signature with a resp code of 200
+        for open buckets and 403 for a protected bucket.
         """
-        sig = dict(
-            finding=args.get("finding", None),
-            access=args.get("access", None),
-            resp_code=args.get("resp_code", None),
-            resp_text=args.get("resp_text", None),
-            dns=args.get("dns", False)
+        new_sig = dict(
+            finding=raw_sig.get("finding", None),
+            access=raw_sig.get("access", None),
+            resp_code=raw_sig.get("resp_code", None),
+            resp_text=raw_sig.get("resp_text", None),
+            dns=raw_sig.get("dns", False)
         )
 
         # A signature must have at least an HTTP response code or a DNS check
-        if not sig["dns"] and not sig["resp_code"]:
+        if not new_sig["dns"] and not new_sig["resp_code"]:
             raise ValueError("Must have at least resp_code or dns")
 
         # Type check everything
-        if not isinstance(sig["resp_code"], (int, type(None))):
+        if not isinstance(new_sig["resp_code"], (int, type(None))):
             raise TypeError("Must be a string")
-        if not isinstance(sig["finding"], (str, type(None))):
+        if not isinstance(new_sig["finding"], (str, type(None))):
             raise TypeError("Must be a string")
-        if not isinstance(sig["access"], (AccessLevel, type(None))):
+        if not isinstance(new_sig["access"], (AccessLevel, type(None))):
             raise TypeError("Must be an AccessLevel enum")
-        if not isinstance(sig["resp_text"], (str, type(None))):
+        if not isinstance(new_sig["resp_text"], (str, type(None))):
             raise TypeError("Must be a string")
-        if not isinstance(sig["dns"], (str, bool)):
+        if not isinstance(new_sig["dns"], (str, bool)):
             raise TypeError("Must be a bool")
 
-        self.sigs.append(sig)
+        self.sigs.append(new_sig)
 
 
 class HTTPChecker(Checker):
@@ -78,10 +83,33 @@ class HTTPChecker(Checker):
     known pattern matches of HTTP response codes and text.
     """
 
-    def check_targets(self):
+    @staticmethod
+    def check_target(target, sig):
         """
-        This is where the active checks happen
+        Checks an individual target for a pattern match.
+
+        Returns True/False based on the HTTP response and the provided
+        signature.
         """
+        try:
+            resp = requests.get(target)
+        except requests.exceptions.ConnectionError as error_msg:
+            print(f"    [!] Connection error on {target}:")
+            print(error_msg)
+            return False
+        except TimeoutError:
+            print(f"    [!] Timeout on {target}.")
+            return False
+
+        if resp.status_code == sig["resp_code"]:
+            if not sig["resp_text"]:
+                # Simple checks match only the response status code
+                return True
+            if sig["resp_text"] in resp.text:
+                # Some checks also require matching response text
+                return True
+
+        return False
 
 
 class DNSChecker(Checker):
