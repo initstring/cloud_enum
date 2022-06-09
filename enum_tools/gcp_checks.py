@@ -17,6 +17,7 @@ GCP_URL = 'storage.googleapis.com'
 FBRTDB_URL = 'firebaseio.com'
 APPSPOT_URL = 'appspot.com'
 FUNC_URL = 'cloudfunctions.net'
+FBAPP_URL = 'firebaseapp.com'
 
 # Hacky, I know. Used to store project/region combos that report at least
 # one cloud function, to brute force later on
@@ -138,7 +139,55 @@ def check_fbrtdb(names, threads):
 
     # Stop the time
     utils.stop_timer(start_time)
+      
+      
+def print_fbapp_response(reply):
+    """
+    Parses the HTTP reply of a brute-force attempt
 
+    This function is passed into the class object so we can view results
+    in real-time.
+    """
+    data = {'platform': 'gcp', 'msg': '', 'target': '', 'access': ''}
+
+    if reply.status_code == 404:
+        pass
+    elif reply.status_code == 200:
+        data['msg'] = 'OPEN GOOGLE FIREBASE APP'
+        data['target'] = reply.url
+        data['access'] = 'public'
+        utils.fmt_output(data)
+    else:
+        print(f"    Unknown status codes being received from {reply.url}:\n"
+              "       {reply.status_code}: {reply.reason}")
+
+def check_fbapp(names, threads):
+    """
+    Checks for Google Firebase Applications
+    """
+    print("[+] Checking for Google Firebase Applications")
+
+    # Start a counter to report on elapsed time
+    start_time = utils.start_timer()
+
+    # Initialize the list of correctly formatted urls
+    candidates = []
+
+    # Take each mutated keyword craft a url with the correct format
+    for name in names:
+        # Firebase RTDB names cannot include a period. We'll exlcude
+        # those from the global candidates list
+        if '.' not in name:
+            candidates.append(f'{name}.{FBAPP_URL}')
+
+    # Send the valid names to the batch HTTP processor
+    utils.get_url_batch(candidates, use_ssl=True,
+                        callback=print_fbapp_response,
+                        threads=threads,
+                        redir=False)
+
+    # Stop the time
+    utils.stop_timer(start_time)
 
 def print_appspot_response(reply):
     """
