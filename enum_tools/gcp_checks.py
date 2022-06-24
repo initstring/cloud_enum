@@ -273,14 +273,17 @@ def check_functions(names, brute_list, quickscan, threads):
     # Start a counter to report on elapsed time
     start_time = utils.start_timer()
 
+    # Initialize the list of correctly formatted urls
+    candidates = []
+      
     # Pull the regions from a config file
     regions = gcp_regions.REGIONS
 
     print(f"[*] Testing across {len(regions)} regions defined in the config file")
 
+    # Take each mutated keyword craft a url with the correct format
     for region in regions:
-        # Initialize the list of initial URLs to check
-        candidates = [region + '-' + name + '.' + FUNC_URL for name in names]
+        candidates += [region + '-' + name + '.' + FUNC_URL for name in names]
 
     # Send the valid names to the batch HTTP processor
     utils.get_url_batch(candidates, use_ssl=False,
