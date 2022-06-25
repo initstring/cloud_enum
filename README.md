@@ -19,6 +19,7 @@ Currently enumerates the following:
 - Open / Protected Firebase Realtime Databases
 - Google App Engine sites
 - Cloud Functions (enumerates project/regions with existing functions, then brute forces actual function names)
+- Open Firebase Apps
 
 See it in action in [Codingo](https://github.com/codingo)'s video demo [here](https://www.youtube.com/embed/pTUDJhWJ1m0).
 
