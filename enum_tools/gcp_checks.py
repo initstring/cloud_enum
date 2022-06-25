@@ -175,7 +175,7 @@ def check_fbapp(names, threads):
 
     # Take each mutated keyword craft a url with the correct format
     for name in names:
-        # Firebase RTDB names cannot include a period. We'll exlcude
+        # Firebase App names cannot include a period. We'll exlcude
         # those from the global candidates list
         if '.' not in name:
             candidates.append(f'{name}.{FBAPP_URL}')
