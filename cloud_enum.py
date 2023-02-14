@@ -13,6 +13,7 @@ import os
 import sys
 import argparse
 import re
+import json
 from enum_tools import aws_checks
 from enum_tools import azure_checks
 from enum_tools import gcp_checks
@@ -84,6 +85,9 @@ def parse_arguments():
 
     parser.add_argument('-qs', '--quickscan', action='store_true',
                         help='Disable all mutations and second-level scans')
+
+    parser.add_argument('-j', '--jsonfile', type=str, action='store',
+                        help='JSON output file')
 
     args = parser.parse_args()
 
@@ -242,6 +246,9 @@ def main():
             azure_checks.run_all(names, args)
         if not args.disable_gcp:
             gcp_checks.run_all(names, args)
+        if args.jsonfile :
+            with open(args.jsonfile, 'w')  as log_writer:
+                log_writer.write(json.dumps(utils.JSON_RESULT))
     except KeyboardInterrupt:
         print("Thanks for playing!")
         sys.exit()

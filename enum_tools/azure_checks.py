@@ -134,6 +134,7 @@ def print_container_response(reply):
         data['target'] = reply.url
         data['access'] = 'public'
         utils.fmt_output(data)
+        utils.JSON_RESULT["azure"]["containers"].append(reply.url)
         utils.list_bucket_contents(reply.url)
     elif 'One of the request inputs is out of range' in reply.reason:
         pass
@@ -209,6 +210,7 @@ def print_website_response(hostname):
     data['target'] = hostname
     data['access'] = 'public'
     utils.fmt_output(data)
+    utils.JSON_RESULT["azure"]["websites"].append(hostname)
 
 
 def check_azure_websites(names, nameserver, threads):
@@ -243,6 +245,7 @@ def print_database_response(hostname):
     data['target'] = hostname
     data['access'] = 'public'
     utils.fmt_output(data)
+    utils.JSON_RESULT["azure"]["databases"].append(hostname)
 
 
 def check_azure_databases(names, nameserver, threads):
@@ -277,6 +280,7 @@ def print_vm_response(hostname):
     data['target'] = hostname
     data['access'] = 'public'
     utils.fmt_output(data)
+    utils.JSON_RESULT["azure"]["vms"].append(hostname)
 
 
 def check_azure_vms(names, nameserver, threads):
