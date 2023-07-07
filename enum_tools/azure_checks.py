@@ -85,7 +85,7 @@ def check_storage_accounts(names, threads, nameserver):
     regex = re.compile('[^a-zA-Z0-9]')
     for name in names:
         if not re.search(regex, name):
-            candidates.append(f'{name}.{BLOB_URL}')
+            candidate.append(f'{name}.{BLOB_URL}')
         if not re.search(regex, name):
             canidate.append(f'{name}.{DATA_LAKE_URL}')
         if not re.search(regex, name):
