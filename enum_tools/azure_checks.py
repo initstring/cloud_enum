@@ -87,13 +87,13 @@ def check_storage_accounts(names, threads, nameserver):
         if not re.search(regex, name):
             candidate.append(f'{name}.{BLOB_URL}')
         if not re.search(regex, name):
-            canidate.append(f'{name}.{DATA_LAKE_URL}')
+            candidate.append(f'{name}.{DATA_LAKE_URL}')
         if not re.search(regex, name):
-            canidate.append(f'{name}.{AZURE_FILES_URL}')
+            candidate.append(f'{name}.{AZURE_FILES_URL}')
         if not re.search(regex, name):
-            canidate.append(f'{name}.{QUE_STORAGE_URL}')
+            candidate.append(f'{name}.{QUE_STORAGE_URL}')
         if not re.search(regex, name):
-            canidate.append(f'{name}.{TABLE_STORAGE_URL}')
+            candidate.append(f'{name}.{TABLE_STORAGE_URL}')
 
     # Azure Storage Accounts use DNS sub-domains. First, see which are valid.
     valid_names = utils.fast_dns_lookup(candidates, nameserver,
