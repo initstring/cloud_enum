@@ -18,6 +18,10 @@ BANNER = '''
 BLOB_URL = 'blob.core.windows.net'
 WEBAPP_URL = 'azurewebsites.net'
 DATABASE_URL = 'database.windows.net'
+DATA_LAKE_URL = 'dfs.core.windows.net'
+AZURE_FILES_URL = 'filecore.windows.net'
+QUE_STORAGE_URL = 'que.core.windows.net'
+TABLE_STORAGE_URL = 'table.core.windows.net'
 
 # Virtual machine DNS names are actually:
 #   {whatever}.{region}.cloudapp.azure.com
@@ -82,6 +86,14 @@ def check_storage_accounts(names, threads, nameserver):
     for name in names:
         if not re.search(regex, name):
             candidates.append(f'{name}.{BLOB_URL}')
+        if not re.search(regex, name):
+            canidate.append(f'{name}.{DATA_LAKE_URL}')
+        if not re.search(regex, name):
+            canidate.append(f'{name}.{AZURE_FILES_URL}')
+        if not re.search(regex, name):
+            canidate.append(f'{name}.{QUE_STORAGE_URL}')
+        if not re.search(regex, name):
+            canidate.append(f'{name}.{TABLE_STORAGE_URL}')
 
     # Azure Storage Accounts use DNS sub-domains. First, see which are valid.
     valid_names = utils.fast_dns_lookup(candidates, nameserver,
