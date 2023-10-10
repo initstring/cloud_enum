@@ -10,6 +10,7 @@ import csv
 import json
 from multiprocessing.dummy import Pool as ThreadPool
 from functools import partial
+from urllib.parse import urlparse
 try:
     import requests
     import dns
@@ -41,6 +42,23 @@ def init_logfile(logfile, fmt):
             log_writer.write(f"\n\n#### CLOUD_ENUM {now} ####\n")
 
 
+def is_valid_domain(domain):
+    """
+    Checks if the domain has a valid format and length
+    """
+    # Check for domain total length
+    if len(domain) > 253:  # According to DNS specifications
+        return False
+
+    # Check each label in the domain
+    for label in domain.split('.'):
+        # Each label should be between 1 and 63 characters long
+        if not (1 <= len(label) <= 63):
+            return False
+        
+    return True
+
+
 def get_url_batch(url_list, use_ssl=False, callback='', threads=5, redir=True):
     """
     Processes a list of URLs, sending the results back to the calling
@@ -51,6 +69,9 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5, redir=True):
     tick = {}
     tick['total'] = len(url_list)
     tick['current'] = 0
+
+    # Filter out invalid URLs
+    url_list = [url for url in url_list if is_valid_domain(url)]
 
     # Break the url list into smaller lists based on thread size
     queue = [url_list[x:x+threads] for x in range(0, len(url_list), threads)]
@@ -148,6 +169,9 @@ def fast_dns_lookup(names, nameserver, callback='', threads=5):
     valid_names = []
 
     print(f"[*] Brute-forcing a list of {total} possible DNS names")
+
+    # Filter out invalid domains
+    names = [name for name in names if is_valid_domain(name)]
 
     # Break the url list into smaller lists based on thread size
     queue = [names[x:x+threads] for x in range(0, len(names), threads)]
