@@ -331,9 +331,16 @@ def check_functions(names, brute_list, quickscan, threads):
     print(f"[*] Testing across {len(regions)} regions defined in the config file")
 
     # Take each mutated keyword craft a url with the correct format
+    ## Below added by dnx
     for region in regions:
-        candidates += [region + '-' + name + '.' + FUNC_URL for name in names]
-
+        for name in names:
+            if len(name) < 254:
+                newdomain = f"{region}-{name}.{FUNC_URL}"
+                portions = newdomain.split(".")
+                for portion in portions:
+                    if len(portion) < 65:
+                        candidates.append(newdomain)
+                
     # Send the valid names to the batch HTTP processor
     utils.get_url_batch(candidates, use_ssl=False,
                         callback=print_functions_response1,
