@@ -331,15 +331,17 @@ def check_functions(names, brute_list, quickscan, threads):
     print(f"[*] Testing across {len(regions)} regions defined in the config file")
 
     # Take each mutated keyword craft a url with the correct format
-    ## Below added by dnx
+    toolong = False
     for region in regions:
         for name in names:
-            if len(name) < 254:
-                newdomain = f"{region}-{name}.{FUNC_URL}"
-                portions = newdomain.split(".")
-                for portion in portions:
-                    if len(portion) < 65:
-                        candidates.append(newdomain)
+            newdomain = f"{region}-{name}.{FUNC_URL}"
+            parts = newdomain.split(".")
+            for part in parts:
+                if len(part) > 63:
+                    toolong = True
+            if len(newdomain) < 254 and toolong is False:
+                candidates.append(newdomain)
+            toolong = False
                 
     # Send the valid names to the batch HTTP processor
     utils.get_url_batch(candidates, use_ssl=False,
