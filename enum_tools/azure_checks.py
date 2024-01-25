@@ -513,17 +513,17 @@ def run_all(names, args):
     """
     print(BANNER)
 
-    #valid_accounts = check_storage_accounts(names, args.threads,
-    #                                        args.nameserver, args.nameserverfile)
-    #if valid_accounts and not args.quickscan:
-    #    brute_force_containers(valid_accounts, args.brute, args.threads, args.nameserverfile)
+    valid_accounts = check_storage_accounts(names, args.threads,
+                                            args.nameserver, args.nameserverfile)
+    if valid_accounts and not args.quickscan:
+        brute_force_containers(valid_accounts, args.brute, args.threads, args.nameserverfile)
 
-    #check_file_accounts(names, args.threads, args.nameserver, args.nameserverfile)
-    #check_queue_accounts(names, args.threads, args.nameserver, args.nameserverfile)
-    #check_table_accounts(names, args.threads, args.nameserver, args.nameserverfile)
+    check_file_accounts(names, args.threads, args.nameserver, args.nameserverfile)
+    check_queue_accounts(names, args.threads, args.nameserver, args.nameserverfile)
+    check_table_accounts(names, args.threads, args.nameserver, args.nameserverfile)
     check_mgmt_accounts(names, args.threads, args.nameserver, args.nameserverfile)
     check_vault_accounts(names, args.threads, args.nameserver, args.nameserverfile)
 
-    #check_azure_websites(names, args.nameserver, args.threads, args.nameserverfile)
-    #check_azure_databases(names, args.nameserver, args.threads, args.nameserverfile)
-    #check_azure_vms(names, args.nameserver, args.threads, args.nameserverfile)
+    check_azure_websites(names, args.nameserver, args.threads, args.nameserverfile)
+    check_azure_databases(names, args.nameserver, args.threads, args.nameserverfile)
+    check_azure_vms(names, args.nameserver, args.threads, args.nameserverfile)
