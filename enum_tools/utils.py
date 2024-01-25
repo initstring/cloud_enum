@@ -8,6 +8,7 @@ import datetime
 import re
 import csv
 import json
+import ipaddress
 from multiprocessing.dummy import Pool as ThreadPool
 from functools import partial
 from urllib.parse import urlparse
@@ -131,15 +132,48 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5, redir=True):
     # Clear the status message
     sys.stdout.write('                            \r')
 
+def read_nameservers(file_path):
+    """
+    Reads nameservers from a given file.
+    Each line in the file should contain one nameserver IP address.
+    Lines starting with '#' will be ignored as comments.
+    """
+    try:
+        with open(file_path, 'r') as file:
+            nameservers = [line.strip() for line in file if line.strip() and not line.startswith('#')]
+        if not nameservers:
+            raise ValueError("Nameserver file is empty or only contains comments")
+        return nameservers
+    except FileNotFoundError:
+        print(f"Error: File '{file_path}' not found.")
+        exit(1)
+    except ValueError as e:
+        print(e)
+        exit(1)
+
+def is_valid_ip(address):
+    try:
+        ipaddress.ip_address(address)
+        return True
+    except ValueError:
+        return False
 
 def dns_lookup(nameserver, name):
     """
     This function performs the actual DNS lookup when called in a threadpool
     by the fast_dns_lookup function.
     """
+    nameserverfile = False
+    if not is_valid_ip(nameserver):
+        nameserverfile = nameserver
+
     res = dns.resolver.Resolver()
     res.timeout = 10
-    res.nameservers = [nameserver]
+    if nameserverfile:
+        nameservers = read_nameservers(nameserverfile)
+        res.nameservers = nameservers
+    else:
+        res.nameservers = [nameserver]
 
     try:
         res.query(name)
@@ -160,7 +194,7 @@ def dns_lookup(nameserver, name):
         return ''
 
 
-def fast_dns_lookup(names, nameserver, callback='', threads=5):
+def fast_dns_lookup(names, nameserver, nameserverfile, callback='', threads=5):
     """
     Helper function to resolve DNS names. Uses multithreading.
     """
@@ -181,7 +215,10 @@ def fast_dns_lookup(names, nameserver, callback='', threads=5):
 
         # Because pool.map takes only a single function arg, we need to
         # define this partial so that each iteration uses the same ns
-        dns_lookup_params = partial(dns_lookup, nameserver)
+        if nameserverfile:
+            dns_lookup_params = partial(dns_lookup, nameserverfile)
+        else:
+            dns_lookup_params = partial(dns_lookup, nameserver)
 
         results = pool.map(dns_lookup_params, batch)
 

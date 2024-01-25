@@ -98,7 +98,7 @@ def check_s3_buckets(names, threads):
     utils.stop_timer(start_time)
 
 
-def check_awsapps(names, threads, nameserver):
+def check_awsapps(names, threads, nameserver, nameserverfile=False):
     """
     Checks for existence of AWS Apps
     (ie. WorkDocs, WorkMail, Connect, etc.)
@@ -122,7 +122,7 @@ def check_awsapps(names, threads, nameserver):
 
     # AWS Apps use DNS sub-domains. First, see which are valid.
     valid_names = utils.fast_dns_lookup(candidates, nameserver,
-                                        threads=threads)
+                                        nameserverfile, threads=threads)
 
     for name in valid_names:
         data['target'] = f'https://{name}'
@@ -143,4 +143,4 @@ def run_all(names, args):
     # if not regions:
     #    regions = AWS_REGIONS
     check_s3_buckets(names, args.threads)
-    check_awsapps(names, args.threads, args.nameserver)
+    check_awsapps(names, args.threads, args.nameserver, args.nameserverfile)
