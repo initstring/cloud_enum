@@ -516,7 +516,7 @@ def run_all(names, args):
     valid_accounts = check_storage_accounts(names, args.threads,
                                             args.nameserver, args.nameserverfile)
     if valid_accounts and not args.quickscan:
-        brute_force_containers(valid_accounts, args.brute, args.threads, args.nameserverfile)
+        brute_force_containers(valid_accounts, args.brute, args.threads)
 
     check_file_accounts(names, args.threads, args.nameserver, args.nameserverfile)
     check_queue_accounts(names, args.threads, args.nameserver, args.nameserverfile)
