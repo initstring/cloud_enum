@@ -65,7 +65,8 @@ def parse_arguments():
     parser.add_argument('-ns', '--nameserver', type=str, action='store',
                         default='8.8.8.8',
                         help='DNS server to use in brute-force.')
-
+    parser.add_argument('-nsf', '--nameserverfile', type=str, 
+                        help='Path to the file containing nameserver IPs')
     parser.add_argument('-l', '--logfile', type=str, action='store',
                         help='Appends found items to specified file.')
     parser.add_argument('-f', '--format', type=str, action='store',
@@ -221,6 +222,19 @@ def build_names(base_list, mutations):
 
     return names
 
+def read_nameservers(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            nameservers = [line.strip() for line in file if line.strip()]
+        if not nameservers:
+            raise ValueError("Nameserver file is empty")
+        return nameservers
+    except FileNotFoundError:
+        print(f"Error: File '{file_path}' not found.")
+        exit(1)
+    except ValueError as e:
+        print(e)
+        exit(1)
 
 def main():
     """
