@@ -106,7 +106,7 @@ def check_storage_accounts(names, threads, nameserver, nameserverfile=False):
     # de-dupe the results and return
     return list(set(valid_names))
 
-def check_file_accounts(names, threads, nameserver):
+def check_file_accounts(names, threads, nameserver, nameserverfile=False):
     """
     Checks File account names
     """
