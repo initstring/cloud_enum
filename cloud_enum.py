@@ -186,6 +186,14 @@ def clean_text(text):
     return text_clean
 
 
+def append_name(name, names_list):
+    """
+    Ensure strings stick to DNS label limit of 63 characters
+    """
+    if len(name) <= 63:
+        names_list.append(name)
+
+
 def build_names(base_list, mutations):
     """
     Combine base and mutations for processing by individual modules.
@@ -197,21 +205,21 @@ def build_names(base_list, mutations):
         base = clean_text(base)
 
         # First, include with no mutations
-        names.append(base)
+        append_name(base, names)
 
         for mutation in mutations:
             # Clean mutation
             mutation = clean_text(mutation)
 
             # Then, do appends
-            names.append(f"{base}{mutation}")
-            names.append(f"{base}.{mutation}")
-            names.append(f"{base}-{mutation}")
+            append_name(f"{base}{mutation}", names)
+            append_name(f"{base}.{mutation}", names)
+            append_name(f"{base}-{mutation}", names)
 
             # Then, do prepends
-            names.append(f"{mutation}{base}")
-            names.append(f"{mutation}.{base}")
-            names.append(f"{mutation}-{base}")
+            append_name(f"{mutation}{base}", names)
+            append_name(f"{mutation}.{base}", names)
+            append_name(f"{mutation}-{base}", names)
 
     print(f"[+] Mutated results: {len(names)} items")
 
