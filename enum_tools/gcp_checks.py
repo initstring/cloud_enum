@@ -4,6 +4,7 @@ github.com/initstring/cloud_enum
 """
 
 from enum_tools import utils
+from enum_tools import json
 from enum_tools import gcp_regions
 
 BANNER = '''
@@ -40,14 +41,14 @@ def print_bucket_response(reply):
         data['target'] = reply.url
         data['access'] = 'public'
         utils.fmt_output(data)
-        utils.JSON_RESULT["gcp"]["bucket"]["open"].append(reply.url)
+        json.JSON_RESULT["gcp"]["bucket"]["open"].append(reply.url)
         utils.list_bucket_contents(reply.url + '/')
     elif reply.status_code == 403:
         data['msg'] = 'Protected Google Bucket'
         data['target'] = reply.url
         data['access'] = 'protected'
         utils.fmt_output(data)
-        utils.JSON_RESULT["gcp"]["bucket"]["protected"].append(reply.url)
+        json.JSON_RESULT["gcp"]["bucket"]["protected"].append(reply.url)
     else:
         print(f"    Unknown status codes being received from {reply.url}:\n"
               "       {reply.status_code}: {reply.reason}")
@@ -94,25 +95,25 @@ def print_fbrtdb_response(reply):
         data['target'] = reply.url
         data['access'] = 'public'
         utils.fmt_output(data)
-        utils.JSON_RESULT["gcp"]["firebase"]["open"].append(reply.url)
+        json.JSON_RESULT["gcp"]["firebase"]["open"].append(reply.url)
     elif reply.status_code == 401:
         data['msg'] = 'Protected Google Firebase RTDB'
         data['target'] = reply.url
         data['access'] = 'protected'
         utils.fmt_output(data)
-        utils.JSON_RESULT["gcp"]["firebase"]["protected"].append(reply.url)
+        json.JSON_RESULT["gcp"]["firebase"]["protected"].append(reply.url)
     elif reply.status_code == 402:
         data['msg'] = 'Payment required on Google Firebase RTDB'
         data['target'] = reply.url
         data['access'] = 'disabled'
         utils.fmt_output(data)
-        utils.JSON_RESULT["gcp"]["firebase"]["payment"].append(reply.url)
+        json.JSON_RESULT["gcp"]["firebase"]["payment"].append(reply.url)
     elif reply.status_code == 423:
         data['msg'] = 'The Firebase database has been deactivated.'
         data['target'] = reply.url
         data['access'] = 'disabled'
         utils.fmt_output(data)
-        utils.JSON_RESULT["gcp"]["firebase"]["disabled"].append(reply.url)
+        json.JSON_RESULT["gcp"]["firebase"]["disabled"].append(reply.url)
     else:
         print(f"    Unknown status codes being received from {reply.url}:\n"
               "       {reply.status_code}: {reply.reason}")
@@ -163,7 +164,7 @@ def print_fbapp_response(reply):
         data['target'] = reply.url
         data['access'] = 'public'
         utils.fmt_output(data)
-        utils.JSON_RESULT["gcp"]["firebase"]["open"].append(reply.url)
+        json.JSON_RESULT["gcp"]["firebase"]["open"].append(reply.url)
     else:
         print(f"    Unknown status codes being received from {reply.url}:\n"
               "       {reply.status_code}: {reply.reason}")
@@ -218,13 +219,13 @@ def print_appspot_response(reply):
             data['target'] = reply.history[0].url
             data['access'] = 'protected'
             utils.fmt_output(data)
-            utils.JSON_RESULT["gcp"]["appspot"]["protected"].append(reply.url)
+            json.JSON_RESULT["gcp"]["appspot"]["protected"].append(reply.url)
         else:
             data['msg'] = 'Open Google App Engine app'
             data['target'] = reply.url
             data['access'] = 'public'
             utils.fmt_output(data)
-            utils.JSON_RESULT["gcp"]["appspot"]["open"].append(reply.url)
+            json.JSON_RESULT["gcp"]["appspot"]["open"].append(reply.url)
     else:
         print(f"    Unknown status codes being received from {reply.url}:\n"
               "       {reply.status_code}: {reply.reason}")
@@ -274,7 +275,7 @@ def print_functions_response1(reply):
         data['target'] = reply.url
         data['access'] = 'public'
         utils.fmt_output(data)
-        utils.JSON_RESULT["gcp"]["function"]["viewed"].append(reply.url)
+        json.JSON_RESULT["gcp"]["function"]["viewed"].append(reply.url)
         HAS_FUNCS.append(reply.url)
     else:
         print(f"    Unknown status codes being received from {reply.url}:\n"
@@ -297,18 +298,18 @@ def print_functions_response2(reply):
         data['target'] = reply.url
         data['access'] = 'protected'
         utils.fmt_output(data)
-        utils.JSON_RESULT["gcp"]["function"]["authRequired"].append(reply.url)
+        json.JSON_RESULT["gcp"]["function"]["authRequired"].append(reply.url)
     elif reply.status_code == 405:
         data['msg'] = 'UNAUTHENTICATED Cloud Function (POST-Only)'
         data['target'] = reply.url
         data['access'] = 'public'
-        utils.JSON_RESULT["gcp"]["function"]["post"].append(reply.url)
+        json.JSON_RESULT["gcp"]["function"]["post"].append(reply.url)
         utils.fmt_output(data)
     elif reply.status_code in (200, 404):
         data['msg'] = 'UNAUTHENTICATED Cloud Function (GET-OK)'
         data['target'] = reply.url
         data['access'] = 'public'
-        utils.JSON_RESULT["gcp"]["function"]["get"].append(reply.url)
+        json.JSON_RESULT["gcp"]["function"]["get"].append(reply.url)
         utils.fmt_output(data)
     else:
         print(f"    Unknown status codes being received from {reply.url}:\n"

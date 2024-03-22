@@ -7,7 +7,7 @@ import sys
 import datetime
 import re
 import csv
-import json
+
 from multiprocessing.dummy import Pool as ThreadPool
 from functools import partial
 from urllib.parse import urlparse
@@ -24,47 +24,6 @@ except ImportError:
 
 LOGFILE = False
 LOGFILE_FMT = ''
-
-JSON_RESULT = {
-    "aws" : {
-        "s3" : {
-            "open" : [],
-            "protected" : []
-        },
-        "apps" : []
-    },
-    "azure" : {
-        "websites" : [],
-        "databases" : [],
-        "vms" : [],
-        "containers" : []
-    },
-    "gcp" : {
-        "bucket": {
-            "open" : [],
-            "protected" : []
-        },
-        "firebase":{
-            "open" : [],
-            "protected" : [],
-            "payment" : [],
-            "disabled" : []
-        },
-        "appspot":{
-            "open" : [],
-            "error" : []
-        },
-        "function":{
-            "viewed" : [],
-            "authRequired" : [],
-            "open" : {
-                "get" : [],
-                "post" : []
-            }
-        }
-    }
-}
-
 
 def init_logfile(logfile, fmt):
     """

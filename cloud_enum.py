@@ -18,6 +18,7 @@ from enum_tools import aws_checks
 from enum_tools import azure_checks
 from enum_tools import gcp_checks
 from enum_tools import utils
+from enum_tools import json
 
 BANNER = '''
 ##########################
@@ -256,7 +257,7 @@ def main():
             gcp_checks.run_all(names, args)
         if args.jsonfile :
             with open(args.jsonfile, 'w')  as log_writer:
-                log_writer.write(json.dumps(utils.JSON_RESULT))
+                log_writer.write(json.dumps(json.JSON_RESULT))
     except KeyboardInterrupt:
         print("Thanks for playing!")
         sys.exit()
