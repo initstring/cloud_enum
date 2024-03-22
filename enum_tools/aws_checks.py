@@ -4,7 +4,7 @@ github.com/initstring/cloud_enum
 """
 
 from enum_tools import utils
-from enum_tools import json
+from enum_tools import json_utils
 
 BANNER = '''
 ++++++++++++++++++++++++++
@@ -58,14 +58,14 @@ def print_s3_response(reply):
         data['target'] = reply.url
         data['access'] = 'public'
         utils.fmt_output(data)
-        json.JSON_RESULT["aws"]["s3"]["open"].append(reply.url)
+        json_utils.JSON_RESULT["aws"]["s3"]["open"].append(reply.url)
         utils.list_bucket_contents(reply.url)
     elif reply.status_code == 403:
         data['msg'] = 'Protected S3 Bucket'
         data['target'] = reply.url
         data['access'] = 'protected'
         utils.fmt_output(data)
-        json.JSON_RESULT["aws"]["s3"]["protected"].append(reply.url)
+        json_utils.JSON_RESULT["aws"]["s3"]["protected"].append(reply.url)
     elif 'Slow Down' in reply.reason:
         print("[!] You've been rate limited, skipping rest of check...")
         return 'breakout'
@@ -131,7 +131,7 @@ def check_awsapps(names, threads, nameserver):
         data['target'] = f'https://{name}'
         data['access'] = 'protected'
         utils.fmt_output(data)
-        json.JSON_RESULT["aws"]["apps"].append("https://{}".format(name))
+        json_utils.JSON_RESULT["aws"]["apps"].append("https://{}".format(name))
 
     # Stop the timer
     utils.stop_timer(start_time)

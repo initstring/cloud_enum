@@ -2,8 +2,6 @@
 Manage JSON output.
 """
 
-import json
-
 JSON_RESULT = {
     "aws" : {
         "s3" : {
