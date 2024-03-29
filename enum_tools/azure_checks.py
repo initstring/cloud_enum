@@ -16,6 +16,11 @@ BANNER = '''
 
 # Known Azure domain names
 BLOB_URL = 'blob.core.windows.net'
+FILE_URL= 'file.core.windows.net'
+QUEUE_URL = 'queue.core.windows.net'
+TABLE_URL = 'table.core.windows.net'
+MGMT_URL = 'scm.azurewebsites.net'
+VAULT_URL = 'vault.azure.net'
 WEBAPP_URL = 'azurewebsites.net'
 DATABASE_URL = 'database.windows.net'
 
@@ -33,34 +38,37 @@ def print_account_response(reply):
     """
     data = {'platform': 'azure', 'msg': '', 'target': '', 'access': ''}
 
-    if reply.status_code == 404:
+    if reply.status_code == 404 or 'The requested URI does not represent' in reply.reason:
         pass
     elif 'Server failed to authenticate the request' in reply.reason:
-        data['msg'] = 'Auth-Only Storage Account'
+        data['msg'] = 'Auth-Only Account'
         data['target'] = reply.url
         data['access'] = 'protected'
         utils.fmt_output(data)
     elif 'The specified account is disabled' in reply.reason:
-        data['msg'] = 'Disabled Storage Account'
+        data['msg'] = 'Disabled Account'
         data['target'] = reply.url
         data['access'] = 'disabled'
         utils.fmt_output(data)
     elif 'Value for one of the query' in reply.reason:
-        data['msg'] = 'HTTP-OK Storage Account'
+        data['msg'] = 'HTTP-OK Account'
         data['target'] = reply.url
         data['access'] = 'public'
         utils.fmt_output(data)
     elif 'The account being accessed' in reply.reason:
-        data['msg'] = 'HTTPS-Only Storage Account'
+        data['msg'] = 'HTTPS-Only Account'
         data['target'] = reply.url
         data['access'] = 'public'
         utils.fmt_output(data)
+    elif 'Unauthorized' in reply.reason:
+        data['msg'] = 'Unathorized Account'
+        data['target'] = reply.url
+        data['access'] = 'public'
     else:
-        print("    Unknown status codes being received from {reply.url}:\n"
-              "       {reply.status_code}: {reply.reason}")
+        print("    Unknown status codes being received from " + reply.url +":\n"
+              "       "+ str(reply.status_code)+" : "+ reply.reason)
 
-
-def check_storage_accounts(names, threads, nameserver):
+def check_storage_accounts(names, threads, nameserver, nameserverfile=False):
     """
     Checks storage account names
     """
@@ -85,7 +93,197 @@ def check_storage_accounts(names, threads, nameserver):
 
     # Azure Storage Accounts use DNS sub-domains. First, see which are valid.
     valid_names = utils.fast_dns_lookup(candidates, nameserver,
-                                        threads=threads)
+                                        nameserverfile, threads=threads)
+
+    # Send the valid names to the batch HTTP processor
+    utils.get_url_batch(valid_names, use_ssl=False,
+                        callback=print_account_response,
+                        threads=threads)
+
+    # Stop the timer
+    utils.stop_timer(start_time)
+
+    # de-dupe the results and return
+    return list(set(valid_names))
+
+def check_file_accounts(names, threads, nameserver, nameserverfile=False):
+    """
+    Checks File account names
+    """
+    print("[+] Checking for Azure File Accounts")
+
+    # Start a counter to report on elapsed time
+    start_time = utils.start_timer()
+
+    # Initialize the list of domain names to look up
+    candidates = []
+
+    # Initialize the list of valid hostnames
+    valid_names = []
+
+    # Take each mutated keyword craft a domain name to lookup.
+    # As Azure Storage Accounts can contain only letters and numbers,
+    # discard those not matching to save time on the DNS lookups.
+    regex = re.compile('[^a-zA-Z0-9]')
+    for name in names:
+        if not re.search(regex, name):
+            candidates.append(f'{name}.{FILE_URL}')
+
+    # Azure Storage Accounts use DNS sub-domains. First, see which are valid.
+    valid_names = utils.fast_dns_lookup(candidates, nameserver,
+                                        nameserverfile, threads=threads)
+
+    # Send the valid names to the batch HTTP processor
+    utils.get_url_batch(valid_names, use_ssl=False,
+                        callback=print_account_response,
+                        threads=threads)
+
+    # Stop the timer
+    utils.stop_timer(start_time)
+
+    # de-dupe the results and return
+    return list(set(valid_names))
+
+def check_queue_accounts(names, threads, nameserver, nameserverfile=False):
+    """
+    Checks Queue account names
+    """
+    print("[+] Checking for Azure Queue Accounts")
+
+    # Start a counter to report on elapsed time
+    start_time = utils.start_timer()
+
+    # Initialize the list of domain names to look up
+    candidates = []
+
+    # Initialize the list of valid hostnames
+    valid_names = []
+
+    # Take each mutated keyword craft a domain name to lookup.
+    # As Azure Storage Accounts can contain only letters and numbers,
+    # discard those not matching to save time on the DNS lookups.
+    regex = re.compile('[^a-zA-Z0-9]')
+    for name in names:
+        if not re.search(regex, name):
+            candidates.append(f'{name}.{QUEUE_URL}')
+
+    # Azure Storage Accounts use DNS sub-domains. First, see which are valid.
+    valid_names = utils.fast_dns_lookup(candidates, nameserver,
+                                        nameserverfile, threads=threads)
+
+    # Send the valid names to the batch HTTP processor
+    utils.get_url_batch(valid_names, use_ssl=False,
+                        callback=print_account_response,
+                        threads=threads)
+
+    # Stop the timer
+    utils.stop_timer(start_time)
+
+    # de-dupe the results and return
+    return list(set(valid_names))
+
+def check_table_accounts(names, threads, nameserver, nameserverfile=False):
+    """
+    Checks Table account names
+    """
+    print("[+] Checking for Azure Table Accounts")
+
+    # Start a counter to report on elapsed time
+    start_time = utils.start_timer()
+
+    # Initialize the list of domain names to look up
+    candidates = []
+
+    # Initialize the list of valid hostnames
+    valid_names = []
+
+    # Take each mutated keyword craft a domain name to lookup.
+    # As Azure Storage Accounts can contain only letters and numbers,
+    # discard those not matching to save time on the DNS lookups.
+    regex = re.compile('[^a-zA-Z0-9]')
+    for name in names:
+        if not re.search(regex, name):
+            candidates.append(f'{name}.{TABLE_URL}')
+
+    # Azure Storage Accounts use DNS sub-domains. First, see which are valid.
+    valid_names = utils.fast_dns_lookup(candidates, nameserver,
+                                        nameserverfile, threads=threads)
+
+    # Send the valid names to the batch HTTP processor
+    utils.get_url_batch(valid_names, use_ssl=False,
+                        callback=print_account_response,
+                        threads=threads)
+
+    # Stop the timer
+    utils.stop_timer(start_time)
+
+    # de-dupe the results and return
+    return list(set(valid_names))
+
+def check_mgmt_accounts(names, threads, nameserver, nameserverfile=False):
+    """
+    Checks App Management account names
+    """
+    print("[+] Checking for Azure App Management Accounts")
+
+    # Start a counter to report on elapsed time
+    start_time = utils.start_timer()
+
+    # Initialize the list of domain names to look up
+    candidates = []
+
+    # Initialize the list of valid hostnames
+    valid_names = []
+
+    # Take each mutated keyword craft a domain name to lookup.
+    # As Azure Storage Accounts can contain only letters and numbers,
+    # discard those not matching to save time on the DNS lookups.
+    regex = re.compile('[^a-zA-Z0-9]')
+    for name in names:
+        if not re.search(regex, name):
+            candidates.append(f'{name}.{MGMT_URL}')
+
+    # Azure Storage Accounts use DNS sub-domains. First, see which are valid.
+    valid_names = utils.fast_dns_lookup(candidates, nameserver,
+                                        nameserverfile, threads=threads)
+
+    # Send the valid names to the batch HTTP processor
+    utils.get_url_batch(valid_names, use_ssl=False,
+                        callback=print_account_response,
+                        threads=threads)
+
+    # Stop the timer
+    utils.stop_timer(start_time)
+
+    # de-dupe the results and return
+    return list(set(valid_names))
+
+def check_vault_accounts(names, threads, nameserver, nameserverfile=False):
+    """
+    Checks Key Vault account names
+    """
+    print("[+] Checking for Azure Key Vault Accounts")
+
+    # Start a counter to report on elapsed time
+    start_time = utils.start_timer()
+
+    # Initialize the list of domain names to look up
+    candidates = []
+
+    # Initialize the list of valid hostnames
+    valid_names = []
+
+    # Take each mutated keyword craft a domain name to lookup.
+    # As Azure Storage Accounts can contain only letters and numbers,
+    # discard those not matching to save time on the DNS lookups.
+    regex = re.compile('[^a-zA-Z0-9]')
+    for name in names:
+        if not re.search(regex, name):
+            candidates.append(f'{name}.{VAULT_URL}')
+
+    # Azure Storage Accounts use DNS sub-domains. First, see which are valid.
+    valid_names = utils.fast_dns_lookup(candidates, nameserver,
+                                        nameserverfile, threads=threads)
 
     # Send the valid names to the batch HTTP processor
     utils.get_url_batch(valid_names, use_ssl=False,
@@ -211,7 +409,7 @@ def print_website_response(hostname):
     utils.fmt_output(data)
 
 
-def check_azure_websites(names, nameserver, threads):
+def check_azure_websites(names, nameserver, threads, nameserverfile=False):
     """
     Checks for Azure Websites (PaaS)
     """
@@ -225,6 +423,7 @@ def check_azure_websites(names, nameserver, threads):
 
     # Azure Websites use DNS sub-domains. If it resolves, it is registered.
     utils.fast_dns_lookup(candidates, nameserver,
+                          nameserverfile,
                           callback=print_website_response,
                           threads=threads)
 
@@ -245,12 +444,11 @@ def print_database_response(hostname):
     utils.fmt_output(data)
 
 
-def check_azure_databases(names, nameserver, threads):
+def check_azure_databases(names, nameserver, threads, nameserverfile=False):
     """
     Checks for Azure Databases
     """
     print("[+] Checking for Azure Databases")
-
     # Start a counter to report on elapsed time
     start_time = utils.start_timer()
 
@@ -259,6 +457,7 @@ def check_azure_databases(names, nameserver, threads):
 
     # Azure databases use DNS sub-domains. If it resolves, it is registered.
     utils.fast_dns_lookup(candidates, nameserver,
+                          nameserverfile,
                           callback=print_database_response,
                           threads=threads)
 
@@ -279,7 +478,7 @@ def print_vm_response(hostname):
     utils.fmt_output(data)
 
 
-def check_azure_vms(names, nameserver, threads):
+def check_azure_vms(names, nameserver, threads, nameserverfile=False):
     """
     Checks for Azure Virtual Machines
     """
@@ -300,6 +499,7 @@ def check_azure_vms(names, nameserver, threads):
 
         # Azure VMs use DNS sub-domains. If it resolves, it is registered.
         utils.fast_dns_lookup(candidates, nameserver,
+                              nameserverfile,
                               callback=print_vm_response,
                               threads=threads)
 
@@ -314,10 +514,16 @@ def run_all(names, args):
     print(BANNER)
 
     valid_accounts = check_storage_accounts(names, args.threads,
-                                            args.nameserver)
+                                            args.nameserver, args.nameserverfile)
     if valid_accounts and not args.quickscan:
         brute_force_containers(valid_accounts, args.brute, args.threads)
 
-    check_azure_websites(names, args.nameserver, args.threads)
-    check_azure_databases(names, args.nameserver, args.threads)
-    check_azure_vms(names, args.nameserver, args.threads)
+    check_file_accounts(names, args.threads, args.nameserver, args.nameserverfile)
+    check_queue_accounts(names, args.threads, args.nameserver, args.nameserverfile)
+    check_table_accounts(names, args.threads, args.nameserver, args.nameserverfile)
+    check_mgmt_accounts(names, args.threads, args.nameserver, args.nameserverfile)
+    check_vault_accounts(names, args.threads, args.nameserver, args.nameserverfile)
+
+    check_azure_websites(names, args.nameserver, args.threads, args.nameserverfile)
+    check_azure_databases(names, args.nameserver, args.threads, args.nameserverfile)
+    check_azure_vms(names, args.nameserver, args.threads, args.nameserverfile)
