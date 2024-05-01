@@ -89,3 +89,6 @@ optional arguments:
 # Thanks
 So far, I have borrowed from:
 - Some of the permutations from [GCPBucketBrute](https://github.com/RhinoSecurityLabs/GCPBucketBrute/blob/master/permutations.txt)
+
+# Sample to Use
+[<img src="https://img.youtube.com/vi/bqbdSmmdNTc/hqdefault.jpg" width="425" height="300"/>](https://youtu.be/bqbdSmmdNTc)
