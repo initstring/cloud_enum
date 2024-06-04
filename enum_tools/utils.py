@@ -363,10 +363,10 @@ def stop_timer(start_time, module_name):
 
     # Print some statistics
     print("")
-    fmt_output({'type': 'start',
+    fmt_output({'type': 'stop',
                 'module_name': module_name,
                 'end_time': datetime.datetime.now().isoformat(),
                 'elapsed_time': f"{elapsed_time:0.2f}"})
-    
+
     print(f" Elapsed time: {formatted_time}")
     print("")
