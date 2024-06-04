@@ -164,6 +164,7 @@ def read_nameservers(file_path):
         exit(1)
 
 def is_valid_ip(address):
+    """Return where IP is or not valid"""
     try:
         ipaddress.ip_address(address)
         return True
