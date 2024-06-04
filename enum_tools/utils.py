@@ -133,7 +133,9 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5, redir=True):
         tick['current'] += threads
         sys.stdout.flush()
         if LOGFILE_FMT == 'json':
-            fmt_output({'type':'progress', 'data': tick})
+            fmt_output({'type':'progress',
+                        'source': callback.__name__.replace("print_", ""),
+                        'data': tick})
 
         sys.stdout.write(f"    {tick['current']}/{tick['total']} complete...")
         sys.stdout.write('\r')
@@ -248,7 +250,12 @@ def fast_dns_lookup(names, nameserver, nameserverfile, callback='', threads=5):
         # Update the status message
         sys.stdout.flush()
         if LOGFILE_FMT == 'json':
-            fmt_output({'type':'progress', 'data': {"total": total, "current": current}})
+            data = {'type':'progress',
+                    'source':'fast_dns_lookup',
+                    'data': {"total": total, "current": current}}
+            if callback:
+                data['source'] = callback.__name__.replace("print_", "")
+            fmt_output(data)
         sys.stdout.write(f"    {current}/{total} complete...")
         sys.stdout.write('\r')
         pool.close()
