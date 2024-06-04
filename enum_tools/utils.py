@@ -192,7 +192,7 @@ def dns_lookup(nameserver, name):
     except dns.resolver.NXDOMAIN:
         return ''
     except dns.resolver.NoNameservers as exc_text:
-        fmt_output({'type': 'error', 'data': f"Error querying nameservers", 'exc_text': exc_text})
+        fmt_output({'type': 'error', 'data': f"Error querying nameservers, more info: {exc_text}"})
         print("    [!] Error querying nameservers! This could be a problem.")
         print("    [!] If you're using a VPN, try setting --ns to your VPN's nameserver.")
         print("    [!] Bailing because you need to fix this")
