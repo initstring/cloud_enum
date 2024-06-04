@@ -80,7 +80,7 @@ def check_s3_buckets(names, threads):
     print("[+] Checking for S3 buckets")
 
     # Start a counter to report on elapsed time
-    start_time = utils.start_timer()
+    start_time = utils.start_timer("S3 buckets")
 
     # Initialize the list of correctly formatted urls
     candidates = []
@@ -95,7 +95,7 @@ def check_s3_buckets(names, threads):
                         threads=threads)
 
     # Stop the time
-    utils.stop_timer(start_time)
+    utils.stop_timer(start_time, "S3 buckets")
 
 
 def check_awsapps(names, threads, nameserver, nameserverfile=False):
@@ -104,11 +104,10 @@ def check_awsapps(names, threads, nameserver, nameserverfile=False):
     (ie. WorkDocs, WorkMail, Connect, etc.)
     """
     data = {'platform': 'aws', 'msg': 'AWS App Found:', 'target': '', 'access': ''}
-
     print("[+] Checking for AWS Apps")
 
     # Start a counter to report on elapsed time
-    start_time = utils.start_timer()
+    start_time = utils.start_timer("AWS Apps")
 
     # Initialize the list of domain names to look up
     candidates = []
@@ -130,7 +129,7 @@ def check_awsapps(names, threads, nameserver, nameserverfile=False):
         utils.fmt_output(data)
 
     # Stop the timer
-    utils.stop_timer(start_time)
+    utils.stop_timer(start_time, "AWS Apps")
 
 
 def run_all(names, args):

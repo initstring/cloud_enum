@@ -58,7 +58,7 @@ def check_gcp_buckets(names, threads):
     print("[+] Checking for Google buckets")
 
     # Start a counter to report on elapsed time
-    start_time = utils.start_timer()
+    start_time = utils.start_timer("Google buckets")
 
     # Initialize the list of correctly formatted urls
     candidates = []
@@ -73,7 +73,7 @@ def check_gcp_buckets(names, threads):
                         threads=threads)
 
     # Stop the time
-    utils.stop_timer(start_time)
+    utils.stop_timer(start_time, "Google buckets")
 
 
 def print_fbrtdb_response(reply):
@@ -119,7 +119,7 @@ def check_fbrtdb(names, threads):
     print("[+] Checking for Google Firebase Realtime Databases")
 
     # Start a counter to report on elapsed time
-    start_time = utils.start_timer()
+    start_time = utils.start_timer("Google Firebase Realtime Databases")
 
     # Initialize the list of correctly formatted urls
     candidates = []
@@ -138,9 +138,9 @@ def check_fbrtdb(names, threads):
                         redir=False)
 
     # Stop the time
-    utils.stop_timer(start_time)
-      
-      
+    utils.stop_timer(start_time, "Google Firebase Realtime Databases")
+
+
 def print_fbapp_response(reply):
     """
     Parses the HTTP reply of a brute-force attempt
@@ -168,7 +168,7 @@ def check_fbapp(names, threads):
     print("[+] Checking for Google Firebase Applications")
 
     # Start a counter to report on elapsed time
-    start_time = utils.start_timer()
+    start_time = utils.start_timer("Google Firebase Applications")
 
     # Initialize the list of correctly formatted urls
     candidates = []
@@ -187,7 +187,7 @@ def check_fbapp(names, threads):
                         redir=False)
 
     # Stop the time
-    utils.stop_timer(start_time)
+    utils.stop_timer(start_time, "Google Firebase Applications")
 
 def print_appspot_response(reply):
     """
@@ -228,14 +228,14 @@ def check_appspot(names, threads):
     print("[+] Checking for Google App Engine apps")
 
     # Start a counter to report on elapsed time
-    start_time = utils.start_timer()
+    start_time = utils.start_timer("Google App Engine apps")
 
     # Initialize the list of correctly formatted urls
     candidates = []
 
     # Take each mutated keyword craft a url with the correct format
     for name in names:
-        # App Engine project names cannot include a period. We'll exlcude
+        # App Engine project names cannot include a period. We'll exclude
         # those from the global candidates list
         if '.' not in name:
             candidates.append(f'{name}.{APPSPOT_URL}')
@@ -246,7 +246,7 @@ def check_appspot(names, threads):
                         threads=threads)
 
     # Stop the time
-    utils.stop_timer(start_time)
+    utils.stop_timer(start_time, "Google App Engine apps")
 
 
 def print_functions_response1(reply):
@@ -299,7 +299,7 @@ def print_functions_response2(reply):
         utils.fmt_output(data)
     else:
         print(f"    Unknown status codes being received from {reply.url}:\n"
-              "       {reply.status_code}: {reply.reason}")
+              f"       {reply.status_code}: {reply.reason}")
 
 
 def check_functions(names, brute_list, quickscan, threads):
@@ -317,14 +317,14 @@ def check_functions(names, brute_list, quickscan, threads):
     See gcp_regions.py to define which regions to check. The tool currently
     defaults to only 1 region, so you should really modify it for best results.
     """
-    print("[+] Checking for project/zones with Google Cloud Functions.")
+    print("[+] Checking for project/zones with Google Cloud Functions")
 
     # Start a counter to report on elapsed time
-    start_time = utils.start_timer()
+    start_time = utils.start_timer("Google Cloud Functions")
 
     # Initialize the list of correctly formatted urls
     candidates = []
-      
+
     # Pull the regions from a config file
     regions = gcp_regions.REGIONS
 
@@ -340,9 +340,9 @@ def check_functions(names, brute_list, quickscan, threads):
                         threads=threads,
                         redir=False)
 
-    # Retun from function if we have not found any valid combos
+    # Return from function if we have not found any valid combos
     if not HAS_FUNCS:
-        utils.stop_timer(start_time)
+        utils.stop_timer(start_time, "Google Cloud Functions")
         return
 
     # Also bail out if doing a quick scan
@@ -375,7 +375,7 @@ def check_functions(names, brute_list, quickscan, threads):
                             threads=threads)
 
     # Stop the time
-    utils.stop_timer(start_time)
+    utils.stop_timer(start_time, "Google Cloud Functions")
 
 
 def run_all(names, args):
