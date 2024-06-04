@@ -41,7 +41,8 @@ def init_logfile(logfile, fmt):
         now = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         with open(logfile, 'a', encoding='utf-8') as log_writer:
             if fmt == 'json':
-                log_writer.write(json.dumps({'start_time': datetime.datetime.now().isoformat()}) + '\n')
+                log_writer.write(
+                    json.dumps({'start_time': datetime.datetime.now().isoformat()}) + '\n')
                 return
 
             log_writer.write(f"\n\n#### CLOUD_ENUM {now} ####\n")
