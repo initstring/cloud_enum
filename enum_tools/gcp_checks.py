@@ -299,7 +299,7 @@ def print_functions_response2(reply):
         utils.fmt_output(data)
     else:
         print(f"    Unknown status codes being received from {reply.url}:\n"
-              "       {reply.status_code}: {reply.reason}")
+              f"       {reply.status_code}: {reply.reason}")
 
 
 def check_functions(names, brute_list, quickscan, threads):
