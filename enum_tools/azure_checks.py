@@ -75,7 +75,7 @@ def check_storage_accounts(names, threads, nameserver, nameserverfile=False):
     print("[+] Checking for Azure Storage Accounts")
 
     # Start a counter to report on elapsed time
-    start_time = utils.start_timer()
+    start_time = utils.start_timer("Azure Storage Accounts")
 
     # Initialize the list of domain names to look up
     candidates = []
@@ -101,7 +101,7 @@ def check_storage_accounts(names, threads, nameserver, nameserverfile=False):
                         threads=threads)
 
     # Stop the timer
-    utils.stop_timer(start_time)
+    utils.stop_timer(start_time, "Azure Storage Accounts")
 
     # de-dupe the results and return
     return list(set(valid_names))
@@ -113,7 +113,7 @@ def check_file_accounts(names, threads, nameserver, nameserverfile=False):
     print("[+] Checking for Azure File Accounts")
 
     # Start a counter to report on elapsed time
-    start_time = utils.start_timer()
+    start_time = utils.start_timer("Azure File Accounts")
 
     # Initialize the list of domain names to look up
     candidates = []
@@ -139,7 +139,7 @@ def check_file_accounts(names, threads, nameserver, nameserverfile=False):
                         threads=threads)
 
     # Stop the timer
-    utils.stop_timer(start_time)
+    utils.stop_timer(start_time, "Azure File Accounts")
 
     # de-dupe the results and return
     return list(set(valid_names))
@@ -151,7 +151,7 @@ def check_queue_accounts(names, threads, nameserver, nameserverfile=False):
     print("[+] Checking for Azure Queue Accounts")
 
     # Start a counter to report on elapsed time
-    start_time = utils.start_timer()
+    start_time = utils.start_timer("Azure Queue Accounts")
 
     # Initialize the list of domain names to look up
     candidates = []
@@ -177,7 +177,7 @@ def check_queue_accounts(names, threads, nameserver, nameserverfile=False):
                         threads=threads)
 
     # Stop the timer
-    utils.stop_timer(start_time)
+    utils.stop_timer(start_time, "Azure Queue Accounts")
 
     # de-dupe the results and return
     return list(set(valid_names))
@@ -189,7 +189,7 @@ def check_table_accounts(names, threads, nameserver, nameserverfile=False):
     print("[+] Checking for Azure Table Accounts")
 
     # Start a counter to report on elapsed time
-    start_time = utils.start_timer()
+    start_time = utils.start_timer("Azure Table Accounts")
 
     # Initialize the list of domain names to look up
     candidates = []
@@ -215,7 +215,7 @@ def check_table_accounts(names, threads, nameserver, nameserverfile=False):
                         threads=threads)
 
     # Stop the timer
-    utils.stop_timer(start_time)
+    utils.stop_timer(start_time, "Azure Table Accounts")
 
     # de-dupe the results and return
     return list(set(valid_names))
@@ -227,7 +227,7 @@ def check_mgmt_accounts(names, threads, nameserver, nameserverfile=False):
     print("[+] Checking for Azure App Management Accounts")
 
     # Start a counter to report on elapsed time
-    start_time = utils.start_timer()
+    start_time = utils.start_timer("Azure App Management Accounts")
 
     # Initialize the list of domain names to look up
     candidates = []
@@ -253,7 +253,7 @@ def check_mgmt_accounts(names, threads, nameserver, nameserverfile=False):
                         threads=threads)
 
     # Stop the timer
-    utils.stop_timer(start_time)
+    utils.stop_timer(start_time, "Azure App Management Accounts")
 
     # de-dupe the results and return
     return list(set(valid_names))
@@ -265,7 +265,7 @@ def check_vault_accounts(names, threads, nameserver, nameserverfile=False):
     print("[+] Checking for Azure Key Vault Accounts")
 
     # Start a counter to report on elapsed time
-    start_time = utils.start_timer()
+    start_time = utils.start_timer("Azure Key Vault Accounts")
 
     # Initialize the list of domain names to look up
     candidates = []
@@ -291,7 +291,7 @@ def check_vault_accounts(names, threads, nameserver, nameserverfile=False):
                         threads=threads)
 
     # Stop the timer
-    utils.stop_timer(start_time)
+    utils.stop_timer(start_time, "Azure Key Vault Accounts")
 
     # de-dupe the results and return
     return list(set(valid_names))
@@ -374,7 +374,7 @@ def brute_force_containers(storage_accounts, brute_list, threads):
     clean_names = utils.get_brute(brute_list, mini=3)
 
     # Start a counter to report on elapsed time
-    start_time = utils.start_timer()
+    start_time = utils.start_timer(f"{len(storage_accounts)} accounts for status before brute-forcing")
 
     print(f"[*] Brute-forcing container names in {len(valid_accounts)} storage accounts")
     for account in valid_accounts:
@@ -393,7 +393,7 @@ def brute_force_containers(storage_accounts, brute_list, threads):
                             threads=threads)
 
     # Stop the timer
-    utils.stop_timer(start_time)
+    utils.stop_timer(start_time, f"{len(storage_accounts)} accounts for status before brute-forcing")
 
 
 def print_website_response(hostname):
@@ -416,7 +416,7 @@ def check_azure_websites(names, nameserver, threads, nameserverfile=False):
     print("[+] Checking for Azure Websites")
 
     # Start a counter to report on elapsed time
-    start_time = utils.start_timer()
+    start_time = utils.start_timer("Azure Websites")
 
     # Initialize the list of domain names to look up
     candidates = [name + '.' + WEBAPP_URL for name in names]
@@ -428,7 +428,7 @@ def check_azure_websites(names, nameserver, threads, nameserverfile=False):
                           threads=threads)
 
     # Stop the timer
-    utils.stop_timer(start_time)
+    utils.stop_timer(start_time, "Azure Websites")
 
 
 def print_database_response(hostname):
@@ -450,7 +450,7 @@ def check_azure_databases(names, nameserver, threads, nameserverfile=False):
     """
     print("[+] Checking for Azure Databases")
     # Start a counter to report on elapsed time
-    start_time = utils.start_timer()
+    start_time = utils.start_timer("Azure Databases")
 
     # Initialize the list of domain names to look up
     candidates = [name + '.' + DATABASE_URL for name in names]
@@ -462,7 +462,7 @@ def check_azure_databases(names, nameserver, threads, nameserverfile=False):
                           threads=threads)
 
     # Stop the timer
-    utils.stop_timer(start_time)
+    utils.stop_timer(start_time, "Azure Databases")
 
 
 def print_vm_response(hostname):
@@ -485,7 +485,7 @@ def check_azure_vms(names, nameserver, threads, nameserverfile=False):
     print("[+] Checking for Azure Virtual Machines")
 
     # Start a counter to report on elapsed time
-    start_time = utils.start_timer()
+    start_time = utils.start_timer("Azure Virtual Machines")
 
     # Pull the regions from a config file
     regions = azure_regions.REGIONS
@@ -504,7 +504,7 @@ def check_azure_vms(names, nameserver, threads, nameserverfile=False):
                               threads=threads)
 
     # Stop the timer
-    utils.stop_timer(start_time)
+    utils.stop_timer(start_time, "Azure Virtual Machines")
 
 
 def run_all(names, args):

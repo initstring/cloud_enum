@@ -40,6 +40,10 @@ def init_logfile(logfile, fmt):
 
         now = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         with open(logfile, 'a', encoding='utf-8') as log_writer:
+            if fmt == 'json':
+                log_writer.write(json.dumps({'start_time': datetime.datetime.now().isoformat()}) + '\n')
+                return
+
             log_writer.write(f"\n\n#### CLOUD_ENUM {now} ####\n")
 
 
@@ -56,7 +60,7 @@ def is_valid_domain(domain):
         # Each label should be between 1 and 63 characters long
         if not (1 <= len(label) <= 63):
             return False
-        
+
     return True
 
 
@@ -103,29 +107,34 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5, redir=True):
         # Then, grab all the results from the queue.
         # This is where we need to catch exceptions that occur with large
         # fuzz lists and dodgy connections.
-        for url in batch_pending:
+        for url, batch_item in batch_pending.items():
             try:
                 # Timeout is set due to observation of some large jobs simply
                 # hanging forever with no exception raised.
-                batch_results[url] = batch_pending[url].result(timeout=30)
+                batch_results[url] = batch_item.result(timeout=30)
             except requests.exceptions.ConnectionError as error_msg:
+                fmt_output({'type': 'error', 'data': f'Connection error on {url}'})
                 print(f"    [!] Connection error on {url}:")
                 print(error_msg)
             except TimeoutError:
+                fmt_output({'type': 'error', 'data': f'Timeout on {url}'})
                 print(f"    [!] Timeout on {url}. Investigate if there are"
                       " many of these")
 
         # Now, send all the results to the callback function for analysis
         # We need a way to stop processing unnecessary brute-forces, so the
         # callback may tell us to bail out.
-        for url in batch_results:
-            check = callback(batch_results[url])
+        for url, batch_item in batch_results.items():
+            check = callback(batch_item)
             if check == 'breakout':
                 return
 
         # Refresh a status message
         tick['current'] += threads
         sys.stdout.flush()
+        if LOGFILE_FMT == 'json':
+            fmt_output({'type':'progress', 'data': tick})
+
         sys.stdout.write(f"    {tick['current']}/{tick['total']} complete...")
         sys.stdout.write('\r')
 
@@ -139,8 +148,9 @@ def read_nameservers(file_path):
     Lines starting with '#' will be ignored as comments.
     """
     try:
-        with open(file_path, 'r') as file:
-            nameservers = [line.strip() for line in file if line.strip() and not line.startswith('#')]
+        with open(file_path, 'r', encoding="utf8") as file:
+            nameservers = [
+                line.strip() for line in file if line.strip() and not line.startswith('#')]
         if not nameservers:
             raise ValueError("Nameserver file is empty or only contains comments")
         return nameservers
@@ -250,7 +260,7 @@ def list_bucket_contents(bucket):
     Provides a list of full URLs to each open bucket
     """
     key_regex = re.compile(r'<(?:Key|Name)>(.*?)</(?:Key|Name)>')
-    reply = requests.get(bucket)
+    reply = requests.get(bucket, timeout=1)
 
     # Make a list of all the relative-path key name
     keys = re.findall(key_regex, reply.text)
@@ -278,14 +288,27 @@ def fmt_output(data):
     # (basically, how public it is))
     bold = '\033[1m'
     end = '\033[0m'
-    if data['access'] == 'public':
-        ansi = bold + '\033[92m'  # green
-    if data['access'] == 'protected':
-        ansi = bold + '\033[33m'  # orange
-    if data['access'] == 'disabled':
-        ansi = bold + '\033[31m'  # red
+    ansi = ''
+    if 'access' in data:
+        if data['access'] == 'public':
+            ansi = bold + '\033[92m'  # green
+        if data['access'] == 'protected':
+            ansi = bold + '\033[33m'  # orange
+        if data['access'] == 'disabled':
+            ansi = bold + '\033[31m'  # red
 
-    sys.stdout.write('  ' + ansi + data['msg'] + ': ' + data['target'] + end + '\n')
+    msg = '  '
+    if ansi != '':
+        msg += ansi
+    if 'msg' in data:
+        msg += data['msg']
+    if 'target' in data:
+        msg += ': ' + data['target']
+    if ansi != '':
+        msg += end
+
+    if msg != '  ':
+        sys.stdout.write(msg + '\n')
 
     if LOGFILE:
         with open(LOGFILE, 'a', encoding='utf-8') as log_writer:
@@ -319,16 +342,18 @@ def get_brute(brute_file, mini=1, maxi=63, banned='[^a-z0-9_-]'):
     return clean_names
 
 
-def start_timer():
+def start_timer(module_name):
     """
     Starts a timer for functions in main module
     """
     # Start a counter to report on elapsed time
     start_time = time.time()
+
+    fmt_output({'type': 'start', 'module_name': module_name})
     return start_time
 
 
-def stop_timer(start_time):
+def stop_timer(start_time, module_name):
     """
     Stops timer and prints a status
     """
@@ -338,5 +363,10 @@ def stop_timer(start_time):
 
     # Print some statistics
     print("")
+    fmt_output({'type': 'start',
+                'module_name': module_name,
+                'end_time': datetime.datetime.now().isoformat(),
+                'elapsed_time': f"{elapsed_time:0.2f}"})
+    
     print(f" Elapsed time: {formatted_time}")
     print("")
