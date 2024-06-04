@@ -65,7 +65,7 @@ def parse_arguments():
     parser.add_argument('-ns', '--nameserver', type=str, action='store',
                         default='1.1.1.1',
                         help='DNS server to use in brute-force (defaults to 1.1.1.1).')
-    parser.add_argument('-nsf', '--nameserverfile', type=str, 
+    parser.add_argument('-nsf', '--nameserverfile', type=str,
                         help='Path to the file containing nameserver IPs')
     parser.add_argument('--log-status', action='store_false',
                         help='Log scan progress', default=False)
@@ -225,6 +225,7 @@ def build_names(base_list, mutations):
     return names
 
 def read_nameservers(file_path):
+    """Read the nameservers file"""
     try:
         with open(file_path, 'r', encoding="utf-8") as file:
             nameservers = [line.strip() for line in file if line.strip()]
