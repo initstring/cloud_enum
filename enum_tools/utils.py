@@ -192,6 +192,7 @@ def dns_lookup(nameserver, name):
     except dns.resolver.NXDOMAIN:
         return ''
     except dns.resolver.NoNameservers as exc_text:
+        fmt_output({'type': 'error', 'data': f"Error querying nameservers", 'exc_text': exc_text})
         print("    [!] Error querying nameservers! This could be a problem.")
         print("    [!] If you're using a VPN, try setting --ns to your VPN's nameserver.")
         print("    [!] Bailing because you need to fix this")
@@ -199,6 +200,7 @@ def dns_lookup(nameserver, name):
         print(exc_text)
         return '-#BREAKOUT_DNS_ERROR#-'
     except dns.exception.Timeout:
+        fmt_output({'type': 'error', 'data': f"DNS Timeout on {name}"})
         print(f"    [!] DNS Timeout on {name}. Investigate if there are many"
               " of these.")
         return ''
@@ -245,6 +247,8 @@ def fast_dns_lookup(names, nameserver, nameserverfile, callback='', threads=5):
 
         # Update the status message
         sys.stdout.flush()
+        if LOGFILE_FMT == 'json':
+            fmt_output({'type':'progress', 'data': {"total": total, "current": current}})
         sys.stdout.write(f"    {current}/{total} complete...")
         sys.stdout.write('\r')
         pool.close()

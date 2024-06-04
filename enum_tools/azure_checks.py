@@ -367,6 +367,9 @@ def brute_force_containers(storage_accounts, brute_list, threads):
             else:
                 valid_accounts.append(account)
         except requests.exceptions.ConnectionError as error_msg:
+            utils.fmt_output({
+                'type': 'error', 
+                'data': f"Connection error on https://{account}: {error_msg}"})
             print(f"    [!] Connection error on https://{account}:")
             print(error_msg)
 
