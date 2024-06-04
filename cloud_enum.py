@@ -226,7 +226,7 @@ def build_names(base_list, mutations):
 
 def read_nameservers(file_path):
     try:
-        with open(file_path, 'r') as file:
+        with open(file_path, 'r', encoding="utf-8") as file:
             nameservers = [line.strip() for line in file if line.strip()]
         if not nameservers:
             raise ValueError("Nameserver file is empty")
