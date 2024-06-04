@@ -377,7 +377,8 @@ def brute_force_containers(storage_accounts, brute_list, threads):
     clean_names = utils.get_brute(brute_list, mini=3)
 
     # Start a counter to report on elapsed time
-    start_time = utils.start_timer(f"{len(storage_accounts)} accounts for status before brute-forcing")
+    start_time = utils.start_timer(f"{len(storage_accounts)} accounts "
+                                   "for status before brute-forcing")
 
     print(f"[*] Brute-forcing container names in {len(valid_accounts)} storage accounts")
     for account in valid_accounts:
@@ -396,7 +397,8 @@ def brute_force_containers(storage_accounts, brute_list, threads):
                             threads=threads)
 
     # Stop the timer
-    utils.stop_timer(start_time, f"{len(storage_accounts)} accounts for status before brute-forcing")
+    utils.stop_timer(start_time, f"{len(storage_accounts)} accounts "
+                     "for status before brute-forcing")
 
 
 def print_website_response(hostname):
