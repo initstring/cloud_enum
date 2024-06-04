@@ -340,7 +340,7 @@ def check_functions(names, brute_list, quickscan, threads):
                         threads=threads,
                         redir=False)
 
-    # Retun from function if we have not found any valid combos
+    # Return from function if we have not found any valid combos
     if not HAS_FUNCS:
         utils.stop_timer(start_time, "Google Cloud Functions")
         return
