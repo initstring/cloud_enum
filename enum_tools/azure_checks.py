@@ -359,7 +359,7 @@ def brute_force_containers(storage_accounts, brute_list, threads):
     valid_accounts = []
     for account in storage_accounts:
         try:
-            reply = requests.get(f'https://{account}/')
+            reply = requests.get(f'https://{account}/', timeout=1)
             if 'Server failed to authenticate the request' in reply.reason:
                 storage_accounts.remove(account)
             elif 'The specified account is disabled' in reply.reason:
