@@ -138,7 +138,7 @@ def check_fbrtdb(names, threads):
                         redir=False)
 
     # Stop the time
-    utils.stop_timer(start_time)
+    utils.stop_timer(start_time, "Google Firebase Realtime Databases")
       
       
 def print_fbapp_response(reply):
