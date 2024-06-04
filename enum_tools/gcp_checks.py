@@ -139,8 +139,8 @@ def check_fbrtdb(names, threads):
 
     # Stop the time
     utils.stop_timer(start_time, "Google Firebase Realtime Databases")
-      
-      
+
+
 def print_fbapp_response(reply):
     """
     Parses the HTTP reply of a brute-force attempt
