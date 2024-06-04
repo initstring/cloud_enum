@@ -11,7 +11,7 @@ import json
 import ipaddress
 from multiprocessing.dummy import Pool as ThreadPool
 from functools import partial
-from urllib.parse import urlparse
+
 try:
     import requests
     import dns
