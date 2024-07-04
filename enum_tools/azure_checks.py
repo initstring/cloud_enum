@@ -339,7 +339,7 @@ def print_container_response(reply):
         pass
     else:
         print(f"    Unknown status codes being received from {reply.url}:\n"
-              "       {reply.status_code}: {reply.reason}")
+              f"       {reply.status_code}: {reply.reason}")
 
     return None
 
@@ -478,7 +478,7 @@ def print_vm_response(hostname):
     utils.fmt_output(data)
 
 
-def check_azure_vms(names, nameserver, threads, nameserverfile=False):
+def check_azure_vms(names, nameserver, threads, nameserverfile=False, region=None):
     """
     Checks for Azure Virtual Machines
     """
@@ -490,7 +490,11 @@ def check_azure_vms(names, nameserver, threads, nameserverfile=False):
     # Pull the regions from a config file
     regions = azure_regions.REGIONS
 
-    print(f"[*] Testing across {len(regions)} regions defined in the config file")
+    # If a region is specified, use that instead
+    if region:
+        regions = [region]
+
+    print(f"[*] Testing across {len(regions)} regions defined in the config file or command line")
 
     for region in regions:
 
@@ -526,4 +530,4 @@ def run_all(names, args):
 
     check_azure_websites(names, args.nameserver, args.threads, args.nameserverfile)
     check_azure_databases(names, args.nameserver, args.threads, args.nameserverfile)
-    check_azure_vms(names, args.nameserver, args.threads, args.nameserverfile)
+    check_azure_vms(names, args.nameserver, args.threads, args.nameserverfile, args.region)

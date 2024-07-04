@@ -85,6 +85,9 @@ def parse_arguments():
 
     parser.add_argument('-qs', '--quickscan', action='store_true',
                         help='Disable all mutations and second-level scans')
+    
+    parser.add_argument('-r', '--region', type=str, action='store',
+                        help='Region to use for checks')
 
     args = parser.parse_args()
 
