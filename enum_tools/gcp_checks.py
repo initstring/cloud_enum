@@ -31,17 +31,19 @@ def print_bucket_response(reply):
     This function is passed into the class object so we can view results
     in real-time.
     """
-    data = {'platform': 'gcp', 'msg': '', 'target': '', 'access': ''}
+    data = {'platform': 'gcp', 'msg': '', 'target': '', 'access': '', 'key': ''}
 
     if reply.status_code == 404:
         pass
     elif reply.status_code == 200:
+        data['key'] = 'BUCKET_OPEN'
         data['msg'] = 'OPEN GOOGLE BUCKET'
         data['target'] = reply.url
         data['access'] = 'public'
         utils.fmt_output(data)
         utils.list_bucket_contents(reply.url + '/')
     elif reply.status_code == 403:
+        data['key'] = 'BUCKET_PROTECTED'
         data['msg'] = 'Protected Google Bucket'
         data['target'] = reply.url
         data['access'] = 'protected'
@@ -83,26 +85,30 @@ def print_fbrtdb_response(reply):
     This function is passed into the class object so we can view results
     in real-time.
     """
-    data = {'platform': 'gcp', 'msg': '', 'target': '', 'access': ''}
+    data = {'platform': 'gcp', 'msg': '', 'target': '', 'access': '', 'key': ''}
 
     if reply.status_code == 404:
         pass
     elif reply.status_code == 200:
+        data['key'] = 'FIREBASE_OPEN'
         data['msg'] = 'OPEN GOOGLE FIREBASE RTDB'
         data['target'] = reply.url
         data['access'] = 'public'
         utils.fmt_output(data)
     elif reply.status_code == 401:
+        data['key'] = 'FIREBASE_PROTECTED'
         data['msg'] = 'Protected Google Firebase RTDB'
         data['target'] = reply.url
         data['access'] = 'protected'
         utils.fmt_output(data)
     elif reply.status_code == 402:
+        data['key'] = 'FIREBASE_PAYMENT_REQUIRED'
         data['msg'] = 'Payment required on Google Firebase RTDB'
         data['target'] = reply.url
         data['access'] = 'disabled'
         utils.fmt_output(data)
     elif reply.status_code == 423:
+        data['key'] = 'FIREBASE_DISABLED'
         data['msg'] = 'The Firebase database has been deactivated.'
         data['target'] = reply.url
         data['access'] = 'disabled'
@@ -148,11 +154,12 @@ def print_fbapp_response(reply):
     This function is passed into the class object so we can view results
     in real-time.
     """
-    data = {'platform': 'gcp', 'msg': '', 'target': '', 'access': ''}
+    data = {'platform': 'gcp', 'msg': '', 'target': '', 'access': '', 'key': ''}
 
     if reply.status_code == 404:
         pass
     elif reply.status_code == 200:
+        data['key'] = 'FIREBASE_OPEN'
         data['msg'] = 'OPEN GOOGLE FIREBASE APP'
         data['target'] = reply.url
         data['access'] = 'public'
@@ -196,22 +203,25 @@ def print_appspot_response(reply):
     This function is passed into the class object so we can view results
     in real-time.
     """
-    data = {'platform': 'gcp', 'msg': '', 'target': '', 'access': ''}
+    data = {'platform': 'gcp', 'msg': '', 'target': '', 'access': '', 'key': ''}
 
     if reply.status_code == 404:
         pass
     elif str(reply.status_code)[0] == 5:
+        data['key'] = 'APP_ENGINE_ERROR'
         data['msg'] = 'Google App Engine app with a 50x error'
         data['target'] = reply.url
         data['access'] = 'public'
         utils.fmt_output(data)
     elif reply.status_code in (200, 302, 404):
         if 'accounts.google.com' in reply.url:
+            data['key'] = 'APP_ENGINE_PROTECTED'
             data['msg'] = 'Protected Google App Engine app'
             data['target'] = reply.history[0].url
             data['access'] = 'protected'
             utils.fmt_output(data)
         else:
+            data['key'] = 'APP_ENGINE_OPEN'
             data['msg'] = 'Open Google App Engine app'
             data['target'] = reply.url
             data['access'] = 'public'
@@ -256,11 +266,12 @@ def print_functions_response1(reply):
     This function is passed into the class object so we can view results
     in real-time.
     """
-    data = {'platform': 'gcp', 'msg': '', 'target': '', 'access': ''}
+    data = {'platform': 'gcp', 'msg': '', 'target': '', 'access': '', 'key': ''}
 
     if reply.status_code == 404:
         pass
     elif reply.status_code == 302:
+        data['key'] = 'HAS_CLOUD_FUNCTIONS'
         data['msg'] = 'Contains at least 1 Cloud Function'
         data['target'] = reply.url
         data['access'] = 'public'
@@ -278,21 +289,24 @@ def print_functions_response2(reply):
     This function is passed into the class object so we can view results
     in real-time.
     """
-    data = {'platform': 'gcp', 'msg': '', 'target': '', 'access': ''}
+    data = {'platform': 'gcp', 'msg': '', 'target': '', 'access': '', 'key': ''}
 
     if 'accounts.google.com/ServiceLogin' in reply.url:
         pass
     elif reply.status_code in (403, 401):
+        data['key'] = 'CLOUD_FUNCTION_AUTH_REQUIRED'
         data['msg'] = 'Auth required Cloud Function'
         data['target'] = reply.url
         data['access'] = 'protected'
         utils.fmt_output(data)
     elif reply.status_code == 405:
+        data['key'] = 'CLOUD_FUNCTION_POST_ONLY'
         data['msg'] = 'UNAUTHENTICATED Cloud Function (POST-Only)'
         data['target'] = reply.url
         data['access'] = 'public'
         utils.fmt_output(data)
     elif reply.status_code in (200, 404):
+        data['key'] = 'CLOUD_FUNCTION_GET_OK'
         data['msg'] = 'UNAUTHENTICATED Cloud Function (GET-OK)'
         data['target'] = reply.url
         data['access'] = 'public'

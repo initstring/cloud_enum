@@ -46,19 +46,21 @@ def print_s3_response(reply):
     This function is passed into the class object so we can view results
     in real-time.
     """
-    data = {'platform': 'aws', 'msg': '', 'target': '', 'access': ''}
+    data = {'platform': 'aws', 'msg': '', 'target': '', 'access': '', 'key': ''}
 
     if reply.status_code == 404:
         pass
     elif 'Bad Request' in reply.reason:
         pass
     elif reply.status_code == 200:
+        data['key'] = 'BUCKET_OPEN'
         data['msg'] = 'OPEN S3 BUCKET'
         data['target'] = reply.url
         data['access'] = 'public'
         utils.fmt_output(data)
         utils.list_bucket_contents(reply.url)
     elif reply.status_code == 403:
+        data['key'] = 'BUCKET_PROTECTED'
         data['msg'] = 'Protected S3 Bucket'
         data['target'] = reply.url
         data['access'] = 'protected'
@@ -103,7 +105,7 @@ def check_awsapps(names, threads, nameserver, nameserverfile=False):
     Checks for existence of AWS Apps
     (ie. WorkDocs, WorkMail, Connect, etc.)
     """
-    data = {'platform': 'aws', 'msg': 'AWS App Found:', 'target': '', 'access': ''}
+    data = {'platform': 'aws', 'msg': 'AWS App Found:', 'target': '', 'access': '', 'key': ''}
 
     print("[+] Checking for AWS Apps")
 
