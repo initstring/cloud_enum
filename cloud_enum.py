@@ -13,10 +13,11 @@ import os
 import sys
 import argparse
 import re
-from enum_tools import aws_checks
-from enum_tools import azure_checks
-from enum_tools import gcp_checks
+from enum_tools import aws_checks as aws
+from enum_tools import azure_checks as azure
+from enum_tools import gcp_checks as gcp
 from enum_tools import utils
+from logger import logger
 
 BANNER = '''
 ##########################
@@ -47,32 +48,31 @@ def parse_arguments():
     kw_group.add_argument('-kf', '--keyfile', type=str, action='store',
                           help='Input file with a single keyword per line.')
 
+    parser.add_argument('-l', '--log-level', type=str,
+                        action='store', default='info', help='Log level')
+
     # Use included mutations file by default, or let the user provide one
-    parser.add_argument('-m', '--mutations', type=str, action='store',
-                        default=script_path + '/enum_tools/fuzz.txt',
-                        help='Mutations. Default: enum_tools/fuzz.txt')
+    parser.add_argument('-m', '--mutations', type=str, action='store', default=script_path +
+                        '/enum_tools/fuzz.txt', help='Mutations. Default: enum_tools/fuzz.txt')
 
     # Use include container brute-force or let the user provide one
-    parser.add_argument('-b', '--brute', type=str, action='store',
-                        default=script_path + '/enum_tools/fuzz.txt',
-                        help='List to brute-force Azure container names.'
-                        '  Default: enum_tools/fuzz.txt')
+    parser.add_argument('-b', '--brute', type=str, action='store', default=script_path + '/enum_tools/fuzz.txt',
+                        help='List to brute-force Azure container names. Default: enum_tools/fuzz.txt')
 
     parser.add_argument('-t', '--threads', type=int, action='store',
-                        default=5, help='Threads for HTTP brute-force.'
-                        ' Default = 5')
+                        default=5, help='Threads for HTTP brute-force. Default = 5')
 
     parser.add_argument('-ns', '--nameserver', type=str, action='store',
-                        default='8.8.8.8',
-                        help='DNS server to use in brute-force.')
-    parser.add_argument('-nsf', '--nameserverfile', type=str, 
+                        default='8.8.8.8', help='DNS server to use in brute-force.')
+
+    parser.add_argument('-nsf', '--nameserverfile', type=str,
                         help='Path to the file containing nameserver IPs')
-    parser.add_argument('-l', '--logfile', type=str, action='store',
+
+    parser.add_argument('-lf', '--logfile', type=str, action='store',
                         help='Appends found items to specified file.')
-    parser.add_argument('-f', '--format', type=str, action='store',
-                        default='text',
-                        help='Format for log file (text,json,csv)'
-                             ' - default: text')
+
+    parser.add_argument('-f', '--format', type=str, action='store', default='text',
+                        help='Format for log file (text,json,csv) - default: text')
 
     parser.add_argument('--disable-aws', action='store_true',
                         help='Disable Amazon checks.')
@@ -85,26 +85,26 @@ def parse_arguments():
 
     parser.add_argument('-qs', '--quickscan', action='store_true',
                         help='Disable all mutations and second-level scans')
-    
-    parser.add_argument('-r', '--region', type=str, action='store',
-                        help='Region to use for checks')
+
+    parser.add_argument('-r', '--region', type=str,
+                        action='store', help='Region to use for checks')
 
     args = parser.parse_args()
 
     # Ensure mutations file is readable
     if not os.access(args.mutations, os.R_OK):
-        print(f"[!] Cannot access mutations file: {args.mutations}")
+        log.error(f"[!] Cannot access mutations file: {args.mutations}")
         sys.exit()
 
     # Ensure brute file is readable
     if not os.access(args.brute, os.R_OK):
-        print("[!] Cannot access brute-force file, exiting")
+        log.error("[!] Cannot access brute-force file, exiting")
         sys.exit()
 
     # Ensure keywords file is readable
     if args.keyfile:
         if not os.access(args.keyfile, os.R_OK):
-            print("[!] Cannot access keyword file, exiting")
+            log.error("[!] Cannot access keyword file, exiting")
             sys.exit()
 
         # Parse keywords from input file
@@ -114,7 +114,7 @@ def parse_arguments():
     # Ensure log file is writeable
     if args.logfile:
         if os.path.isdir(args.logfile):
-            print("[!] Can't specify a directory as the logfile, exiting.")
+            log.error("[!] Can't specify a directory as the logfile, exiting.")
             sys.exit()
         if os.path.isfile(args.logfile):
             target = args.logfile
@@ -124,12 +124,13 @@ def parse_arguments():
                 target = '.'
 
         if not os.access(target, os.W_OK):
-            print("[!] Cannot write to log file, exiting")
+            log.error("[!] Cannot write to log file, exiting")
             sys.exit()
 
         # Set up logging format
         if args.format not in ('text', 'json', 'csv'):
-            print("[!] Sorry! Allowed log formats: 'text', 'json', or 'csv'")
+            log.error(
+                "[!] Sorry! Allowed log formats: 'text', 'json', or 'csv'")
             sys.exit()
         # Set the global in the utils file, where logging needs to happen
         utils.init_logfile(args.logfile, args.format)
@@ -141,13 +142,12 @@ def print_status(args):
     """
     Print a short pre-run status message
     """
-    print(f"Keywords:    {', '.join(args.keyword)}")
+    log.debug(f"Keywords:    {', '.join(args.keyword)}")
     if args.quickscan:
-        print("Mutations:   NONE! (Using quickscan)")
+        log.debug("Mutations:   NONE! (Using quickscan)")
     else:
-        print(f"Mutations:   {args.mutations}")
-    print(f"Brute-list:  {args.brute}")
-    print("")
+        log.debug(f"Mutations:   {args.mutations}")
+    log.debug(f"Brute-list:  {args.brute}")
 
 
 def check_windows():
@@ -160,8 +160,8 @@ def check_windows():
             import colorama
             colorama.init()
         except ModuleNotFoundError:
-            print("[!] Yo, Windows user - if you want pretty colors, you can"
-                  " install the colorama python package.")
+            log.debug("[!] Yo, Windows user - if you want pretty colors, you can"
+                      " install the colorama python package.")
 
 
 def read_mutations(mutations_file):
@@ -171,7 +171,7 @@ def read_mutations(mutations_file):
     with open(mutations_file, encoding="utf8", errors="ignore") as infile:
         mutations = infile.read().splitlines()
 
-    print(f"[+] Mutations list imported: {len(mutations)} items")
+    log.debug(f"Mutations list imported: {len(mutations)} items")
     return mutations
 
 
@@ -221,9 +221,10 @@ def build_names(base_list, mutations):
             append_name(f"{mutation}.{base}", names)
             append_name(f"{mutation}-{base}", names)
 
-    print(f"[+] Mutated results: {len(names)} items")
+    log.debug(f"Mutated results: {len(names)} items")
 
     return names
+
 
 def read_nameservers(file_path):
     try:
@@ -233,18 +234,22 @@ def read_nameservers(file_path):
             raise ValueError("Nameserver file is empty")
         return nameservers
     except FileNotFoundError:
-        print(f"Error: File '{file_path}' not found.")
+        log.error(f"Error: File '{file_path}' not found.")
         exit(1)
     except ValueError as e:
-        print(e)
+        log.error(e)
         exit(1)
+
 
 def main():
     """
     Main program function.
     """
     args = parse_arguments()
-    print(BANNER)
+
+    # Set up logging
+    global log
+    log = logger.Logger(args.log_level.upper())
 
     # Generate a basic status on targets and parameters
     print_status(args)
@@ -257,22 +262,23 @@ def main():
         mutations = []
     else:
         mutations = read_mutations(args.mutations)
+
     names = build_names(args.keyword, mutations)
 
     # All the work is done in the individual modules
     try:
         if not args.disable_aws:
-            aws_checks.run_all(names, args)
+            aws.AWSChecks(log, args, names).run_all()
         if not args.disable_azure:
-            azure_checks.run_all(names, args)
+            azure.AzureChecks(log, args, names).run_all()
         if not args.disable_gcp:
-            gcp_checks.run_all(names, args)
+            gcp.GCPChecks(log, args, names).run_all()
     except KeyboardInterrupt:
-        print("Thanks for playing!")
+        log.debug("Thanks for playing!")
         sys.exit()
 
     # Best of luck to you!
-    print("\n[+] All done, happy hacking!\n")
+    log.debug("\nAll done, happy hacking!\n")
     sys.exit()
 
 
