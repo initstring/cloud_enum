@@ -16,16 +16,7 @@ import re
 from enum_tools import aws_checks as aws
 from enum_tools import azure_checks as azure
 from enum_tools import gcp_checks as gcp
-from enum_tools import utils
 from logger import logger
-
-BANNER = '''
-##########################
-        cloud_enum
-   github.com/initstring
-##########################
-
-'''
 
 
 def parse_arguments():
@@ -87,18 +78,18 @@ def parse_arguments():
 
     # Ensure mutations file is readable
     if not os.access(args.mutations, os.R_OK):
-        log.error(f"[!] Cannot access mutations file: {args.mutations}")
+        log.new().error(f"[!] Cannot access mutations file: {args.mutations}")
         sys.exit()
 
     # Ensure brute file is readable
     if not os.access(args.brute, os.R_OK):
-        log.error("[!] Cannot access brute-force file, exiting")
+        log.new().error("[!] Cannot access brute-force file, exiting")
         sys.exit()
 
     # Ensure keywords file is readable
     if args.keyfile:
         if not os.access(args.keyfile, os.R_OK):
-            log.error("[!] Cannot access keyword file, exiting")
+            log.new().error("[!] Cannot access keyword file, exiting")
             sys.exit()
 
         # Parse keywords from input file
@@ -112,12 +103,12 @@ def print_status(args):
     """
     Print a short pre-run status message
     """
-    log.debug(f"Keywords:    {', '.join(args.keyword)}")
+    log.new().debug(f"Keywords:    {', '.join(args.keyword)}")
     if args.quickscan:
-        log.debug("Mutations:   NONE! (Using quickscan)")
+        log.new().debug("Mutations:   NONE! (Using quickscan)")
     else:
-        log.debug(f"Mutations:   {args.mutations}")
-    log.debug(f"Brute-list:  {args.brute}")
+        log.new().debug(f"Mutations:   {args.mutations}")
+    log.new().debug(f"Brute-list:  {args.brute}")
 
 
 def check_windows():
@@ -130,8 +121,8 @@ def check_windows():
             import colorama
             colorama.init()
         except ModuleNotFoundError:
-            log.debug("[!] Yo, Windows user - if you want pretty colors, you can"
-                      " install the colorama python package.")
+            log.new().debug("[!] Yo, Windows user - if you want pretty colors, you can"
+                            " install the colorama python package.")
 
 
 def read_mutations(mutations_file):
@@ -141,7 +132,7 @@ def read_mutations(mutations_file):
     with open(mutations_file, encoding="utf8", errors="ignore") as infile:
         mutations = infile.read().splitlines()
 
-    log.debug(f"Mutations list imported: {len(mutations)} items")
+    log.new().debug(f"Mutations list imported: {len(mutations)} items")
     return mutations
 
 
@@ -191,7 +182,7 @@ def build_names(base_list, mutations):
             append_name(f"{mutation}.{base}", names)
             append_name(f"{mutation}-{base}", names)
 
-    log.debug(f"Mutated results: {len(names)} items")
+    log.new().debug(f"Mutated results: {len(names)} items")
 
     return names
 
@@ -204,10 +195,10 @@ def read_nameservers(file_path):
             raise ValueError("Nameserver file is empty")
         return nameservers
     except FileNotFoundError:
-        log.error(f"Error: File '{file_path}' not found.")
+        log.new().error(f"Error: File '{file_path}' not found.")
         exit(1)
     except ValueError as e:
-        log.error(e)
+        log.new().error(e)
         exit(1)
 
 
@@ -244,11 +235,11 @@ def main():
         if not args.disable_gcp:
             gcp.GCPChecks(log, args, names).run_all()
     except KeyboardInterrupt:
-        log.debug("Thanks for playing!")
+        log.new().trace("Thanks for playing!")
         sys.exit()
 
     # Best of luck to you!
-    log.debug("\nAll done, happy hacking!\n")
+    log.new().trace("All done, happy hacking!")
     sys.exit()
 
 

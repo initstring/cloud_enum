@@ -47,8 +47,7 @@ class AWSChecks:
         This function is passed into the class object so we can view results
         in real-time.
         """
-        data = {'platform': 'aws', 'msg': '',
-                'target': '', 'access': '', 'key': ''}
+        data = {'platform': 'aws', 'target': '', 'access': '', 'key': ''}
 
         if reply.status_code == 404:
             pass
@@ -91,7 +90,7 @@ class AWSChecks:
             candidates.append(f'{name}.{S3_URL}')
 
         # Send the valid names to the batch HTTP processor
-        utils.get_url_batch(candidates, use_ssl=False,
+        utils.get_url_batch(self.log, candidates, use_ssl=False,
                             callback=self.print_s3_response,
                             threads=self.args.threads)
 
@@ -104,8 +103,7 @@ class AWSChecks:
         Checks for existence of AWS Apps
         (ie. WorkDocs, WorkMail, Connect, etc.)
         """
-        data = {'platform': 'aws', 'msg': 'AWS App Found:',
-                'target': '', 'access': '', 'key': ''}
+        data = {'platform': 'aws', 'target': '', 'access': '', 'key': ''}
 
         self.log.new().trace("Checking for AWS Apps")
 
@@ -124,12 +122,13 @@ class AWSChecks:
 
         # AWS Apps use DNS sub-domains. First, see which are valid.
         valid_names = utils.fast_dns_lookup(
-            candidates, self.args.nameserver, self.args.nameserverfile, threads=self.args.threads)
+            self.log, candidates, self.args.nameserver, self.args.nameserverfile, threads=self.args.threads)
 
         for name in valid_names:
+            data['key'] = 'aws_app'
             data['target'] = f'https://{name}'
             data['access'] = 'protected'
-            utils.fmt_output(data)
+            self.log.new().extra(map=data).info('AWS App Found')
 
         # Stop the timer
         self.log.new().trace(

@@ -37,8 +37,7 @@ class AzureChecks:
         This function is passed into the class object so we can view results
         in real-time.
         """
-        data = {'platform': 'azure', 'msg': '',
-                'target': '', 'access': '', 'key': ''}
+        data = {'platform': 'azure', 'target': '', 'access': '', 'key': ''}
 
         if reply.status_code == 404 or 'The requested URI does not represent' in reply.reason:
             pass
@@ -96,10 +95,10 @@ class AzureChecks:
 
         # Azure Storage Accounts use DNS sub-domains. First, see which are valid.
         valid_names = utils.fast_dns_lookup(
-            candidates, self.args.nameserver, self.args.nameserverfile, threads=self.args.threads)
+            self.log, candidates, self.args.nameserver, self.args.nameserverfile, threads=self.args.threads)
 
         # Send the valid names to the batch HTTP processor
-        utils.get_url_batch(valid_names, use_ssl=False,
+        utils.get_url_batch(self.log, valid_names, use_ssl=False,
                             callback=self.print_account_response, threads=self.args.threads)
 
         # Stop the timer
@@ -134,10 +133,10 @@ class AzureChecks:
 
         # Azure Storage Accounts use DNS sub-domains. First, see which are valid.
         valid_names = utils.fast_dns_lookup(
-            candidates, self.args.nameserver, self.args.nameserverfile, threads=self.args.threads)
+            self.log, candidates, self.args.nameserver, self.args.nameserverfile, threads=self.args.threads)
 
         # Send the valid names to the batch HTTP processor
-        utils.get_url_batch(valid_names, use_ssl=False,
+        utils.get_url_batch(self.log, valid_names, use_ssl=False,
                             callback=self.print_account_response, threads=self.args.threads)
 
         # Stop the timer
@@ -172,10 +171,10 @@ class AzureChecks:
 
         # Azure Storage Accounts use DNS sub-domains. First, see which are valid.
         valid_names = utils.fast_dns_lookup(
-            candidates, self.args.nameserver, self.args.nameserverfile, threads=self.args.threads)
+            self.log, candidates, self.args.nameserver, self.args.nameserverfile, threads=self.args.threads)
 
         # Send the valid names to the batch HTTP processor
-        utils.get_url_batch(valid_names, use_ssl=False,
+        utils.get_url_batch(self.log, valid_names, use_ssl=False,
                             callback=self.print_account_response, threads=self.args.threads)
 
         # Stop the timer
@@ -210,10 +209,10 @@ class AzureChecks:
 
         # Azure Storage Accounts use DNS sub-domains. First, see which are valid.
         valid_names = utils.fast_dns_lookup(
-            candidates, self.args.nameserver, self.args.nameserverfile, threads=self.args.threads)
+            self.log, candidates, self.args.nameserver, self.args.nameserverfile, threads=self.args.threads)
 
         # Send the valid names to the batch HTTP processor
-        utils.get_url_batch(valid_names, use_ssl=False,
+        utils.get_url_batch(self.log, valid_names, use_ssl=False,
                             callback=self.print_account_response, threads=self.args.threads)
 
         # Stop the timer
@@ -248,10 +247,10 @@ class AzureChecks:
 
         # Azure Storage Accounts use DNS sub-domains. First, see which are valid.
         valid_names = utils.fast_dns_lookup(
-            candidates, self.args.nameserver, self.args.nameserverfile, threads=self.args.threads)
+            self.log, candidates, self.args.nameserver, self.args.nameserverfile, threads=self.args.threads)
 
         # Send the valid names to the batch HTTP processor
-        utils.get_url_batch(valid_names, use_ssl=False,
+        utils.get_url_batch(self.log, valid_names, use_ssl=False,
                             callback=self.print_account_response, threads=self.args.threads)
 
         # Stop the timer
@@ -286,10 +285,10 @@ class AzureChecks:
 
         # Azure Storage Accounts use DNS sub-domains. First, see which are valid.
         valid_names = utils.fast_dns_lookup(
-            candidates, self.args.nameserver, self.args.nameserverfile, threads=self.args.threads)
+            self.log, candidates, self.args.nameserver, self.args.nameserverfile, threads=self.args.threads)
 
         # Send the valid names to the batch HTTP processor
-        utils.get_url_batch(valid_names, use_ssl=False,
+        utils.get_url_batch(self.log, valid_names, use_ssl=False,
                             callback=self.print_account_response, threads=self.args.threads)
 
         # Stop the timer
@@ -306,8 +305,7 @@ class AzureChecks:
         This function is passed into the class object so we can view results
         in real-time.
         """
-        data = {'platform': 'azure', 'msg': '',
-                'target': '', 'access': '', 'key': ''}
+        data = {'platform': 'azure', 'target': '', 'access': '', 'key': ''}
 
         # Stop brute forcing disabled accounts
         if 'The specified account is disabled' in reply.reason:
@@ -334,7 +332,7 @@ class AzureChecks:
             data['key'] = 'container_open'
             data['target'] = reply.url
             data['access'] = 'public'
-            self.log.new().extra(map=data).info('OPEN AZURE CONTAINER')
+            self.log.new().extra(map=data).info('Open Azure Container')
             utils.list_bucket_contents(self.log, reply.url)
         elif 'One of the request inputs is out of range' in reply.reason:
             pass
@@ -394,8 +392,8 @@ class AzureChecks:
                     f'{account}/{name}/?restype=container&comp=list')
 
             # Send the valid names to the batch HTTP processor
-            utils.get_url_batch(
-                candidates, use_ssl=True, callback=self.print_container_response, threads=self.args.threads)
+            utils.get_url_batch(self.log,
+                                candidates, use_ssl=True, callback=self.print_container_response, threads=self.args.threads)
 
         # Stop the timer
         self.log.new().trace(
@@ -406,8 +404,7 @@ class AzureChecks:
         This function is passed into the DNS brute force as a callback,
         so we can get real-time results.
         """
-        data = {'platform': 'azure', 'msg': '',
-                'target': '', 'access': '', 'key': ''}
+        data = {'platform': 'azure', 'target': '', 'access': '', 'key': ''}
 
         data['key'] = 'registered_website_dns'
         data['target'] = hostname
@@ -427,7 +424,7 @@ class AzureChecks:
         candidates = [name + '.' + WEBAPP_URL for name in self.names]
 
         # Azure Websites use DNS sub-domains. If it resolves, it is registered.
-        utils.fast_dns_lookup(candidates, self.args.nameserver, self.args.nameserverfile,
+        utils.fast_dns_lookup(self.log, candidates, self.args.nameserver, self.args.nameserverfile,
                               callback=self.print_website_response, threads=self.args.threads)
 
         # Stop the timer
@@ -439,8 +436,7 @@ class AzureChecks:
         This function is passed into the DNS brute force as a callback,
         so we can get real-time results.
         """
-        data = {'platform': 'azure', 'msg': '',
-                'target': '', 'access': '', 'key': ''}
+        data = {'platform': 'azure', 'target': '', 'access': '', 'key': ''}
 
         data['key'] = 'registered_database_dns'
         data['target'] = hostname
@@ -459,7 +455,7 @@ class AzureChecks:
         candidates = [name + '.' + DATABASE_URL for name in self.names]
 
         # Azure databases use DNS sub-domains. If it resolves, it is registered.
-        utils.fast_dns_lookup(candidates, self.args.nameserver, self.args.nameserverfile,
+        utils.fast_dns_lookup(self.log, candidates, self.args.nameserver, self.args.nameserverfile,
                               callback=self.print_database_response, threads=self.args.threads)
 
         # Stop the timer
@@ -471,8 +467,7 @@ class AzureChecks:
         This function is passed into the DNS brute force as a callback,
         so we can get real-time results.
         """
-        data = {'platform': 'azure', 'msg': '',
-                'target': '', 'access': '', 'key': ''}
+        data = {'platform': 'azure', 'target': '', 'access': '', 'key': ''}
 
         data['key'] = 'registered_vm_dns'
         data['target'] = hostname
@@ -504,7 +499,7 @@ class AzureChecks:
                           '.' + VM_URL for name in self.names]
 
             # Azure VMs use DNS sub-domains. If it resolves, it is registered.
-            utils.fast_dns_lookup(candidates, self.args.nameserver, self.args.nameserverfile,
+            utils.fast_dns_lookup(self.log, candidates, self.args.nameserver, self.args.nameserverfile,
                                   callback=self.print_vm_response, threads=self.args.threads)
 
         # Stop the timer

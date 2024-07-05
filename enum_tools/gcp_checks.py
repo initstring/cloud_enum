@@ -32,8 +32,7 @@ class GCPChecks:
         This function is passed into the class object so we can view results
         in real-time.
         """
-        data = {'platform': 'gcp', 'msg': '',
-                'target': '', 'access': '', 'key': ''}
+        data = {'platform': 'gcp', 'target': '', 'access': '', 'key': ''}
 
         if reply.status_code == 404:
             pass
@@ -69,7 +68,7 @@ class GCPChecks:
             candidates.append(f'{GCP_URL}/{name}')
 
         # Send the valid names to the batch HTTP processor
-        utils.get_url_batch(candidates, use_ssl=False,
+        utils.get_url_batch(self.log, candidates, use_ssl=False,
                             callback=self.print_bucket_response, threads=self.args.threads)
 
         # Stop the time
@@ -83,8 +82,7 @@ class GCPChecks:
         This function is passed into the class object so we can view results
         in real-time.
         """
-        data = {'platform': 'gcp', 'msg': '',
-                'target': '', 'access': '', 'key': ''}
+        data = {'platform': 'gcp', 'target': '', 'access': '', 'key': ''}
 
         if reply.status_code == 404:
             pass
@@ -132,7 +130,7 @@ class GCPChecks:
                 candidates.append(f'{name}.{FBRTDB_URL}/.json')
 
         # Send the valid names to the batch HTTP processor
-        utils.get_url_batch(candidates, use_ssl=True, callback=self.print_fbrtdb_response,
+        utils.get_url_batch(self.log, candidates, use_ssl=True, callback=self.print_fbrtdb_response,
                             threads=self.args.threads, redir=False)
 
         # Stop the time
@@ -146,8 +144,7 @@ class GCPChecks:
         This function is passed into the class object so we can view results
         in real-time.
         """
-        data = {'platform': 'gcp', 'msg': '',
-                'target': '', 'access': '', 'key': ''}
+        data = {'platform': 'gcp', 'target': '', 'access': '', 'key': ''}
 
         if reply.status_code == 404:
             pass
@@ -180,7 +177,7 @@ class GCPChecks:
                 candidates.append(f'{name}.{FBAPP_URL}')
 
         # Send the valid names to the batch HTTP processor
-        utils.get_url_batch(candidates, use_ssl=True, callback=self.print_fbapp_response,
+        utils.get_url_batch(self.log, candidates, use_ssl=True, callback=self.print_fbapp_response,
                             threads=self.args.threads, redir=False)
 
         # Stop the time
@@ -194,39 +191,35 @@ class GCPChecks:
         This function is passed into the class object so we can view results
         in real-time.
         """
-        data = {'platform': 'gcp', 'msg': '',
-                'target': '', 'access': '', 'key': ''}
+        data = {'platform': 'gcp', 'target': '', 'access': '', 'key': ''}
 
         if reply.status_code == 404:
             pass
         elif str(reply.status_code)[0] == 5:
             data['key'] = 'app_engine_error'
-            data['msg'] = 'Google App Engine app with a 50x error'
             data['target'] = reply.url
             data['access'] = 'public'
-            utils.fmt_output(data)
+            self.log.new().extra(map=data).info("Google App Engine app with a 50x error")
         elif reply.status_code in (200, 302, 404):
             if 'accounts.google.com' in reply.url:
                 data['key'] = 'app_engine_protected'
-                data['msg'] = 'Protected Google App Engine app'
                 data['target'] = reply.history[0].url
                 data['access'] = 'protected'
-                utils.fmt_output(data)
+                self.log.new().extra(map=data).info("Protected Google App Engine app")
             else:
                 data['key'] = 'app_engine_open'
-                data['msg'] = 'Open Google App Engine app'
                 data['target'] = reply.url
                 data['access'] = 'public'
-                utils.fmt_output(data)
+                self.log.new().extra(map=data).info("Open Google App Engine app")
         else:
-            print(f"    Unknown status codes being received from {reply.url}:\n"
-                  f"       {reply.status_code}: {reply.reason}")
+            self.log.new().extra("status_code", reply.status_code).extra("reason", reply.reason).warning(
+                f"Unknown status code from: {reply.url}")
 
     def check_appspot(self):
         """
         Checks for Google App Engine sites running on appspot.com
         """
-        print("Checking for Google App Engine apps")
+        self.log.new().trace("Checking for Google App Engine apps")
 
         # Start a counter to report on elapsed time
         start_time = utils.start_timer()
@@ -242,11 +235,12 @@ class GCPChecks:
                 candidates.append(f'{name}.{APPSPOT_URL}')
 
         # Send the valid names to the batch HTTP processor
-        utils.get_url_batch(candidates, use_ssl=False,
+        utils.get_url_batch(self.log, candidates, use_ssl=False,
                             callback=self.print_appspot_response, threads=self.args.threads)
 
         # Stop the time
-        utils.stop_timer(start_time)
+        self.log.new().trace(
+            f"Checking for Google App Engine apps took {utils.stop_timer(start_time)}")
 
     def print_functions_response1(self, reply):
         """
@@ -255,8 +249,7 @@ class GCPChecks:
         This function is passed into the class object so we can view results
         in real-time.
         """
-        data = {'platform': 'gcp', 'msg': '',
-                'target': '', 'access': '', 'key': ''}
+        data = {'platform': 'gcp', 'target': '', 'access': '', 'key': ''}
 
         if reply.status_code == 404:
             pass
@@ -277,14 +270,12 @@ class GCPChecks:
         This function is passed into the class object so we can view results
         in real-time.
         """
-        data = {'platform': 'gcp', 'msg': '',
-                'target': '', 'access': '', 'key': ''}
+        data = {'platform': 'gcp', 'target': '', 'access': '', 'key': ''}
 
         if 'accounts.google.com/ServiceLogin' in reply.url:
             pass
         elif reply.status_code in (403, 401):
             data['key'] = 'cloud_function_auth_required'
-            data['msg'] = 'Auth required Cloud Function'
             data['target'] = reply.url
             data['access'] = 'protected'
             self.log.new().extra(map=data).info("Auth required Cloud Function")
@@ -329,8 +320,8 @@ class GCPChecks:
         regions = gcp_regions.REGIONS
 
         # If a region is specified, use that instead
-        if region:
-            regions = [region]
+        if self.args.region:
+            regions = [self.args.region]
 
         self.log.new().trace(
             f"Testing across {len(regions)} regions defined in the config file or command line")
@@ -341,7 +332,7 @@ class GCPChecks:
                            '.' + FUNC_URL for name in self.names]
 
         # Send the valid names to the batch HTTP processor
-        utils.get_url_batch(candidates, use_ssl=False,
+        utils.get_url_batch(self.log, candidates, use_ssl=False,
                             callback=self.print_functions_response1, threads=self.args.threads, redir=False)
 
         # Retun from function if we have not found any valid combos
@@ -376,8 +367,8 @@ class GCPChecks:
             candidates = [func + brute + '/' for brute in brute_strings]
 
             # Send the valid names to the batch HTTP processor
-            utils.get_url_batch(
-                candidates, use_ssl=False, callback=self.print_functions_response2, threads=self.args.threads)
+            utils.get_url_batch(self.log,
+                                candidates, use_ssl=False, callback=self.print_functions_response2, threads=self.args.threads)
 
         # Stop the time
         self.log.new().trace(

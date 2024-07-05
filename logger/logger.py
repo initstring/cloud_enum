@@ -19,7 +19,7 @@ class Logger:
         self._extra_data = {}
 
     def new(self):
-        return Logger(self._level)
+        return Logger(self.__level_str(self._level))
 
     def extra(self, key=None, value=None, map=None):
         if map:
@@ -79,7 +79,3 @@ class Logger:
         if level == "ERROR":
             return ERROR
         return INFO
-
-
-logger = Logger("INFO")
-logger.new().extra("hello", "world").extra("foo", "bar").info("hello world")

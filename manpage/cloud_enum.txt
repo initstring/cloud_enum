@@ -33,8 +33,8 @@ OPTIONS
   -b BRUTE, --brute BRUTE                   List to brute-force Azure container names. Default: /usr/lib/cloud-enum/enum_tools/fuzz.txt.
   -t THREADS, --threads THREADS             Threads for HTTP brute-force. Default = 5.
   -ns NAMESERVER, --nameserver NAMESERVER   DNS server to use in brute-force.
-  -l LOGFILE, --logfile LOGFILE             Will APPEND found items to specified file.
-  -f FORMAT, --format Format                Format for log file (text,json,csv - defaults to text)
+  -l LOGFILE, --logfile LOGFILE             REMOVED: Will APPEND found items to specified file.
+  -f FORMAT, --format Format                REMOVED: Format for log file (text,json,csv - defaults to text)
   --disable-aws                             Disable Amazon checks.
   --disable-azure                           Disable Azure checks.
   --disable-gcp                             Disable Google checks.
