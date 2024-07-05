@@ -56,14 +56,12 @@ class AWSChecks:
             pass
         elif reply.status_code == 200:
             data['key'] = 'bucket_open'
-            data['msg'] = 'OPEN S3 BUCKET'
             data['target'] = reply.url
             data['access'] = 'public'
             self.log.new().extra(map=data).info('OPEN S3 BUCKET')
             utils.list_bucket_contents(self.log, reply.url)
         elif reply.status_code == 403:
             data['key'] = 'bucket_protected'
-            data['msg'] = 'Protected S3 Bucket'
             data['target'] = reply.url
             data['access'] = 'protected'
             self.log.new().extra(map=data).info('Protected S3 Bucket')
