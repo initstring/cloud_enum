@@ -4,12 +4,7 @@ github.com/initstring/cloud_enum
 """
 
 from enum_tools import utils
-
-BANNER = '''
-++++++++++++++++++++++++++
-      amazon checks
-++++++++++++++++++++++++++
-'''
+from logger import logger
 
 # Known S3 domain names
 S3_URL = 's3.amazonaws.com'
@@ -38,45 +33,46 @@ AWS_REGIONS = ['amazonaws.com',
                'eu-north-1.amazonaws.com',
                'sa-east-1.amazonaws.com']
 
+
 class AWSChecks:
-    def __init__(self, log, args, names):
+    def __init__(self, log: logger.Logger, args, names):
         self.log = log
         self.args = args
         self.names = names
 
-    def print_s3_response(reply):
+    def print_s3_response(self, reply):
         """
         Parses the HTTP reply of a brute-force attempt
 
         This function is passed into the class object so we can view results
         in real-time.
         """
-        data = {'platform': 'aws', 'msg': '', 'target': '', 'access': '', 'key': ''}
+        data = {'platform': 'aws', 'msg': '',
+                'target': '', 'access': '', 'key': ''}
 
         if reply.status_code == 404:
             pass
         elif 'Bad Request' in reply.reason:
             pass
         elif reply.status_code == 200:
-            # TODO get logger here
-            data['key'] = 'BUCKET_OPEN'
+            data['key'] = 'bucket_open'
             data['msg'] = 'OPEN S3 BUCKET'
             data['target'] = reply.url
             data['access'] = 'public'
-            utils.fmt_output(data)
-            # utils.list_bucket_contents(reply.url)
+            self.log.new().extra(map=data).info('OPEN S3 BUCKET')
+            utils.list_bucket_contents(self.log, reply.url)
         elif reply.status_code == 403:
-            data['key'] = 'BUCKET_PROTECTED'
+            data['key'] = 'bucket_protected'
             data['msg'] = 'Protected S3 Bucket'
             data['target'] = reply.url
             data['access'] = 'protected'
-            utils.fmt_output(data)
+            self.log.new().extra(map=data).info('Protected S3 Bucket')
         elif 'Slow Down' in reply.reason:
-            print("[!] You've been rate limited, skipping rest of check...")
+            self.log.new().warning("Rate limited by AWS")
             return 'breakout'
         else:
-            print(f"    Unknown status codes being received from {reply.url}:\n"
-                f"       {reply.status_code}: {reply.reason}")
+            self.log.new().extra("status_code", reply.status_code).extra(
+                "reason", reply.reason).warning(f"Unknown status code from: {reply.url}")
 
         return None
 
@@ -84,7 +80,7 @@ class AWSChecks:
         """
         Checks for open and restricted Amazon S3 buckets
         """
-        print("Checking for S3 buckets")
+        self.log.new().trace("Checking for S3 buckets")
 
         # Start a counter to report on elapsed time
         start_time = utils.start_timer()
@@ -102,16 +98,18 @@ class AWSChecks:
                             threads=self.args.threads)
 
         # Stop the time
-        utils.stop_timer(start_time)
+        self.log.new().trace(
+            f"Checking for S3 buckets took {utils.stop_timer(start_time)}")
 
     def check_awsapps(self):
         """
         Checks for existence of AWS Apps
         (ie. WorkDocs, WorkMail, Connect, etc.)
         """
-        data = {'platform': 'aws', 'msg': 'AWS App Found:', 'target': '', 'access': '', 'key': ''}
+        data = {'platform': 'aws', 'msg': 'AWS App Found:',
+                'target': '', 'access': '', 'key': ''}
 
-        print("Checking for AWS Apps")
+        self.log.new().trace("Checking for AWS Apps")
 
         # Start a counter to report on elapsed time
         start_time = utils.start_timer()
@@ -127,7 +125,8 @@ class AWSChecks:
             candidates.append(f'{name}.{APPS_URL}')
 
         # AWS Apps use DNS sub-domains. First, see which are valid.
-        valid_names = utils.fast_dns_lookup(candidates, self.args.nameserver, self.args.nameserverfile, threads=self.args.threads)
+        valid_names = utils.fast_dns_lookup(
+            candidates, self.args.nameserver, self.args.nameserverfile, threads=self.args.threads)
 
         for name in valid_names:
             data['target'] = f'https://{name}'
@@ -135,13 +134,13 @@ class AWSChecks:
             utils.fmt_output(data)
 
         # Stop the timer
-        utils.stop_timer(start_time)
+        self.log.new().trace(
+            f"Checking for AWS Apps took {utils.stop_timer(start_time)}")
 
     def run_all(self):
         """
         Function is called by main program
         """
-        print(BANNER)
 
         # Use user-supplied AWS region if provided
         # if not regions:

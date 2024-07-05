@@ -4,14 +4,11 @@ Helper functions for network requests, etc
 
 import time
 import sys
-import datetime
 import re
-import csv
-import json
 import ipaddress
 from multiprocessing.dummy import Pool as ThreadPool
 from functools import partial
-from urllib.parse import urlparse
+from logger import logger
 try:
     import requests
     import dns
@@ -22,25 +19,6 @@ try:
 except ImportError:
     print("[!] Please pip install requirements.txt.")
     sys.exit()
-
-LOGFILE = False
-LOGFILE_FMT = ''
-
-
-def init_logfile(logfile, fmt):
-    """
-    Initialize the global logfile if specified as a user-supplied argument
-    """
-    if logfile:
-        global LOGFILE
-        LOGFILE = logfile
-
-        global LOGFILE_FMT
-        LOGFILE_FMT = fmt
-
-        now = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        with open(logfile, 'a', encoding='utf-8') as log_writer:
-            log_writer.write(f"\n\n#### CLOUD_ENUM {now} ####\n")
 
 
 def is_valid_domain(domain):
@@ -56,7 +34,7 @@ def is_valid_domain(domain):
         # Each label should be between 1 and 63 characters long
         if not (1 <= len(label) <= 63):
             return False
-        
+
     return True
 
 
@@ -92,13 +70,15 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5, redir=True):
         # happening. Putting it in here fixes the issue.
         # There is an unresolved discussion here:
         # https://github.com/ross/requests-futures/issues/20
-        session = FuturesSession(executor=ThreadPoolExecutor(max_workers=threads+5))
+        session = FuturesSession(
+            executor=ThreadPoolExecutor(max_workers=threads+5))
         batch_pending = {}
         batch_results = {}
 
         # First, grab the pending async request and store it in a dict
         for url in batch:
-            batch_pending[url] = session.get(proto + url, allow_redirects=redir)
+            batch_pending[url] = session.get(
+                proto + url, allow_redirects=redir)
 
         # Then, grab all the results from the queue.
         # This is where we need to catch exceptions that occur with large
@@ -132,6 +112,7 @@ def get_url_batch(url_list, use_ssl=False, callback='', threads=5, redir=True):
     # Clear the status message
     sys.stdout.write('                            \r')
 
+
 def read_nameservers(file_path):
     """
     Reads nameservers from a given file.
@@ -140,9 +121,11 @@ def read_nameservers(file_path):
     """
     try:
         with open(file_path, 'r') as file:
-            nameservers = [line.strip() for line in file if line.strip() and not line.startswith('#')]
+            nameservers = [line.strip() for line in file if line.strip()
+                           and not line.startswith('#')]
         if not nameservers:
-            raise ValueError("Nameserver file is empty or only contains comments")
+            raise ValueError(
+                "Nameserver file is empty or only contains comments")
         return nameservers
     except FileNotFoundError:
         print(f"Error: File '{file_path}' not found.")
@@ -151,12 +134,14 @@ def read_nameservers(file_path):
         print(e)
         exit(1)
 
+
 def is_valid_ip(address):
     try:
         ipaddress.ip_address(address)
         return True
     except ValueError:
         return False
+
 
 def dns_lookup(nameserver, name):
     """
@@ -183,7 +168,8 @@ def dns_lookup(nameserver, name):
         return ''
     except dns.resolver.NoNameservers as exc_text:
         print("    [!] Error querying nameservers! This could be a problem.")
-        print("    [!] If you're using a VPN, try setting --ns to your VPN's nameserver.")
+        print(
+            "    [!] If you're using a VPN, try setting --ns to your VPN's nameserver.")
         print("    [!] Bailing because you need to fix this")
         print("    [!] More Info:")
         print(exc_text)
@@ -245,7 +231,7 @@ def fast_dns_lookup(names, nameserver, nameserverfile, callback='', threads=5):
     return valid_names
 
 
-def list_bucket_contents(bucket):
+def list_bucket_contents(log: logger.Logger, bucket):
     """
     Provides a list of full URLs to each open bucket
     """
@@ -262,40 +248,11 @@ def list_bucket_contents(bucket):
 
     # Format them to full URLs and print to console
     if keys:
-        print("      FILES:")
         for key in keys:
             url = bucket + key
-            print(f"      ->{url}")
+            log.new().extra("bucket", bucket).debug(f"File: {url}")
     else:
-        print("      ...empty bucket, so sad. :(")
-
-
-def fmt_output(data):
-    """
-    Handles the output - printing and logging based on a specified format
-    """
-    # ANSI escape sequences are set based on accessibility of target
-    # (basically, how public it is))
-    bold = '\033[1m'
-    end = '\033[0m'
-    if data['access'] == 'public':
-        ansi = bold + '\033[92m'  # green
-    if data['access'] == 'protected':
-        ansi = bold + '\033[33m'  # orange
-    if data['access'] == 'disabled':
-        ansi = bold + '\033[31m'  # red
-
-    sys.stdout.write('  ' + ansi + data['msg'] + ': ' + data['target'] + end + '\n')
-
-    if LOGFILE:
-        with open(LOGFILE, 'a', encoding='utf-8') as log_writer:
-            if LOGFILE_FMT == 'text':
-                log_writer.write(f'{data["msg"]}: {data["target"]}\n')
-            if LOGFILE_FMT == 'csv':
-                writer = csv.DictWriter(log_writer, data.keys())
-                writer.writerow(data)
-            if LOGFILE_FMT == 'json':
-                log_writer.write(json.dumps(data) + '\n')
+        log.new().extra("bucket", bucket).debug("Empty bucket")
 
 
 def get_brute(brute_file, mini=1, maxi=63, banned='[^a-z0-9_-]'):
@@ -330,13 +287,10 @@ def start_timer():
 
 def stop_timer(start_time):
     """
-    Stops timer and prints a status
+    Stops timer and returns difference
     """
     # Stop the timer
     elapsed_time = time.time() - start_time
     formatted_time = time.strftime("%H:%M:%S", time.gmtime(elapsed_time))
 
-    # Print some statistics
-    print("")
-    print(f" Elapsed time: {formatted_time}")
-    print("")
+    return formatted_time

@@ -1,13 +1,16 @@
 # cloud_enum
+
 Multi-cloud OSINT tool. Enumerate public resources in AWS, Azure, and Google Cloud.
 
 Currently enumerates the following:
 
 **Amazon Web Services**:
+
 - Open / Protected S3 Buckets
 - awsapps (WorkMail, WorkDocs, Connect, etc.)
 
 **Microsoft Azure**:
+
 - Storage Accounts
 - Open Blob Storage Containers
 - Hosted Databases
@@ -15,6 +18,7 @@ Currently enumerates the following:
 - Web Apps
 
 **Google Cloud Platform**
+
 - Open / Protected GCP Buckets
 - Open / Protected Firebase Realtime Databases
 - Google App Engine sites
@@ -25,10 +29,10 @@ See it in action in [Codingo](https://github.com/codingo)'s video demo [here](ht
 
 <img src="https://initstring.keybase.pub/host/images/cloud_enum.png" align="center"/>
 
-
 # Usage
 
 ## Setup
+
 Several non-standard libaries are required to support threaded HTTP requests and dns lookups. You'll need to install the requirements as follows:
 
 ```sh
@@ -36,6 +40,7 @@ pip3 install -r ./requirements.txt
 ```
 
 ## Running
+
 The only required argument is at least one keyword. You can use the built-in fuzzing strings, but you will get better results if you supply your own with `-m` and/or `-b`.
 
 You can provide multiple keywords by specifying the `-k` argument multiple times.
@@ -57,6 +62,7 @@ HTTP scraping and DNS lookups use 5 threads each by default. You can try increas
 **IMPORTANT**: Some resources (Azure Containers, GCP Functions) are discovered per-region. To save time scanning, there is a "REGIONS" variable defined in `cloudenum/azure_regions.py and cloudenum/gcp_regions.py` that is set by default to use only 1 region. You may want to look at these files and edit them to be relevant to your own work.
 
 **Complete Usage Details**
+
 ```
 usage: cloud_enum.py [-h] -k KEYWORD [-m MUTATIONS] [-b BRUTE]
 
@@ -77,7 +83,7 @@ optional arguments:
   -ns NAMESERVER, --nameserver NAMESERVER
                         DNS server to use in brute-force.
   -l LOGFILE, --logfile LOGFILE
-                        Will APPEND found items to specified file.
+                        REMOVED Will APPEND found items to specified file.
   -f FORMAT, --format FORMAT
                         Format for log file (text,json,csv - defaults to text)
   --disable-aws         Disable Amazon checks.
@@ -87,5 +93,7 @@ optional arguments:
 ```
 
 # Thanks
+
 So far, I have borrowed from:
+
 - Some of the permutations from [GCPBucketBrute](https://github.com/RhinoSecurityLabs/GCPBucketBrute/blob/master/permutations.txt)

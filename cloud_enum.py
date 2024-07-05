@@ -68,12 +68,6 @@ def parse_arguments():
     parser.add_argument('-nsf', '--nameserverfile', type=str,
                         help='Path to the file containing nameserver IPs')
 
-    parser.add_argument('-lf', '--logfile', type=str, action='store',
-                        help='Appends found items to specified file.')
-
-    parser.add_argument('-f', '--format', type=str, action='store', default='text',
-                        help='Format for log file (text,json,csv) - default: text')
-
     parser.add_argument('--disable-aws', action='store_true',
                         help='Disable Amazon checks.')
 
@@ -110,30 +104,6 @@ def parse_arguments():
         # Parse keywords from input file
         with open(args.keyfile, encoding='utf-8') as infile:
             args.keyword = [keyword.strip() for keyword in infile]
-
-    # Ensure log file is writeable
-    if args.logfile:
-        if os.path.isdir(args.logfile):
-            log.error("[!] Can't specify a directory as the logfile, exiting.")
-            sys.exit()
-        if os.path.isfile(args.logfile):
-            target = args.logfile
-        else:
-            target = os.path.dirname(args.logfile)
-            if target == '':
-                target = '.'
-
-        if not os.access(target, os.W_OK):
-            log.error("[!] Cannot write to log file, exiting")
-            sys.exit()
-
-        # Set up logging format
-        if args.format not in ('text', 'json', 'csv'):
-            log.error(
-                "[!] Sorry! Allowed log formats: 'text', 'json', or 'csv'")
-            sys.exit()
-        # Set the global in the utils file, where logging needs to happen
-        utils.init_logfile(args.logfile, args.format)
 
     return args
 
