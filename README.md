@@ -1,4 +1,21 @@
 # cloud_enum
+
+## Future of cloud_enum
+
+I built this tool in 2019 for a pentest involving Azure, as no other enumeration tools supported it at the time. It grew from there, and I learned a lot while adding features.
+
+Building tools is fun, but maintaining tools is hard. I haven't actively used this tool myself in a while, but I've done my best to fix bugs and review pull requests.
+
+Moving forward, it makes sense to consolidate this functionality into a well-maintained project that handles the essentials (web/dns requests, threading, I/O, logging, etc.). [Nuclei](https://github.com/projectdiscovery/nuclei) is really well suited for this. You can see my first PR to migrate cloud_enum functionality to Nuclei [here](https://github.com/projectdiscovery/nuclei-templates/pull/6865).
+
+I encourage others to contribute templates to Nuclei, allowing us to focus on detecting cloud resources while leaving the groundwork to Nuclei.
+
+I'll still try to review PRs here to address bugs as time permits, but likely won't have time for major changes.
+
+Thanks to all the great contributors. Good luck with your recon!
+
+## Overview
+
 Multi-cloud OSINT tool. Enumerate public resources in AWS, Azure, and Google Cloud.
 
 Currently enumerates the following:
@@ -26,16 +43,16 @@ See it in action in [Codingo](https://github.com/codingo)'s video demo [here](ht
 <img src="https://initstring.keybase.pub/host/images/cloud_enum.png" align="center"/>
 
 
-# Usage
+## Usage
 
-## Setup
+### Setup
 Several non-standard libaries are required to support threaded HTTP requests and dns lookups. You'll need to install the requirements as follows:
 
 ```sh
 pip3 install -r ./requirements.txt
 ```
 
-## Running
+### Running
 The only required argument is at least one keyword. You can use the built-in fuzzing strings, but you will get better results if you supply your own with `-m` and/or `-b`.
 
 You can provide multiple keywords by specifying the `-k` argument multiple times.
@@ -86,6 +103,6 @@ optional arguments:
   -qs, --quickscan      Disable all mutations and second-level scans
 ```
 
-# Thanks
+## Thanks
 So far, I have borrowed from:
 - Some of the permutations from [GCPBucketBrute](https://github.com/RhinoSecurityLabs/GCPBucketBrute/blob/master/permutations.txt)
