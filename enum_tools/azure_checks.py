@@ -64,6 +64,7 @@ def print_account_response(reply):
         data['msg'] = 'Unathorized Account'
         data['target'] = reply.url
         data['access'] = 'public'
+        utils.fmt_output(data)
     else:
         print("    Unknown status codes being received from " + reply.url +":\n"
               "       "+ str(reply.status_code)+" : "+ reply.reason)
