@@ -168,30 +168,34 @@ def dns_lookup(nameserver, name):
         nameserverfile = nameserver
 
     res = dns.resolver.Resolver()
-    res.timeout = 10
+    res.timeout = 3
     if nameserverfile:
         nameservers = read_nameservers(nameserverfile)
         res.nameservers = nameservers
     else:
         res.nameservers = [nameserver]
 
-    try:
-        res.query(name)
-        # If no exception is thrown, return the valid name
-        return name
-    except dns.resolver.NXDOMAIN:
-        return ''
-    except dns.resolver.NoNameservers as exc_text:
-        print("    [!] Error querying nameservers! This could be a problem.")
-        print("    [!] If you're using a VPN, try setting --ns to your VPN's nameserver.")
-        print("    [!] Bailing because you need to fix this")
-        print("    [!] More Info:")
-        print(exc_text)
-        return '-#BREAKOUT_DNS_ERROR#-'
-    except dns.exception.Timeout:
-        print(f"    [!] DNS Timeout on {name}. Investigate if there are many"
-              " of these.")
-        return ''
+    tries = 0
+
+    while tries < 3:
+        try:
+            res.query(name)
+            # If no exception is thrown, return the valid name
+            return name
+        except dns.resolver.NXDOMAIN:
+            return ''
+        except dns.resolver.NoNameservers as exc_text:
+            print("    [!] Error querying nameservers! This could be a problem.")
+            print("    [!] If you're using a VPN, try setting --ns to your VPN's nameserver.")
+            print("    [!] Bailing because you need to fix this")
+            print("    [!] More Info:")
+            print(exc_text)
+            return '-#BREAKOUT_DNS_ERROR#-'
+        except dns.exception.Timeout:
+            tries += 1
+
+    print(f"    [!] DNS lookup for {name} timed out after 3 tries. Investigate if there are many of these.")
+    return ''
 
 
 def fast_dns_lookup(names, nameserver, nameserverfile, callback='', threads=5):
