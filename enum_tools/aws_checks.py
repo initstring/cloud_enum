@@ -48,6 +48,7 @@ def print_s3_response(reply):
     """
     data = {'platform': 'aws', 'msg': '', 'target': '', 'access': ''}
 
+    reply.url = reply.url.replace("/foobar", "")
     if reply.status_code == 404:
         pass
     elif 'Bad Request' in reply.reason:
@@ -87,7 +88,7 @@ def check_s3_buckets(names, threads):
 
     # Take each mutated keyword craft a url with the correct format
     for name in names:
-        candidates.append(f'{name}.{S3_URL}')
+        candidates.append(f'{name}.{S3_URL}/foobar')
 
     # Send the valid names to the batch HTTP processor
     utils.get_url_batch(candidates, use_ssl=False,
