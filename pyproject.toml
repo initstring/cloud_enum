@@ -17,6 +17,10 @@ dev = [
     "pytest",
 ]
 
+[tool.setuptools]
+py-modules = ["cloud_enum"]
+packages = ["enum_tools"]
+
 [build-system]
 requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
