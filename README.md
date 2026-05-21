@@ -46,10 +46,10 @@ See it in action in [Codingo](https://github.com/codingo)'s video demo [here](ht
 ## Usage
 
 ### Setup
-Several non-standard libaries are required to support threaded HTTP requests and dns lookups. You'll need to install the requirements as follows:
+This project uses [uv](https://github.com/astral-sh/uv) for dependency management. Install uv, then run:
 
 ```sh
-pip3 install -r ./requirements.txt
+uv sync
 ```
 
 ### Running
@@ -62,13 +62,13 @@ Keywords are mutated automatically using strings from `enum_tools/fuzz.txt` or a
 Let's say you were researching "somecompany" whose website is "somecompany.io" that makes a product called "blockchaindoohickey". You could run the tool like this:
 
 ```sh
-./cloud_enum.py -k somecompany -k somecompany.io -k blockchaindoohickey
+uv run cloud_enum -k somecompany -k somecompany.io -k blockchaindoohickey
 ```
 
 HTTP scraping and DNS lookups use 5 threads each by default. You can try increasing this, but eventually the cloud providers will rate limit you. Here is an example to increase to 10.
 
 ```sh
-./cloud_enum.py -k keyword -t 10
+uv run cloud_enum -k keyword -t 10
 ```
 
 **IMPORTANT**: Some resources (Azure Containers, GCP Functions) are discovered per-region. To save time scanning, there is a "REGIONS" variable defined in `cloudenum/azure_regions.py and cloudenum/gcp_regions.py` that is set by default to use only 1 region. You may want to look at these files and edit them to be relevant to your own work.
