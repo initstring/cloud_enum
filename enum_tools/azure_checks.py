@@ -340,7 +340,7 @@ def print_container_response(reply):
         pass
     else:
         print(f"    Unknown status codes being received from {reply.url}:\n"
-              "       {reply.status_code}: {reply.reason}")
+              f"       {reply.status_code}: {reply.reason}")
 
     return None
 

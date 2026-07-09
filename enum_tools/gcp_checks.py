@@ -48,7 +48,7 @@ def print_bucket_response(reply):
         utils.fmt_output(data)
     else:
         print(f"    Unknown status codes being received from {reply.url}:\n"
-              "       {reply.status_code}: {reply.reason}")
+              f"       {reply.status_code}: {reply.reason}")
 
 
 def check_gcp_buckets(names, threads):
@@ -109,7 +109,7 @@ def print_fbrtdb_response(reply):
         utils.fmt_output(data)
     else:
         print(f"    Unknown status codes being received from {reply.url}:\n"
-              "       {reply.status_code}: {reply.reason}")
+              f"       {reply.status_code}: {reply.reason}")
 
 
 def check_fbrtdb(names, threads):
@@ -159,7 +159,7 @@ def print_fbapp_response(reply):
         utils.fmt_output(data)
     else:
         print(f"    Unknown status codes being received from {reply.url}:\n"
-              "       {reply.status_code}: {reply.reason}")
+              f"       {reply.status_code}: {reply.reason}")
 
 def check_fbapp(names, threads):
     """
@@ -218,7 +218,7 @@ def print_appspot_response(reply):
             utils.fmt_output(data)
     else:
         print(f"    Unknown status codes being received from {reply.url}:\n"
-              "       {reply.status_code}: {reply.reason}")
+              f"       {reply.status_code}: {reply.reason}")
 
 
 def check_appspot(names, threads):
@@ -268,7 +268,7 @@ def print_functions_response1(reply):
         HAS_FUNCS.append(reply.url)
     else:
         print(f"    Unknown status codes being received from {reply.url}:\n"
-              "       {reply.status_code}: {reply.reason}")
+              f"       {reply.status_code}: {reply.reason}")
 
 
 def print_functions_response2(reply):
@@ -299,7 +299,7 @@ def print_functions_response2(reply):
         utils.fmt_output(data)
     else:
         print(f"    Unknown status codes being received from {reply.url}:\n"
-              "       {reply.status_code}: {reply.reason}")
+              f"       {reply.status_code}: {reply.reason}")
 
 
 def check_functions(names, brute_list, quickscan, threads):
