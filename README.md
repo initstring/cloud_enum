@@ -52,6 +52,12 @@ This project uses [uv](https://github.com/astral-sh/uv) for dependency managemen
 uv sync
 ```
 
+Or install it as a standalone tool:
+
+```sh
+uv tool install git+https://github.com/initstring/cloud_enum
+```
+
 ### Running
 The only required argument is at least one keyword. You can use the built-in fuzzing strings, but you will get better results if you supply your own with `-m` and/or `-b`.
 
@@ -71,32 +77,34 @@ HTTP scraping and DNS lookups use 5 threads each by default. You can try increas
 uv run cloud_enum -k keyword -t 10
 ```
 
-**IMPORTANT**: Some resources (Azure Containers, GCP Functions) are discovered per-region. To save time scanning, there is a "REGIONS" variable defined in `cloudenum/azure_regions.py and cloudenum/gcp_regions.py` that is set by default to use only 1 region. You may want to look at these files and edit them to be relevant to your own work.
+**IMPORTANT**: Some resources (Azure Containers, GCP Functions) are discovered per-region. To save time scanning, there is a "REGIONS" variable defined in `enum_tools/azure_regions.py` and `enum_tools/gcp_regions.py` that is set by default to use only 1 region. You may want to look at these files and edit them to be relevant to your own work.
 
 **Complete Usage Details**
 ```
-usage: cloud_enum.py [-h] -k KEYWORD [-m MUTATIONS] [-b BRUTE]
+usage: cloud_enum [-h] (-k KEYWORD | -kf KEYFILE) [-m MUTATIONS] [-b BRUTE] [-t THREADS]
+                  [-ns NAMESERVER] [-nsf NAMESERVERFILE] [-l LOGFILE] [-f FORMAT] [--disable-aws]
+                  [--disable-azure] [--disable-gcp] [-qs]
 
 Multi-cloud enumeration utility. All hail OSINT!
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
-  -k KEYWORD, --keyword KEYWORD
+  -k, --keyword KEYWORD
                         Keyword. Can use argument multiple times.
-  -kf KEYFILE, --keyfile KEYFILE
+  -kf, --keyfile KEYFILE
                         Input file with a single keyword per line.
-  -m MUTATIONS, --mutations MUTATIONS
+  -m, --mutations MUTATIONS
                         Mutations. Default: enum_tools/fuzz.txt
-  -b BRUTE, --brute BRUTE
-                        List to brute-force Azure container names. Default: enum_tools/fuzz.txt
-  -t THREADS, --threads THREADS
+  -b, --brute BRUTE     List to brute-force Azure container names. Default: enum_tools/fuzz.txt
+  -t, --threads THREADS
                         Threads for HTTP brute-force. Default = 5
-  -ns NAMESERVER, --nameserver NAMESERVER
-                        DNS server to use in brute-force.
-  -l LOGFILE, --logfile LOGFILE
-                        Will APPEND found items to specified file.
-  -f FORMAT, --format FORMAT
-                        Format for log file (text,json,csv - defaults to text)
+  -ns, --nameserver NAMESERVER
+                        DNS server to use in brute-force. Default: 1.1.1.1
+  -nsf, --nameserverfile NAMESERVERFILE
+                        Path to the file containing nameserver IPs
+  -l, --logfile LOGFILE
+                        Appends found items to specified file.
+  -f, --format FORMAT   Format for log file (text,json,csv) - default: text
   --disable-aws         Disable Amazon checks.
   --disable-azure       Disable Azure checks.
   --disable-gcp         Disable Google checks.

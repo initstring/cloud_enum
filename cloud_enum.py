@@ -34,8 +34,9 @@ def parse_arguments():
     desc = "Multi-cloud enumeration utility. All hail OSINT!"
     parser = argparse.ArgumentParser(description=desc)
 
-    # Grab the current dir of the script, for setting some defaults below
-    script_path = os.path.split(os.path.abspath(sys.argv[0]))[0]
+    # Grab the install dir of this module, for setting some defaults below.
+    # Not sys.argv[0]: console-script entry points live in the venv's bin dir.
+    script_path = os.path.dirname(os.path.abspath(__file__))
 
     kw_group = parser.add_mutually_exclusive_group(required=True)
 
@@ -64,7 +65,8 @@ def parse_arguments():
 
     parser.add_argument('-ns', '--nameserver', type=str, action='store',
                         default='1.1.1.1',
-                        help='DNS server to use in brute-force.')
+                        help='DNS server to use in brute-force.'
+                        ' Default: 1.1.1.1')
     parser.add_argument('-nsf', '--nameserverfile', type=str, 
                         help='Path to the file containing nameserver IPs')
     parser.add_argument('-l', '--logfile', type=str, action='store',

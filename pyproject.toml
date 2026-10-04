@@ -21,6 +21,9 @@ dev = [
 py-modules = ["cloud_enum"]
 packages = ["enum_tools"]
 
+[tool.setuptools.package-data]
+enum_tools = ["fuzz.txt"]
+
 [build-system]
 requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
