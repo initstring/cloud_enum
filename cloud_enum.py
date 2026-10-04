@@ -65,7 +65,8 @@ def parse_arguments():
 
     parser.add_argument('-ns', '--nameserver', type=str, action='store',
                         default='1.1.1.1',
-                        help='DNS server to use in brute-force.')
+                        help='DNS server to use in brute-force.'
+                        ' Default: 1.1.1.1')
     parser.add_argument('-nsf', '--nameserverfile', type=str, 
                         help='Path to the file containing nameserver IPs')
     parser.add_argument('-l', '--logfile', type=str, action='store',

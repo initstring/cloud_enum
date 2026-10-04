@@ -20,7 +20,7 @@ try:
     from requests_futures.sessions import FuturesSession
     from concurrent.futures._base import TimeoutError
 except ImportError:
-    print("[!] Please pip install requirements.txt.")
+    print("[!] Missing dependencies, please run 'uv sync'.")
     sys.exit()
 
 LOGFILE = False
